@@ -11,11 +11,16 @@
 #include "AVector.h"
 #include "ALine.h"
 
+#include <vector>
+
 class GLWidget : public QGLWidget
 {
     Q_OBJECT
 
 private:
+
+    std::vector<AVector> strokeLines;
+
     bool    _isMouseDown;
     float   _zoomFactor;
     QPoint  _scrollOffset;
