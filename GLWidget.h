@@ -19,7 +19,10 @@ class GLWidget : public QGLWidget
 
 private:
 
-    std::vector<AVector> strokeLines;
+    // strokes
+    std::vector<AVector>        _strokeLines;
+    QOpenGLBuffer               _strokeLinesVbo;
+    QOpenGLVertexArrayObject    _strokeLinesVao;
 
     bool    _isMouseDown;
     float   _zoomFactor;
@@ -50,14 +53,15 @@ private:
     QMatrix4x4  _transformMatrix;
 
 private:
-   void InitCurve();
-   void PaintCurve();
-   void CreateCurveVAO();
+    void InitCurve();
+    void PaintCurve();
+    void CreateCurveVAO();
 
-   void SaveToSvg();
+    void SaveToSvg();
 
-   void PreparePointsVAO(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol);
+    void PreparePointsVAO(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol);
     void PrepareLinesVAO(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
+    void PrepareLinesVAO(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
 
 protected:
     // qt event
