@@ -31,11 +31,14 @@ public:
 
 private:
     // strokes
-    std::vector<AVector>        _strokeLines;
+    std::vector<AVector>        _oriStrokeLines;    // not resampled
+    std::vector<AVector>        _strokeLines;       // resampled
     QOpenGLBuffer               _strokeLinesVbo;
     QOpenGLVertexArrayObject    _strokeLinesVao;
 
 private:
+    void CalculateDecorativeStroke();
+
     void PrepareLinesVAO(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
 
 };

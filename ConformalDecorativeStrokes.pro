@@ -16,7 +16,9 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     GLContainer.cpp \
     GLWidget.cpp \
-    StrokePainter.cpp
+    StrokePainter.cpp \
+    UtilityFunctions.cpp \
+    SystemParams.cpp
 
 HEADERS  += mainwindow.h \
     AVector.h \
@@ -24,7 +26,9 @@ HEADERS  += mainwindow.h \
     GLWidget.h \
     VertexData.h \
     ALine.h \
-    StrokePainter.h
+    StrokePainter.h \
+    UtilityFunctions.h \
+    SystemParams.h
 
 FORMS    += mainwindow.ui
 

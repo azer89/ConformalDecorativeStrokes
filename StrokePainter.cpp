@@ -1,6 +1,8 @@
 
 #include "StrokePainter.h"
 #include "VertexData.h"
+#include "UtilityFunctions.h"
+#include "SystemParams.h"
 
 #include <stdlib.h>
 #include <iostream>
@@ -13,25 +15,32 @@ StrokePainter::~StrokePainter()
 {
 }
 
+void StrokePainter::CalculateDecorativeStroke()
+{
+    UtilityFunctions::UniformResample(_oriStrokeLines, _strokeLines, SystemParams::stroke_resample_length);
+}
+
 // mouse press
 void StrokePainter::mousePressEvent(float x, float y)
 {
-    _strokeLines.clear();
-    _strokeLines.push_back(AVector(x, y));
+    _oriStrokeLines.clear();
+    _oriStrokeLines.push_back(AVector(x, y));
     PrepareLinesVAO(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(1, 0, 0));
 }
 
 // mouse move
 void StrokePainter::mouseMoveEvent(float x, float y)
 {
-    _strokeLines.push_back(AVector(x, y));
+    _oriStrokeLines.push_back(AVector(x, y));
+    CalculateDecorativeStroke();
     PrepareLinesVAO(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(1, 0, 0));
 }
 
 // mouse release
 void StrokePainter::mouseReleaseEvent(float x, float y)
 {
-    _strokeLines.push_back(AVector(x, y));
+    _oriStrokeLines.push_back(AVector(x, y));
+    CalculateDecorativeStroke();
     PrepareLinesVAO(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(1, 0, 0));
 }
 
@@ -50,6 +59,8 @@ void StrokePainter::Draw()
 
 void StrokePainter::PrepareLinesVAO(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol)
 {
+    if(points.size() == 0) return;
+
     bool isInit = false;
     if(!linesVao->isCreated())
     {
