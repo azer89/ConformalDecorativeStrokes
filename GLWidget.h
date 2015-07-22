@@ -10,6 +10,7 @@
 
 #include "AVector.h"
 #include "ALine.h"
+#include "StrokePainter.h"
 
 #include <vector>
 
@@ -19,10 +20,14 @@ class GLWidget : public QGLWidget
 
 private:
 
-    // strokes
-    std::vector<AVector>        _strokeLines;
-    QOpenGLBuffer               _strokeLinesVbo;
-    QOpenGLVertexArrayObject    _strokeLinesVao;
+    //uint _nMouseEvent;
+    //uint _nAllocateEvent;
+
+//    // strokes
+//    std::vector<AVector>        _strokeLines;
+//    QOpenGLBuffer               _strokeLinesVbo;
+//    QOpenGLVertexArrayObject    _strokeLinesVao;
+    StrokePainter* _sPainter;
 
     bool    _isMouseDown;
     float   _zoomFactor;
@@ -61,7 +66,7 @@ private:
 
     void PreparePointsVAO(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol);
     void PrepareLinesVAO(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
-    void PrepareLinesVAO(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
+    //void PrepareLinesVAO(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
 
 protected:
     // qt event

@@ -18,13 +18,15 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent) :
     _zoomFactor(10.0),
     _shaderProgram(0),
     _img_width(50),
-    _img_height(50)
+    _img_height(50),
+    _sPainter(0)
 {
 }
 
 GLWidget::~GLWidget()
 {
     if(_shaderProgram) delete _shaderProgram;
+    if(_sPainter) delete _sPainter;
 }
 
 void GLWidget::initializeGL()
@@ -57,6 +59,11 @@ void GLWidget::initializeGL()
 
     //InitCurve();
     //CreateCurveVAO();
+    _sPainter = new StrokePainter();
+    _sPainter->_shaderProgram = _shaderProgram;
+    _sPainter->_colorLocation = _colorLocation;
+    _sPainter->_vertexLocation = _vertexLocation;
+    _sPainter->_use_color_location = _use_color_location;
 }
 
 bool GLWidget::event( QEvent * event )
@@ -95,14 +102,7 @@ void GLWidget::paintGL()
 
     _shaderProgram->setUniformValue(_mvpMatrixLocation, orthoMatrix * transformMatrix);
 
-    //PaintCurve();
-    if(_strokeLinesVao.isCreated())
-    {
-        glLineWidth(2.0f);
-        _strokeLinesVao.bind();
-        glDrawArrays(GL_LINES, 0, _strokeLines.size());
-        _strokeLinesVao.release();
-    }
+    _sPainter->Draw();
 }
 
 // Mouse is pressed
@@ -116,9 +116,7 @@ void GLWidget::mousePressEvent(int x, int y)
     float dy = y + _scrollOffset.y();
     dy /= _zoomFactor;
 
-    _strokeLines.clear();
-    _strokeLines.push_back(AVector(dx, dy));
-    PrepareLinesVAO(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(1, 0, 0));
+    _sPainter->mousePressEvent(dx, dy);
 
 
     this->repaint();
@@ -137,8 +135,7 @@ void GLWidget::mouseMoveEvent(int x, int y)
 
     if(_isMouseDown)
     {
-        _strokeLines.push_back(AVector(dx, dy));
-        PrepareLinesVAO(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(1, 0, 0));
+        _sPainter->mouseMoveEvent(dx, dy);
     }
 
     this->repaint();
@@ -155,9 +152,7 @@ void GLWidget::mouseReleaseEvent(int x, int y)
     float dy = y + _scrollOffset.y();
     dy /= _zoomFactor;
 
-    // your stuff
-    _strokeLines.push_back(AVector(dx, dy));
-    PrepareLinesVAO(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(1, 0, 0));
+    _sPainter->mouseReleaseEvent(dx, dy);
 
     this->repaint();
 }
@@ -245,41 +240,6 @@ void GLWidget::PreparePointsVAO(std::vector<AVector> points, QOpenGLBuffer* ptsV
     _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
 
     ptsVao->release();
-}
-
-void GLWidget::PrepareLinesVAO(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol)
-{
-    if(linesVao->isCreated())
-    {
-        linesVao->destroy();
-    }
-
-    linesVao->create();
-    linesVao->bind();
-
-    QVector<VertexData> data;
-    for(uint a = 0; a < points.size() - 1; a ++)
-    {
-        data.append(VertexData(QVector3D(points[a].x, points[a].y,  0), QVector2D(), vecCol));
-        data.append(VertexData(QVector3D(points[a+1].x, points[a+1].y,  0), QVector2D(), vecCol));
-    }
-
-    linesVbo->create();
-    linesVbo->bind();
-    linesVbo->allocate(data.data(), data.size() * sizeof(VertexData));
-
-    quintptr offset = 0;
-
-    _shaderProgram->enableAttributeArray(_vertexLocation);
-    _shaderProgram->setAttributeBuffer(_vertexLocation, GL_FLOAT, 0, 3, sizeof(VertexData));
-
-    offset += sizeof(QVector3D);
-    offset += sizeof(QVector2D);
-
-    _shaderProgram->enableAttributeArray(_colorLocation);
-    _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
-
-    linesVao->release();
 }
 
 void GLWidget::PrepareLinesVAO(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol)

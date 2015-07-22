@@ -15,14 +15,16 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     GLContainer.cpp \
-    GLWidget.cpp
+    GLWidget.cpp \
+    StrokePainter.cpp
 
 HEADERS  += mainwindow.h \
     AVector.h \
     GLContainer.h \
     GLWidget.h \
     VertexData.h \
-    ALine.h
+    ALine.h \
+    StrokePainter.h
 
 FORMS    += mainwindow.ui
 

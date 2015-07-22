@@ -73,8 +73,8 @@ void GLContainer::UpdateViewport(bool putInMiddle)
         img_height  = 100 * zoomFactor;
     }
 
-    float xSPos;
-    float ySPos;
+    float xSPos = 0.0f;
+    float ySPos = 0.0f;
     if(!putInMiddle)
     {
         float xNormPos = _mousePos.x() + _xPrevF;
@@ -93,8 +93,8 @@ void GLContainer::UpdateViewport(bool putInMiddle)
     int upRange = 0;
     int downRange = 0;
 
-    float hPos = 0;
-    float vPos = 0;
+    float hPos = 0.0f;
+    float vPos = 0.0f;
 
     int xGap = abs(barSize.width() - img_width);
     int yGap = abs(barSize.height() - img_height);
@@ -296,7 +296,7 @@ void GLContainer::wheelEvent(QWheelEvent* event)
     if(scrollDir) _glWidget->ZoomOut();
     else _glWidget->ZoomIn();
 
-    float zoomFactor = _glWidget->GetZoomFactor() * 100.0;
+    //float zoomFactor = _glWidget->GetZoomFactor() * 100.0;
 
     // update scrollbars
     UpdateViewport();

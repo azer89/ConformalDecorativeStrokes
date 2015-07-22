@@ -3,6 +3,7 @@
 
 #include <limits>
 #include <cmath>
+#include <iostream> // for abs (?)
 
 struct AVector
 {
