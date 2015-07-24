@@ -23,6 +23,8 @@ public:
                                  AVector* pB,
                                  AVector* pC,
                                  AVector* pD);
+
+
 };
 
 #endif // UTILITYFUNCTIONS_H

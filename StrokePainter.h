@@ -36,11 +36,15 @@ private:
     QOpenGLBuffer               _strokeLinesVbo;
     QOpenGLVertexArrayObject    _strokeLinesVao;
 
+    std::vector<ALine>          _gridLines;
+    QOpenGLBuffer               _gridLinesVbo;
+    QOpenGLVertexArrayObject    _gridLinesVao;
+
 private:
     void CalculateDecorativeStroke();
 
     void PrepareLinesVAO(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
-
+    void PrepareLinesVAO(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
 };
 
 #endif // STROKEPAINTER_H
