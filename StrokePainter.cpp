@@ -16,7 +16,7 @@ StrokePainter::~StrokePainter()
 {
 }
 
-void StrokePainter::CalculateDecorativeStroke()
+void StrokePainter::CalculateDecorativeStroke1()
 {
     _points.clear();
     _strokeLines.clear();
@@ -24,7 +24,6 @@ void StrokePainter::CalculateDecorativeStroke()
 
     std::vector<AVector> tempLine;
     CurveRDP::SimplifyRDP(_oriStrokeLines, tempLine, SystemParams::rdp_epsilon);
-    //UtilityFunctions::DivideLines(tempLine, _strokeLines, 5.0);
     _strokeLines = std::vector<AVector>(tempLine);
 
     for(uint a = 0; a < _strokeLines.size(); a++)
@@ -61,6 +60,75 @@ void StrokePainter::CalculateDecorativeStroke()
     BuildPointsVertexData(_points, &_pointsVbo, &_pointsVao, QVector3D(1, 0, 0));
 }
 
+void StrokePainter::CalculateDecorativeStroke2()
+{
+    _points.clear();
+    _strokeLines.clear();
+    _lLines.clear();
+    _rLines.clear();
+
+    std::vector<AVector> tempLine;
+    CurveRDP::SimplifyRDP(_oriStrokeLines, tempLine, SystemParams::rdp_epsilon);
+    _strokeLines = std::vector<AVector>(tempLine);
+
+    for(uint a = 0; a < _strokeLines.size(); a++)
+    {
+        if(a == 0)
+        {
+            AVector pt1 = _strokeLines[0];
+            AVector pt2 = _strokeLines[1];
+            AVector dirVec = (pt2 - pt1).Norm() * (SystemParams::stroke_width / 2.0f);
+
+            AVector leftVec (-dirVec.y,  dirVec.x);
+            AVector rightVec( dirVec.y, -dirVec.x);
+
+            AVector lPoint = pt1 + leftVec;
+            AVector rPoint = pt1 + rightVec;
+
+            _lLines.push_back(lPoint);
+            _rLines.push_back(rPoint);
+        }
+        else if(_strokeLines.size() >= 3 && a <= _strokeLines.size() - 2)
+        {
+            ALine prevLine(_strokeLines[a-1], _strokeLines[a]);
+            ALine curLine(_strokeLines[a], _strokeLines[a+1]);
+
+            AVector lPoint, rPoint;
+
+            UtilityFunctions::GetMiterJoints(prevLine, curLine,
+                                             SystemParams::stroke_width / 2.0f, SystemParams::stroke_width / 2.0f,
+                                             &lPoint, &rPoint);
+
+            _lLines.push_back(lPoint);
+            _rLines.push_back(rPoint);
+        }
+
+        // add an end
+        if(a == _strokeLines.size() - 2)
+        {
+            AVector pt1 = _strokeLines[a];
+            AVector pt2 = _strokeLines[a + 1];
+            AVector dirVec = (pt2 - pt1).Norm() * (SystemParams::stroke_width / 2.0f);
+
+            AVector leftVec (-dirVec.y,  dirVec.x);
+            AVector rightVec( dirVec.y, -dirVec.x);
+
+            AVector lPoint = pt2 + leftVec;
+            AVector rPoint = pt2 + rightVec;
+
+            _lLines.push_back(lPoint);
+            _rLines.push_back(rPoint);
+        }
+    }
+
+    BuildLinesVertexData(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(0, 0, 0));
+    BuildLinesVertexData(_lLines, &_lLinesVbo, &_lLinesVao, QVector3D(0, 0, 0));
+    BuildLinesVertexData(_rLines, &_rLinesVbo, &_rLinesVao, QVector3D(0, 0, 0));
+
+    _points = std::vector<AVector>(_strokeLines);
+    BuildPointsVertexData(_points, &_pointsVbo, &_pointsVao, QVector3D(1, 0, 0));
+}
+
 // mouse press
 void StrokePainter::mousePressEvent(float x, float y)
 {
@@ -82,7 +150,7 @@ void StrokePainter::mouseMoveEvent(float x, float y)
 void StrokePainter::mouseReleaseEvent(float x, float y)
 {
     _oriStrokeLines.push_back(AVector(x, y));
-    CalculateDecorativeStroke();
+    CalculateDecorativeStroke2();
 
     /*for(uint a = 0; a < _strokeLines.size() - 2; a++)
         { std::cout << _strokeLines[a].Distance(_strokeLines[a+1]) << " "; }
@@ -99,6 +167,22 @@ void StrokePainter::Draw()
         _pointsVao.bind();
         glDrawArrays(GL_POINTS, 0, _points.size());
         _pointsVao.release();
+    }
+
+    if(_lLinesVao.isCreated())
+    {
+        glLineWidth(2.0f);
+        _lLinesVao.bind();
+        glDrawArrays(GL_LINES, 0, (_lLines.size() - 1) * 2);
+        _lLinesVao.release();
+    }
+
+    if(_rLinesVao.isCreated())
+    {
+        glLineWidth(2.0f);
+        _rLinesVao.bind();
+        glDrawArrays(GL_LINES, 0, (_rLines.size() - 1) * 2);
+        _rLinesVao.release();
     }
 
     if(_strokeLinesVao.isCreated())

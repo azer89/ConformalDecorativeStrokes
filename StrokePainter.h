@@ -40,12 +40,21 @@ private:
     QOpenGLBuffer               _gridLinesVbo;
     QOpenGLVertexArrayObject    _gridLinesVao;
 
+    std::vector<AVector>          _lLines;
+    QOpenGLBuffer               _lLinesVbo;
+    QOpenGLVertexArrayObject    _lLinesVao;
+
+    std::vector<AVector>          _rLines;
+    QOpenGLBuffer               _rLinesVbo;
+    QOpenGLVertexArrayObject    _rLinesVao;
+
     std::vector<AVector>        _points;
     QOpenGLBuffer               _pointsVbo;
     QOpenGLVertexArrayObject    _pointsVao;
 
 private:
-    void CalculateDecorativeStroke();
+    void CalculateDecorativeStroke1();
+    void CalculateDecorativeStroke2();
 
     void BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
     void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);

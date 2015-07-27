@@ -124,6 +124,31 @@ AVector UtilityFunctions::GetFiniteIntersection(ALine rayA, ALine rayB)
     return intersectionPoint;
 }
 
+void UtilityFunctions::GetMiterJoints(ALine prevLine,
+                                      ALine curLine,
+                                      double t0,
+                                      double t1,
+                                      AVector* pA,
+                                      AVector* pB)
+{
+    AVector pDir  = prevLine.Direction().Norm();
+    AVector cDir  = curLine.Direction().Norm();
+
+    AVector pDirLeft(-pDir.y,   pDir.x);
+    AVector pDirRight(pDir.y,  -pDir.x);
+    AVector cDirLeft(-cDir.y,   cDir.x);
+    AVector cDirRight(cDir.y,  -cDir.x);
+
+    ALine pLeftRay (prevLine.GetPointA() + pDirLeft  * t0, pDir);
+    ALine pRightRay(prevLine.GetPointA() + pDirRight * t1, pDir);
+
+    ALine cLeftInvRay (curLine.GetPointB()  + cDirLeft  * t0, AVector(-cDir.x, -cDir.y));
+    ALine cRightInvRay(curLine.GetPointB()  + cDirRight * t1, AVector(-cDir.x, -cDir.y));
+
+    *pA = GetFiniteIntersection(pLeftRay,  cLeftInvRay);
+    *pB = GetFiniteIntersection(pRightRay, cRightInvRay);
+}
+
 void UtilityFunctions::GetMiterJoints(ALine curLine,
                              ALine prevLine,
                              ALine nextLine,
