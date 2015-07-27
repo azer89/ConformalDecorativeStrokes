@@ -14,12 +14,12 @@
 
 GLWidget::GLWidget(QGLFormat format, QWidget *parent) :
     QGLWidget(format, parent),
+    _sPainter(0),
     _isMouseDown(false),
     _zoomFactor(10.0),
-    _shaderProgram(0),
     _img_width(50),
     _img_height(50),
-    _sPainter(0)
+    _shaderProgram(0)
 {
 }
 
@@ -191,11 +191,11 @@ void GLWidget::InitCurve()
     }
 }
 
-void GLWidget::CreateCurveVAO()
+void GLWidget::BuildCurveVertexData()
 {
     // POINTS VAO
     QVector3D vecCol = QVector3D(1.0, 0.0, 0.0);
-    PreparePointsVAO(_points, &_pointsVbo, &_pointsVao, vecCol);
+    BuildPointsVertexData(_points, &_pointsVbo, &_pointsVao, vecCol);
 
     // LINES VAO
     vecCol = QVector3D(0.0, 0.5, 1.0);
@@ -205,10 +205,10 @@ void GLWidget::CreateCurveVAO()
         if(a < _points.size() - 1) { lines.push_back(ALine(_points[a], _points[a + 1])); }
         else { lines.push_back(ALine(_points[a], _points[0])); }
     }
-    PrepareLinesVAO(lines, &_linesVbo, &_linesVao, vecCol);
+    BuildLinesVertexData(lines, &_linesVbo, &_linesVao, vecCol);
 }
 
-void GLWidget::PreparePointsVAO(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol)
+void GLWidget::BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol)
 {
     if(ptsVao->isCreated())
     {
@@ -242,7 +242,7 @@ void GLWidget::PreparePointsVAO(std::vector<AVector> points, QOpenGLBuffer* ptsV
     ptsVao->release();
 }
 
-void GLWidget::PrepareLinesVAO(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol)
+void GLWidget::BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol)
 {
     if(linesVao->isCreated())
     {

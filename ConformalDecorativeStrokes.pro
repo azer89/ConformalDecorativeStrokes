@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     GLWidget.cpp \
     StrokePainter.cpp \
     UtilityFunctions.cpp \
-    SystemParams.cpp
+    SystemParams.cpp \
+    CurveRDP.cpp
 
 HEADERS  += mainwindow.h \
     AVector.h \
@@ -28,7 +29,8 @@ HEADERS  += mainwindow.h \
     ALine.h \
     StrokePainter.h \
     UtilityFunctions.h \
-    SystemParams.h
+    SystemParams.h \
+    CurveRDP.h
 
 FORMS    += mainwindow.ui
 

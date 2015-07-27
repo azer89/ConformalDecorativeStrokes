@@ -20,13 +20,6 @@ class GLWidget : public QGLWidget
 
 private:
 
-    //uint _nMouseEvent;
-    //uint _nAllocateEvent;
-
-//    // strokes
-//    std::vector<AVector>        _strokeLines;
-//    QOpenGLBuffer               _strokeLinesVbo;
-//    QOpenGLVertexArrayObject    _strokeLinesVao;
     StrokePainter* _sPainter;
 
     bool    _isMouseDown;
@@ -60,13 +53,12 @@ private:
 private:
     void InitCurve();
     void PaintCurve();
-    void CreateCurveVAO();
 
     void SaveToSvg();
 
-    void PreparePointsVAO(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol);
-    void PrepareLinesVAO(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
-    //void PrepareLinesVAO(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
+    void BuildCurveVertexData();
+    void BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol);
+    void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
 
 protected:
     // qt event

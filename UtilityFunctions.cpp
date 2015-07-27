@@ -4,7 +4,7 @@ UtilityFunctions::UtilityFunctions()
 {
 }
 
-void UtilityFunctions::UniformResample(std::vector<AVector>& oriCurve, std::vector<AVector>& resampleCurve, double resample_size  )
+void UtilityFunctions::UniformResample(std::vector<AVector>& oriCurve, std::vector<AVector>& resampleCurve, float resample_size  )
 {
     resampleCurve.clear();
 
@@ -54,7 +54,117 @@ void UtilityFunctions::UniformResample(std::vector<AVector>& oriCurve, std::vect
     }
 }
 
-void UtilityFunctions::GetSegmentPoints(ALine curLine,
+bool UtilityFunctions::CheckCollinearCase(ALine ray1, ALine ray2)
+{
+    float eps_val = std::numeric_limits<float>::epsilon() * 1000;
+
+    AVector midPoint = ray1.GetPointA() + (ray2.GetPointA() - ray1.GetPointA()) * 0.5f;
+
+    float u1 = (midPoint.x - ray1.GetPointA().x) / ray1.GetPointB().x;
+    float u2 = (midPoint.y - ray1.GetPointA().y) / ray1.GetPointB().y;
+    float v1 = (midPoint.x - ray2.GetPointA().x) / ray2.GetPointB().x;
+    float v2 = (midPoint.y - ray2.GetPointA().y) / ray2.GetPointB().y;
+
+    if(abs(u1 - u2) < eps_val && abs(v1 - v2) < eps_val && u1 > 0 && u2 > 0 && v1 > 0 && v2 > 0)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool UtilityFunctions::CheckHorizontalVerticalCase(ALine ray1, ALine ray2)
+{
+    float eps_val = std::numeric_limits<float>::epsilon() * 1000;
+    AVector midPoint = ray1.GetPointA() + (ray2.GetPointA() - ray1.GetPointA()) * 0.5f;
+
+    float u1 = (midPoint.x - ray1.GetPointA().x) / ray1.GetPointB().x;
+    float u2 = (midPoint.y - ray1.GetPointA().y) / ray1.GetPointB().y;
+    float v1 = (midPoint.x - ray2.GetPointA().x) / ray2.GetPointB().x;
+    float v2 = (midPoint.y - ray2.GetPointA().y) / ray2.GetPointB().y;
+
+    // vertical case
+    if(abs(ray1.GetPointB().x) < eps_val && abs(ray2.GetPointB().x) <  eps_val &&
+       ray1.GetPointB().y != 0 && ray2.GetPointB().y != 0 &&
+       u2 > 0 && v2 > 0 )
+    {
+        return true;
+    }
+    // horizontal case
+    else if(ray1.GetPointB().x != 0 && ray2.GetPointB().x != 0 &&
+            abs(ray1.GetPointB().y) < eps_val && abs(ray2.GetPointB().y) < eps_val &&
+            u1 > 0 && v1 > 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+AVector UtilityFunctions::GetFiniteIntersection(ALine rayA, ALine rayB)
+{
+    float eps_val = std::numeric_limits<float>::epsilon() * 1000.0f;
+
+    AVector intersectionPoint;
+
+    float dx = rayB.GetPointA().x - rayA.GetPointA().x;
+    float dy = rayB.GetPointA().y - rayA.GetPointA().y;
+    float det = rayB.GetPointB().x * rayA.GetPointB().y - rayB.GetPointB().y * rayA.GetPointB().x;
+    float u = (dy * rayB.GetPointB().x - dx * rayB.GetPointB().y) / det;
+    float v = (dy * rayA.GetPointB().x - dx * rayA.GetPointB().y) / det;
+
+    if((det > eps_val || det < -eps_val) && u > 0 && v > 0)
+    {
+        intersectionPoint = rayA.GetPointA() + rayA.GetPointB() * u;
+    }
+    else if(CheckCollinearCase(rayA, rayB) || CheckHorizontalVerticalCase(rayA, rayB))
+    {
+        intersectionPoint = rayA.GetPointA() + (rayB.GetPointA() - rayA.GetPointA()) * 0.5f;
+    }
+
+    return intersectionPoint;
+}
+
+void UtilityFunctions::GetMiterJoints(ALine curLine,
+                             ALine prevLine,
+                             ALine nextLine,
+                             double t0,
+                             double t1,
+                             AVector* pA,
+                             AVector* pB,
+                             AVector* pC,
+                             AVector* pD)
+{
+    AVector pDir  = prevLine.Direction().Norm();
+    AVector cDir  = curLine.Direction().Norm();
+    AVector nDir  = nextLine.Direction().Norm();
+
+    AVector pDirLeft(-pDir.y,   pDir.x);
+    AVector pDirRight(pDir.y,  -pDir.x);
+    AVector cDirLeft(-cDir.y,   cDir.x);
+    AVector cDirRight(cDir.y,  -cDir.x);
+    AVector nDirLeft(-nDir.y,   nDir.x);
+    AVector nDirRight(nDir.y,  -nDir.x);
+
+    ALine pLeftRay (prevLine.GetPointA() + pDirLeft  * t0, pDir);
+    ALine pRightRay(prevLine.GetPointA() + pDirRight * t1, pDir);
+
+    ALine cLeftRay (curLine.GetPointA()  + cDirLeft  * t0, cDir);
+    ALine cRightRay(curLine.GetPointA()  + cDirRight * t1, cDir);
+    ALine cLeftInvRay (curLine.GetPointB()  + cDirLeft  * t0, AVector(-cDir.x, -cDir.y));
+    ALine cRightInvRay(curLine.GetPointB()  + cDirRight * t1, AVector(-cDir.x, -cDir.y));
+
+    ALine nLeftInvRay (nextLine.GetPointB() + nDirLeft  * t0, AVector(-nDir.x, -nDir.y));
+    ALine nRightInvRay(nextLine.GetPointB() + nDirRight * t1, AVector(-nDir.x, -nDir.y));
+
+    *pA = GetFiniteIntersection(pLeftRay,  cLeftInvRay);
+    *pB = GetFiniteIntersection(pRightRay, cRightInvRay);
+
+    *pC = GetFiniteIntersection(cLeftRay,  nLeftInvRay);
+    *pD = GetFiniteIntersection(cRightRay, nRightInvRay);
+
+}
+
+void UtilityFunctions::GetBisectorJoints(ALine curLine,
                                         ALine prevLine,
                                         ALine nextLine,
                                         double t0,
@@ -119,6 +229,50 @@ void UtilityFunctions::GetSegmentPoints(ALine curLine,
     *pB = p0 + d0Right;
     *pC = p1 + d1Left;
     *pD = p1 + d1Right;
+}
+
+void UtilityFunctions::DivideLines(std::vector<AVector>& oriCurve, std::vector<AVector>& resampleCurve, float resample_size)
+{
+    for(int a = 0; a < oriCurve.size() - 1; a++)
+    {
+        AVector pt1 = oriCurve[a];
+        AVector pt2 = oriCurve[a+1];
+        float dist = pt1.Distance(pt2);
+
+        resampleCurve.push_back(pt1);
+
+        if(dist < resample_size) { continue; }
+
+        float deltaDist = resample_size;
+        AVector dirVec = (pt2 - pt1).Norm();
+
+        float iterDist = deltaDist;
+        while(iterDist < dist)
+        {
+            resampleCurve.push_back(pt1 + dirVec * iterDist);
+            iterDist += deltaDist;
+        }
+    }
+
+    resampleCurve.push_back(oriCurve[oriCurve.size() - 1]);
+}
+
+void UtilityFunctions::CombineLines(std::vector<AVector>& oriCurve, std::vector<AVector>& resampleCurve, float resample_size)
+{
+    int iter = 0;
+    while(iter < oriCurve.size())
+    {
+        AVector pt1 = oriCurve[iter];
+        resampleCurve.push_back(pt1);
+
+        float iterDist = 0;
+        while(iterDist < resample_size)
+        {
+            iter++;
+            AVector pt2 = oriCurve[iter];
+            iterDist = pt1.Distance(pt2);
+        }
+    }
 }
 
 double UtilityFunctions::CurveLength(std::vector<AVector> curves)
