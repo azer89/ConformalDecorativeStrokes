@@ -16,11 +16,14 @@ StrokePainter::~StrokePainter()
 {
 }
 
+// This is deprecated !!!
+/*
 void StrokePainter::CalculateDecorativeStroke1()
 {
     _points.clear();
     _strokeLines.clear();
     _gridLines.clear();
+    _ribLines.clear();
 
     std::vector<AVector> tempLine;
     CurveRDP::SimplifyRDP(_oriStrokeLines, tempLine, SystemParams::rdp_epsilon);
@@ -59,13 +62,15 @@ void StrokePainter::CalculateDecorativeStroke1()
     _points = std::vector<AVector>(_strokeLines);
     BuildPointsVertexData(_points, &_pointsVbo, &_pointsVao, QVector3D(1, 0, 0));
 }
-
-void StrokePainter::CalculateDecorativeStroke2()
+*/
+void StrokePainter::CalculateInitialRibbon()
 {
     _points.clear();
     _strokeLines.clear();
     _lLines.clear();
     _rLines.clear();
+    _ribLines.clear();
+    _gridLines.clear();
 
     std::vector<AVector> tempLine;
     CurveRDP::SimplifyRDP(_oriStrokeLines, tempLine, SystemParams::rdp_epsilon);
@@ -87,6 +92,8 @@ void StrokePainter::CalculateDecorativeStroke2()
 
             _lLines.push_back(lPoint);
             _rLines.push_back(rPoint);
+
+            _ribLines.push_back(ALine(lPoint, rPoint));
         }
         else if(_strokeLines.size() >= 3 && a <= _strokeLines.size() - 2)
         {
@@ -101,6 +108,8 @@ void StrokePainter::CalculateDecorativeStroke2()
 
             _lLines.push_back(lPoint);
             _rLines.push_back(rPoint);
+
+            _ribLines.push_back(ALine(lPoint, rPoint));
         }
 
         // add an end
@@ -118,8 +127,12 @@ void StrokePainter::CalculateDecorativeStroke2()
 
             _lLines.push_back(lPoint);
             _rLines.push_back(rPoint);
+
+            _ribLines.push_back(ALine(lPoint, rPoint));
         }
     }
+
+    BuildLinesVertexData(_ribLines, &_ribLinesVbo, &_ribLinesVao, QVector3D(1, 0, 0));
 
     BuildLinesVertexData(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(0, 0, 0));
     BuildLinesVertexData(_lLines, &_lLinesVbo, &_lLinesVao, QVector3D(0, 0, 0));
@@ -132,6 +145,12 @@ void StrokePainter::CalculateDecorativeStroke2()
 // mouse press
 void StrokePainter::mousePressEvent(float x, float y)
 {
+    _points.clear();
+    _ribLines.clear();
+    _gridLines.clear();
+    _lLines.clear();
+    _rLines.clear();
+    _strokeLines.clear();
     _oriStrokeLines.clear();
     _oriStrokeLines.push_back(AVector(x, y));
 }
@@ -140,8 +159,6 @@ void StrokePainter::mousePressEvent(float x, float y)
 void StrokePainter::mouseMoveEvent(float x, float y)
 {
     _oriStrokeLines.push_back(AVector(x, y));
-
-    _points.clear();
     _strokeLines = std::vector<AVector>(_oriStrokeLines);
     BuildLinesVertexData(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(0, 0, 0));
 }
@@ -150,7 +167,7 @@ void StrokePainter::mouseMoveEvent(float x, float y)
 void StrokePainter::mouseReleaseEvent(float x, float y)
 {
     _oriStrokeLines.push_back(AVector(x, y));
-    CalculateDecorativeStroke2();
+    CalculateInitialRibbon();
 
     /*for(uint a = 0; a < _strokeLines.size() - 2; a++)
         { std::cout << _strokeLines[a].Distance(_strokeLines[a+1]) << " "; }
@@ -191,6 +208,14 @@ void StrokePainter::Draw()
         _strokeLinesVao.bind();
         glDrawArrays(GL_LINES, 0, (_strokeLines.size() - 1) * 2);
         _strokeLinesVao.release();
+    }
+
+    if(_ribLinesVao.isCreated())
+    {
+        glLineWidth(2.0f);
+        _ribLinesVao.bind();
+        glDrawArrays(GL_LINES, 0, _ribLines.size() * 2);
+        _ribLinesVao.release();
     }
 
     if(_gridLinesVao.isCreated())

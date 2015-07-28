@@ -36,15 +36,19 @@ private:
     QOpenGLBuffer               _strokeLinesVbo;
     QOpenGLVertexArrayObject    _strokeLinesVao;
 
+    std::vector<ALine>          _ribLines;
+    QOpenGLBuffer               _ribLinesVbo;
+    QOpenGLVertexArrayObject    _ribLinesVao;
+
     std::vector<ALine>          _gridLines;
     QOpenGLBuffer               _gridLinesVbo;
     QOpenGLVertexArrayObject    _gridLinesVao;
 
-    std::vector<AVector>          _lLines;
+    std::vector<AVector>        _lLines;
     QOpenGLBuffer               _lLinesVbo;
     QOpenGLVertexArrayObject    _lLinesVao;
 
-    std::vector<AVector>          _rLines;
+    std::vector<AVector>        _rLines;
     QOpenGLBuffer               _rLinesVbo;
     QOpenGLVertexArrayObject    _rLinesVao;
 
@@ -53,8 +57,8 @@ private:
     QOpenGLVertexArrayObject    _pointsVao;
 
 private:
-    void CalculateDecorativeStroke1();
-    void CalculateDecorativeStroke2();
+    //void CalculateDecorativeStroke1();
+    void CalculateInitialRibbon();
 
     void BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
     void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
