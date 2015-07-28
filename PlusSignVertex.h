@@ -27,6 +27,13 @@ public:
         this->color = QVector3D();
     }
 
+    PlusSignVertex(AVector position)
+    {
+        this->position = position;
+        this->texCoord = QVector2D();
+        this->color = QVector3D();
+    }
+
     PlusSignVertex()
     {
         this->position = AVector();

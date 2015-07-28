@@ -8,7 +8,9 @@
 #include <stdlib.h>
 #include <iostream>
 
-StrokePainter::StrokePainter()
+StrokePainter::StrokePainter() :
+    _mesh_width(0),
+    _mesh_height(0)
 {
 }
 
@@ -147,6 +149,7 @@ void StrokePainter::CalculateInitialRibbon()
 void StrokePainter::CalculateVertices()
 {
     _vertices.clear();
+    _plusSignVertices.clear();
 
     /*
     std::cout << _strokeLines.size() << "\n";
@@ -180,8 +183,12 @@ void StrokePainter::CalculateVertices()
             xLoop++;
         }
 
+        //int widthSum = 0;
+
         for(int xIter = 0; xIter < xLoop; xIter++)
         {
+            std::vector<PlusSignVertex> columnVertices;
+
             for(int yIter = 0; yIter < yLoop;  yIter++)
             {
                 float xFactor = (float)xIter / (float)intMeshWidth;
@@ -193,12 +200,23 @@ void StrokePainter::CalculateVertices()
                 pt = pt + hVec * xFactor;
 
                 _vertices.push_back(pt);
+                columnVertices.push_back(PlusSignVertex(pt));
             }
+
+            _plusSignVertices.push_back(columnVertices);
         }
 
-        BuildPointsVertexData(_vertices, &_verticesVbo, &_verticesVao, QVector3D(0, 0, 1));
+
         //std::cout << "_vertices.size() " << _vertices.size() << "\n";
     }
+
+    _mesh_width = _plusSignVertices.size();
+    _mesh_height = _plusSignVertices[0].size();
+
+    std::cout << _mesh_width << " " << _mesh_height << "\n";
+
+    //BuildPointsVertexData(_vertices, &_verticesVbo, &_verticesVao, QVector3D(0, 0, 1));
+    BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, QVector3D(1, 0, 0));
 
 }
 
@@ -252,14 +270,23 @@ void StrokePainter::Draw()
         _pointsVao.release();
     }*/
 
-    if(_verticesVao.isCreated())
+    /*if(_verticesVao.isCreated())
     {
         glPointSize(10.0f);
         _verticesVao.bind();
         glDrawArrays(GL_POINTS, 0, _vertices.size());
         _verticesVao.release();
+    }*/
+
+    if(_plusSignVerticesVao.isCreated())
+    {
+        glLineWidth(2.0f);
+        _plusSignVerticesVao.bind();
+        glDrawArrays(GL_LINES, 0, _plusSignDataSize);
+        _plusSignVerticesVao.release();
     }
 
+    /*
     if(_lLinesVao.isCreated())
     {
         glLineWidth(2.0f);
@@ -275,15 +302,17 @@ void StrokePainter::Draw()
         glDrawArrays(GL_LINES, 0, (_rLines.size() - 1) * 2);
         _rLinesVao.release();
     }
+    */
 
     if(_strokeLinesVao.isCreated())
     {
         glLineWidth(2.0f);
         _strokeLinesVao.bind();
-        glDrawArrays(GL_LINES, 0, (_strokeLines.size() - 1) * 2);
+        glDrawArrays(GL_LINES, 0, (_mesh_height - 1) * (_mesh_width - 1 )  * 2 + (_mesh_height - 1) + (_mesh_width - 1 ));
         _strokeLinesVao.release();
     }
 
+    /*
     if(_ribLinesVao.isCreated())
     {
         glLineWidth(2.0f);
@@ -299,6 +328,7 @@ void StrokePainter::Draw()
         glDrawArrays(GL_LINES, 0, _gridLines.size() * 2);
         _gridLinesVao.release();
     }
+    */
 }
 
 void StrokePainter::BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol)
@@ -319,6 +349,95 @@ void StrokePainter::BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuf
         data.append(VertexData(QVector3D(points[a].x, points[a].y,  0), QVector2D(), vecCol));
         data.append(VertexData(QVector3D(points[a+1].x, points[a+1].y,  0), QVector2D(), vecCol));
     }
+
+    if(!linesVbo->isCreated())
+    {
+        linesVbo->create();
+    }
+    linesVbo->bind();
+
+    linesVbo->allocate(data.size() * sizeof(VertexData));
+    linesVbo->write(0, data.data(), data.size() * sizeof(VertexData));
+
+    quintptr offset = 0;
+
+    _shaderProgram->enableAttributeArray(_vertexLocation);
+    _shaderProgram->setAttributeBuffer(_vertexLocation, GL_FLOAT, 0, 3, sizeof(VertexData));
+
+    offset += sizeof(QVector3D);
+    offset += sizeof(QVector2D);
+
+    _shaderProgram->enableAttributeArray(_colorLocation);
+    _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+    if(isInit)
+    {
+        linesVao->release();
+    }
+}
+
+void StrokePainter::BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol)
+{
+    if(plusSignVertices.size() == 0) return;
+
+    bool isInit = false;
+    if(!linesVao->isCreated())
+    {
+        linesVao->create();
+        linesVao->bind();
+        isInit = true;
+    }
+
+    /*
+    QVector<VertexData> data;
+    for(int a = 0; a < _mesh_width; a++)
+    {
+        for(int b = 0; b < _mesh_height; b++)
+        {
+            AVector aVec = plusSignVertices[a][b].position;
+            data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(), vecCol));
+        }
+    }
+    */
+    QVector<VertexData> data;
+    for(int a = 0; a < _mesh_width - 1; a++)
+    {
+        for(int b = 0; b < _mesh_height - 1; b++)
+        {
+            AVector aVec = plusSignVertices[a][b].position;
+            AVector bVec = plusSignVertices[a+1][b].position;
+            AVector cVec = plusSignVertices[a+1][b+1].position;
+            AVector dVec = plusSignVertices[a][b+1].position;
+
+            /*line 1*/
+            data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(), vecCol));
+            data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(), vecCol));
+            /*line 2*/
+            //data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(), vecCol));
+            //data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(), vecCol));
+            /*line 3*/
+            //data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(), vecCol));
+            //data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(), vecCol));
+            /*line 4*/
+            data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(), vecCol));
+            data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(), vecCol));
+
+            if(a == _mesh_width - 2)
+            {
+                data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(), vecCol));
+                data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(), vecCol));
+            }
+
+            if(b == _mesh_height - 2)
+            {
+                data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(), vecCol));
+                data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(), vecCol));
+            }
+        }
+    }
+
+    _plusSignDataSize = data.size();
+    std::cout << data.size() << "\n";
 
     if(!linesVbo->isCreated())
     {

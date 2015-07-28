@@ -32,6 +32,10 @@ public:
     int         _use_color_location;
 
 private:
+
+    int _mesh_width;
+    int _mesh_height;
+
     // strokes
     std::vector<AVector>        _oriStrokeLines;    // not resampled
     std::vector<AVector>        _strokeLines;       // resampled
@@ -62,7 +66,10 @@ private:
     QOpenGLBuffer               _verticesVbo;
     QOpenGLVertexArrayObject    _verticesVao;
 
+    int _plusSignDataSize;
     std::vector<std::vector<PlusSignVertex>> _plusSignVertices;
+    QOpenGLBuffer               _plusSignVerticesVbo;
+    QOpenGLVertexArrayObject    _plusSignVerticesVao;
 
 private:
     //void CalculateDecorativeStroke1();
@@ -71,6 +78,9 @@ private:
 
     void BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
     void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
+
+    void BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
+
     void BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol);
 };
 
