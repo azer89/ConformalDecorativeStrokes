@@ -134,10 +134,11 @@ void UtilityFunctions::GetMiterJoints(ALine prevLine,
     AVector pDir  = prevLine.Direction().Norm();
     AVector cDir  = curLine.Direction().Norm();
 
-    AVector pDirLeft(-pDir.y,   pDir.x);
-    AVector pDirRight(pDir.y,  -pDir.x);
-    AVector cDirLeft(-cDir.y,   cDir.x);
-    AVector cDirRight(cDir.y,  -cDir.x);
+    AVector pDirRight(-pDir.y,   pDir.x);
+    AVector pDirLeft(pDir.y,  -pDir.x);
+
+    AVector cDirRight(-cDir.y,   cDir.x);
+    AVector cDirLeft(cDir.y,  -cDir.x);
 
     ALine pLeftRay (prevLine.GetPointA() + pDirLeft  * t0, pDir);
     ALine pRightRay(prevLine.GetPointA() + pDirRight * t1, pDir);
@@ -149,6 +150,7 @@ void UtilityFunctions::GetMiterJoints(ALine prevLine,
     *pB = GetFiniteIntersection(pRightRay, cRightInvRay);
 }
 
+// beware of a bug since I inadvertently modified the code
 void UtilityFunctions::GetMiterJoints(ALine curLine,
                              ALine prevLine,
                              ALine nextLine,
@@ -163,12 +165,14 @@ void UtilityFunctions::GetMiterJoints(ALine curLine,
     AVector cDir  = curLine.Direction().Norm();
     AVector nDir  = nextLine.Direction().Norm();
 
-    AVector pDirLeft(-pDir.y,   pDir.x);
-    AVector pDirRight(pDir.y,  -pDir.x);
-    AVector cDirLeft(-cDir.y,   cDir.x);
-    AVector cDirRight(cDir.y,  -cDir.x);
-    AVector nDirLeft(-nDir.y,   nDir.x);
-    AVector nDirRight(nDir.y,  -nDir.x);
+    AVector pDirRight(-pDir.y,   pDir.x);
+    AVector pDirLeft(pDir.y,  -pDir.x);
+
+    AVector cDirRight(-cDir.y,   cDir.x);
+    AVector cDirLeft(cDir.y,  -cDir.x);
+
+    AVector nDirRight(-nDir.y,   nDir.x);
+    AVector nDirLeft(nDir.y,  -nDir.x);
 
     ALine pLeftRay (prevLine.GetPointA() + pDirLeft  * t0, pDir);
     ALine pRightRay(prevLine.GetPointA() + pDirRight * t1, pDir);

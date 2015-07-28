@@ -30,7 +30,8 @@ HEADERS  += mainwindow.h \
     StrokePainter.h \
     UtilityFunctions.h \
     SystemParams.h \
-    CurveRDP.h
+    CurveRDP.h \
+    PlusSignVertex.h
 
 FORMS    += mainwindow.ui
 

@@ -66,11 +66,13 @@ void StrokePainter::CalculateDecorativeStroke1()
 void StrokePainter::CalculateInitialRibbon()
 {
     _points.clear();
-    _strokeLines.clear();
+
     _lLines.clear();
     _rLines.clear();
     _ribLines.clear();
     _gridLines.clear();
+
+    _strokeLines.clear();
 
     std::vector<AVector> tempLine;
     CurveRDP::SimplifyRDP(_oriStrokeLines, tempLine, SystemParams::rdp_epsilon);
@@ -84,8 +86,8 @@ void StrokePainter::CalculateInitialRibbon()
             AVector pt2 = _strokeLines[1];
             AVector dirVec = (pt2 - pt1).Norm() * (SystemParams::stroke_width / 2.0f);
 
-            AVector leftVec (-dirVec.y,  dirVec.x);
-            AVector rightVec( dirVec.y, -dirVec.x);
+            AVector rightVec (-dirVec.y,  dirVec.x);
+            AVector leftVec( dirVec.y, -dirVec.x);
 
             AVector lPoint = pt1 + leftVec;
             AVector rPoint = pt1 + rightVec;
@@ -119,8 +121,8 @@ void StrokePainter::CalculateInitialRibbon()
             AVector pt2 = _strokeLines[a + 1];
             AVector dirVec = (pt2 - pt1).Norm() * (SystemParams::stroke_width / 2.0f);
 
-            AVector leftVec (-dirVec.y,  dirVec.x);
-            AVector rightVec( dirVec.y, -dirVec.x);
+            AVector rightVec (-dirVec.y,  dirVec.x);
+            AVector leftVec( dirVec.y, -dirVec.x);
 
             AVector lPoint = pt2 + leftVec;
             AVector rPoint = pt2 + rightVec;
@@ -135,23 +137,86 @@ void StrokePainter::CalculateInitialRibbon()
     BuildLinesVertexData(_ribLines, &_ribLinesVbo, &_ribLinesVao, QVector3D(1, 0, 0));
 
     BuildLinesVertexData(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(0, 0, 0));
-    BuildLinesVertexData(_lLines, &_lLinesVbo, &_lLinesVao, QVector3D(0, 0, 0));
-    BuildLinesVertexData(_rLines, &_rLinesVbo, &_rLinesVao, QVector3D(0, 0, 0));
+    BuildLinesVertexData(_lLines, &_lLinesVbo, &_lLinesVao, QVector3D(0, 0, 1));
+    BuildLinesVertexData(_rLines, &_rLinesVbo, &_rLinesVao, QVector3D(1, 0, 0));
 
     _points = std::vector<AVector>(_strokeLines);
     BuildPointsVertexData(_points, &_pointsVbo, &_pointsVao, QVector3D(1, 0, 0));
+}
+
+void StrokePainter::CalculateVertices()
+{
+    _vertices.clear();
+
+    /*
+    std::cout << _strokeLines.size() << "\n";
+    std::cout << _rLines.size() << "\n";
+    std::cout << _rLines.size() << "\n";
+    std::cout << "\n";*/
+
+    for(int a = 0; a < _strokeLines.size() - 1; a++)
+    {
+        AVector mStartPt = _strokeLines[a];
+        AVector mEndPt   = _strokeLines[a + 1];
+        int intMeshWidth = mStartPt.Distance(mEndPt) / SystemParams::mesh_size;
+        int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
+
+        AVector lStartPt = _lLines[a];
+        AVector lEndPt   = _lLines[a + 1];
+
+        AVector rStartPt = _rLines[a];
+        AVector rEndPt   = _rLines[a + 1];
+
+        AVector vVec = rStartPt - lStartPt;
+
+        AVector uHVec = (lEndPt - lStartPt);
+        AVector bHVec = (rEndPt - rStartPt);
+
+        int xLoop = intMeshWidth;
+        int yLoop = intMeshHeight + 1;
+
+        if(a == _strokeLines.size() - 2)
+        {
+            xLoop++;
+        }
+
+        for(int xIter = 0; xIter < xLoop; xIter++)
+        {
+            for(int yIter = 0; yIter < yLoop;  yIter++)
+            {
+                float xFactor = (float)xIter / (float)intMeshWidth;
+                float yFactor = (float)yIter / (float)intMeshHeight;
+
+                AVector hVec = uHVec * (1.0f - yFactor) + bHVec * yFactor;
+
+                AVector pt = lStartPt + vVec * yFactor;
+                pt = pt + hVec * xFactor;
+
+                _vertices.push_back(pt);
+            }
+        }
+
+        BuildPointsVertexData(_vertices, &_verticesVbo, &_verticesVao, QVector3D(0, 0, 1));
+        //std::cout << "_vertices.size() " << _vertices.size() << "\n";
+    }
+
 }
 
 // mouse press
 void StrokePainter::mousePressEvent(float x, float y)
 {
     _points.clear();
-    _ribLines.clear();
-    _gridLines.clear();
+    _vertices.clear();
+
     _lLines.clear();
     _rLines.clear();
+
+    _ribLines.clear();
+    _gridLines.clear();
+
     _strokeLines.clear();
     _oriStrokeLines.clear();
+
     _oriStrokeLines.push_back(AVector(x, y));
 }
 
@@ -168,7 +233,7 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
 {
     _oriStrokeLines.push_back(AVector(x, y));
     CalculateInitialRibbon();
-
+    CalculateVertices();
     /*for(uint a = 0; a < _strokeLines.size() - 2; a++)
         { std::cout << _strokeLines[a].Distance(_strokeLines[a+1]) << " "; }
     std::cout << "\n";*/
@@ -178,12 +243,21 @@ void StrokePainter::Draw()
 {
     _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
 
+    /*
     if(_pointsVao.isCreated())
     {
         glPointSize(10.0f);
         _pointsVao.bind();
         glDrawArrays(GL_POINTS, 0, _points.size());
         _pointsVao.release();
+    }*/
+
+    if(_verticesVao.isCreated())
+    {
+        glPointSize(10.0f);
+        _verticesVao.bind();
+        glDrawArrays(GL_POINTS, 0, _vertices.size());
+        _verticesVao.release();
     }
 
     if(_lLinesVao.isCreated())

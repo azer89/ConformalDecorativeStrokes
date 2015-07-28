@@ -8,6 +8,8 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
 
+#include "PlusSignVertex.h"
+
 class StrokePainter
 {
 public:
@@ -56,9 +58,16 @@ private:
     QOpenGLBuffer               _pointsVbo;
     QOpenGLVertexArrayObject    _pointsVao;
 
+    std::vector<AVector>        _vertices;
+    QOpenGLBuffer               _verticesVbo;
+    QOpenGLVertexArrayObject    _verticesVao;
+
+    std::vector<std::vector<PlusSignVertex>> _plusSignVertices;
+
 private:
     //void CalculateDecorativeStroke1();
     void CalculateInitialRibbon();
+    void CalculateVertices();
 
     void BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
     void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
