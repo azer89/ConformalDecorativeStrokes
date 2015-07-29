@@ -3,12 +3,12 @@
 
 #include "ALine.h"
 #include "AVector.h"
+#include "VertexData.h"
+#include "PlusSignVertex.h"
 
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
-
-#include "PlusSignVertex.h"
 
 class StrokePainter
 {
@@ -66,7 +66,7 @@ private:
     QOpenGLBuffer               _verticesVbo;
     QOpenGLVertexArrayObject    _verticesVao;
 
-    int _plusSignDataSize;
+    //int _plusSignDataSize;
     std::vector<std::vector<PlusSignVertex>> _plusSignVertices;
     QOpenGLBuffer               _plusSignVerticesVbo;
     QOpenGLVertexArrayObject    _plusSignVerticesVao;
@@ -78,10 +78,9 @@ private:
 
     void BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
     void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
-
     void BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
-
     void BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol);
+    void BindVboWithColor(QVector<VertexData> data, QOpenGLBuffer* vbo);
 };
 
 #endif // STROKEPAINTER_H

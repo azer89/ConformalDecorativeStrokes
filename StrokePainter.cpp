@@ -280,9 +280,14 @@ void StrokePainter::Draw()
 
     if(_plusSignVerticesVao.isCreated())
     {
+        int wMin1 = _mesh_width - 1;
+        int hMin1 = _mesh_height - 1;
+
+        int meshSize = ((wMin1 * _mesh_width) + (hMin1 * _mesh_height)) * 2;
+
         glLineWidth(2.0f);
         _plusSignVerticesVao.bind();
-        glDrawArrays(GL_LINES, 0, _plusSignDataSize);
+        glDrawArrays(GL_LINES, 0, meshSize);
         _plusSignVerticesVao.release();
     }
 
@@ -308,7 +313,7 @@ void StrokePainter::Draw()
     {
         glLineWidth(2.0f);
         _strokeLinesVao.bind();
-        glDrawArrays(GL_LINES, 0, (_mesh_height - 1) * (_mesh_width - 1 )  * 2 + (_mesh_height - 1) + (_mesh_width - 1 ));
+        glDrawArrays(GL_LINES, 0, (_strokeLines.size() - 1) * 2);
         _strokeLinesVao.release();
     }
 
@@ -350,6 +355,9 @@ void StrokePainter::BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuf
         data.append(VertexData(QVector3D(points[a+1].x, points[a+1].y,  0), QVector2D(), vecCol));
     }
 
+
+    BindVboWithColor(data, linesVbo);
+    /*
     if(!linesVbo->isCreated())
     {
         linesVbo->create();
@@ -369,7 +377,7 @@ void StrokePainter::BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuf
 
     _shaderProgram->enableAttributeArray(_colorLocation);
     _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
-
+    */
     if(isInit)
     {
         linesVao->release();
@@ -436,9 +444,11 @@ void StrokePainter::BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>
         }
     }
 
-    _plusSignDataSize = data.size();
-    std::cout << data.size() << "\n";
+    //_plusSignDataSize = data.size();
+    //std::cout << data.size() << "\n";
 
+    BindVboWithColor(data, linesVbo);
+    /*
     if(!linesVbo->isCreated())
     {
         linesVbo->create();
@@ -458,7 +468,7 @@ void StrokePainter::BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>
 
     _shaderProgram->enableAttributeArray(_colorLocation);
     _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
-
+    */
     if(isInit)
     {
         linesVao->release();
@@ -482,6 +492,8 @@ void StrokePainter::BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer
         data.append(VertexData(QVector3D(lines[a].XB, lines[a].YB,  0), QVector2D(), vecCol));
     }
 
+    BindVboWithColor(data, linesVbo);
+    /*
     if(!linesVbo->isCreated())
     {
         linesVbo->create();
@@ -499,7 +511,7 @@ void StrokePainter::BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer
 
     _shaderProgram->enableAttributeArray(_colorLocation);
     _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
-
+    */
     if(isInit)
     {
         linesVao->release();
@@ -522,6 +534,8 @@ void StrokePainter::BuildPointsVertexData(std::vector<AVector> points, QOpenGLBu
         data.append(VertexData(QVector3D(points[a].x, points[a].y,  0), QVector2D(), vecCol));
     }
 
+    BindVboWithColor(data, ptsVbo);
+    /*
     if(!ptsVbo->isCreated())
     {
         ptsVbo->create();
@@ -539,9 +553,31 @@ void StrokePainter::BuildPointsVertexData(std::vector<AVector> points, QOpenGLBu
 
     _shaderProgram->enableAttributeArray(_colorLocation);
     _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+    */
 
     if(isInit)
     {
         ptsVao->release();
     }
+}
+
+void StrokePainter::BindVboWithColor(QVector<VertexData> data, QOpenGLBuffer* vbo)
+{
+    if(!vbo->isCreated())
+    {
+        vbo->create();
+    }
+    vbo->bind();
+    vbo->allocate(data.data(), data.size() * sizeof(VertexData));
+
+    quintptr offset = 0;
+
+    _shaderProgram->enableAttributeArray(_vertexLocation);
+    _shaderProgram->setAttributeBuffer(_vertexLocation, GL_FLOAT, 0, 3, sizeof(VertexData));
+
+    offset += sizeof(QVector3D);
+    offset += sizeof(QVector2D);
+
+    _shaderProgram->enableAttributeArray(_colorLocation);
+    _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
 }
