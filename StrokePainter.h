@@ -72,7 +72,6 @@ private:
     QOpenGLVertexArrayObject    _plusSignVerticesVao;
 
 private:
-    //void CalculateDecorativeStroke1();
     void CalculateInitialRibbon();
     void CalculateVertices();
 
@@ -80,7 +79,7 @@ private:
     void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
     void BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
     void BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol);
-    void BindVboWithColor(QVector<VertexData> data, QOpenGLBuffer* vbo);
+    void BuildVboWithColor(QVector<VertexData> data, QOpenGLBuffer* vbo);
 };
 
 #endif // STROKEPAINTER_H

@@ -176,6 +176,7 @@ void GLWidget::VerticalScroll(int val) { _scrollOffset.setY(val); }
 void GLWidget::ZoomIn() { this->_zoomFactor += 0.5f; }
 void GLWidget::ZoomOut() { this->_zoomFactor -= 0.5f; if(this->_zoomFactor < 0.1f) _zoomFactor = 0.1f; }
 
+/*
 void GLWidget::InitCurve()
 {
     _points.clear();
@@ -190,7 +191,9 @@ void GLWidget::InitCurve()
         _points.push_back(AVector(xPt, yPt));
     }
 }
+*/
 
+/*
 void GLWidget::BuildCurveVertexData()
 {
     // POINTS VAO
@@ -276,11 +279,13 @@ void GLWidget::BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* lin
 
     linesVao->release();
 }
+*/
 
 void GLWidget::SaveToSvg()
 {
 }
 
+/*
 void GLWidget::PaintCurve()
 {
     if(_points.size() == 0) { return; }
@@ -297,5 +302,6 @@ void GLWidget::PaintCurve()
     glDrawArrays(GL_LINES, 0, _points.size() * 2);
     _linesVao.release();
 }
+*/
 
 
