@@ -23,7 +23,11 @@ public:
     // mouse release
     void mouseReleaseEvent(float x, float y);
 
+    QSize MeshSize(){ return QSize(_mesh_width, _mesh_height); }
+
     void Draw();
+
+    void ConformalMappingOneStep();
 
 public:
     QOpenGLShaderProgram* _shaderProgram;
@@ -74,6 +78,8 @@ private:
 private:
     void CalculateInitialRibbon();
     void CalculateVertices();
+
+
 
     void BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
     void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);

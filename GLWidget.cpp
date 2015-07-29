@@ -57,8 +57,6 @@ void GLWidget::initializeGL()
     _vertexLocation = _shaderProgram->attributeLocation("vert");
     _use_color_location = _shaderProgram->uniformLocation("use_color");
 
-    //InitCurve();
-    //CreateCurveVAO();
     _sPainter = new StrokePainter();
     _sPainter->_shaderProgram = _shaderProgram;
     _sPainter->_colorLocation = _colorLocation;
@@ -75,6 +73,11 @@ bool GLWidget::event( QEvent * event )
 // This is an override function from Qt but I can't find its purpose
 void GLWidget::resizeGL(int width, int height)
 {
+}
+
+void GLWidget::ConformalMappingOneStep()
+{
+    _sPainter->ConformalMappingOneStep();
 }
 
 void GLWidget::paintGL()
@@ -176,132 +179,8 @@ void GLWidget::VerticalScroll(int val) { _scrollOffset.setY(val); }
 void GLWidget::ZoomIn() { this->_zoomFactor += 0.5f; }
 void GLWidget::ZoomOut() { this->_zoomFactor -= 0.5f; if(this->_zoomFactor < 0.1f) _zoomFactor = 0.1f; }
 
-/*
-void GLWidget::InitCurve()
-{
-    _points.clear();
-
-    AVector centerPt(this->_img_width / 2, this->_img_height / 2);
-
-    float addValue = (M_PI * 2.0 / (float)16);
-    for(float a = 0.0; a < M_PI * 2.0; a += addValue)
-    {
-        float xPt = centerPt.x + 10 * sin(a);
-        float yPt = centerPt.y + 10 * cos(a);
-        _points.push_back(AVector(xPt, yPt));
-    }
-}
-*/
-
-/*
-void GLWidget::BuildCurveVertexData()
-{
-    // POINTS VAO
-    QVector3D vecCol = QVector3D(1.0, 0.0, 0.0);
-    BuildPointsVertexData(_points, &_pointsVbo, &_pointsVao, vecCol);
-
-    // LINES VAO
-    vecCol = QVector3D(0.0, 0.5, 1.0);
-    std::vector<ALine> lines;
-    for(uint a = 0; a < _points.size(); a++)
-    {
-        if(a < _points.size() - 1) { lines.push_back(ALine(_points[a], _points[a + 1])); }
-        else { lines.push_back(ALine(_points[a], _points[0])); }
-    }
-    BuildLinesVertexData(lines, &_linesVbo, &_linesVao, vecCol);
-}
-
-void GLWidget::BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol)
-{
-    if(ptsVao->isCreated())
-    {
-        ptsVao->destroy();
-    }
-
-    ptsVao->create();
-    ptsVao->bind();
-
-    QVector<VertexData> data;
-    for(uint a = 0; a < points.size(); a++)
-    {
-        data.append(VertexData(QVector3D(points[a].x, points[a].y,  0), QVector2D(), vecCol));
-    }
-
-    ptsVbo->create();
-    ptsVbo->bind();
-    ptsVbo->allocate(data.data(), data.size() * sizeof(VertexData));
-
-    quintptr offset = 0;
-
-    _shaderProgram->enableAttributeArray(_vertexLocation);
-    _shaderProgram->setAttributeBuffer(_vertexLocation, GL_FLOAT, 0, 3, sizeof(VertexData));
-
-    offset += sizeof(QVector3D);
-    offset += sizeof(QVector2D);
-
-    _shaderProgram->enableAttributeArray(_colorLocation);
-    _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
-
-    ptsVao->release();
-}
-
-void GLWidget::BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol)
-{
-    if(linesVao->isCreated())
-    {
-        linesVao->destroy();
-    }
-
-    linesVao->create();
-    linesVao->bind();
-
-    QVector<VertexData> data;
-    for(uint a = 0; a < lines.size(); a++)
-    {
-        data.append(VertexData(QVector3D(lines[a].XA, lines[a].YA,  0), QVector2D(), vecCol));
-        data.append(VertexData(QVector3D(lines[a].XB, lines[a].YB,  0), QVector2D(), vecCol));
-    }
-
-    linesVbo->create();
-    linesVbo->bind();
-    linesVbo->allocate(data.data(), data.size() * sizeof(VertexData));
-
-    quintptr offset = 0;
-
-    _shaderProgram->enableAttributeArray(_vertexLocation);
-    _shaderProgram->setAttributeBuffer(_vertexLocation, GL_FLOAT, 0, 3, sizeof(VertexData));
-
-    offset += sizeof(QVector3D);
-    offset += sizeof(QVector2D);
-
-    _shaderProgram->enableAttributeArray(_colorLocation);
-    _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
-
-    linesVao->release();
-}
-*/
-
 void GLWidget::SaveToSvg()
 {
 }
-
-/*
-void GLWidget::PaintCurve()
-{
-    if(_points.size() == 0) { return; }
-
-    _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
-
-    glPointSize(5.0f);
-    _pointsVao.bind();
-    glDrawArrays(GL_POINTS, 0, _points.size());
-    _pointsVao.release();
-
-    glLineWidth(2.0f);
-    _linesVao.bind();
-    glDrawArrays(GL_LINES, 0, _points.size() * 2);
-    _linesVao.release();
-}
-*/
 
 

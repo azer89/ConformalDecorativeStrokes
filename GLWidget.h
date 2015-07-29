@@ -33,15 +33,6 @@ private:
     // shader
     QOpenGLShaderProgram* _shaderProgram;
 
-    // points
-    //std::vector<AVector>        _points;
-    //QOpenGLBuffer               _pointsVbo;
-    //QOpenGLVertexArrayObject    _pointsVao;
-
-    // lines
-    //QOpenGLBuffer               _linesVbo;
-    //QOpenGLVertexArrayObject    _linesVao;
-
     // for rendering
     int         _mvpMatrixLocation;
     int         _colorLocation;
@@ -51,14 +42,7 @@ private:
     QMatrix4x4  _transformMatrix;
 
 private:
-    //void InitCurve();
-    //void PaintCurve();
-
     void SaveToSvg();
-
-    //void BuildCurveVertexData();
-    //void BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol);
-    //void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
 
 protected:
     // qt event
@@ -78,6 +62,9 @@ public:
     ~GLWidget();
 
     QSize GetCanvasSize() { return QSize(_img_width, _img_height); }
+    QSize GetMeshSize() { return _sPainter->MeshSize(); }
+
+    void ConformalMappingOneStep();
 
     // zoom in handle
     void ZoomIn();

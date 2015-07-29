@@ -105,12 +105,6 @@ void StrokePainter::CalculateVertices()
     _vertices.clear();
     _plusSignVertices.clear();
 
-    /*
-    std::cout << _strokeLines.size() << "\n";
-    std::cout << _rLines.size() << "\n";
-    std::cout << _rLines.size() << "\n";
-    std::cout << "\n";*/
-
     for(int a = 0; a < _strokeLines.size() - 1; a++)
     {
         AVector mStartPt = _strokeLines[a];
@@ -167,11 +161,74 @@ void StrokePainter::CalculateVertices()
     _mesh_width = _plusSignVertices.size();
     _mesh_height = _plusSignVertices[0].size();
 
-    std::cout << _mesh_width << " " << _mesh_height << "\n";
+    //std::cout << _mesh_width << " " << _mesh_height << "\n";
 
     //BuildPointsVertexData(_vertices, &_verticesVbo, &_verticesVao, QVector3D(0, 0, 1));
     BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, QVector3D(1, 0, 0));
 
+}
+
+void StrokePainter::ConformalMappingOneStep()
+{
+    std::cout << "ConformalMappingIteration\n";
+    std::vector<std::vector<PlusSignVertex>> tempVertices = _plusSignVertices;
+
+    for(int a = 0; a < _mesh_width; a++)
+    {
+        for(int b = 0; b < _mesh_height; b++)
+        {
+            PlusSignVertex psVertex = tempVertices[a][b];
+            AVector avgPosVec(0, 0);
+            int numNeighbor = 0;
+
+            // UL
+            if(a == 0 && b == 0)
+            {
+                numNeighbor = 2;
+            }
+
+            // UR
+            else if(a == _mesh_width - 1 && b == 0)
+            {
+                numNeighbor = 2;
+            }
+
+            // BR
+            else if(a == _mesh_width - 1 && b == _mesh_height - 1)
+            {
+                numNeighbor = 2;
+            }
+
+
+            // BL
+            else if(a == 0 && b == _mesh_height - 1)
+            {
+                numNeighbor = 2;
+            }
+
+            // L
+            else if(a == 0)
+            {
+            }
+
+            // R
+            else if(a == _mesh_width - 1)
+            {
+            }
+
+            // T
+            else if(b == 0)
+            {
+            }
+
+            // B
+            else if(b == _mesh_height - 1)
+            {
+            }
+
+            //std::cout << psVertex.position.x << " " << psVertex.position.y << "\n";
+        }
+    }
 }
 
 // mouse press
@@ -179,6 +236,7 @@ void StrokePainter::mousePressEvent(float x, float y)
 {
     _points.clear();
     _vertices.clear();
+    _plusSignVertices.clear();
 
     _lLines.clear();
     _rLines.clear();
@@ -232,7 +290,7 @@ void StrokePainter::Draw()
         _verticesVao.release();
     }*/
 
-    if(_plusSignVerticesVao.isCreated())
+    if(_plusSignVerticesVao.isCreated() && _plusSignVertices.size() > 0)
     {
         int wMin1 = _mesh_width - 1;
         int hMin1 = _mesh_height - 1;
