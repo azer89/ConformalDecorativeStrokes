@@ -20,24 +20,11 @@ public:
 
     static void GetBisectorJoints(ALine curLine, ALine prevLine, ALine nextLine, double t0, double t1, AVector* pA, AVector* pB, AVector* pC, AVector* pD);
 
-    static void GetMiterJoints(ALine prevLine, ALine curLine,
-                               double t0,
-                               double t1,
-                               AVector* pA,
-                               AVector* pB);
-
-    static void GetMiterJoints(ALine curLine,
-                               ALine prevLine,
-                               ALine nextLine,
-                               double t0,
-                               double t1,
-                               AVector* pA,
-                               AVector* pB,
-                               AVector* pC,
-                               AVector* pD);
+    static void GetMiterJoints(ALine prevLine, ALine curLine, double t0, double t1, AVector* pA, AVector* pB);
 
     static bool CheckCollinearCase(ALine ray1, ALine ray2);
     static AVector GetFiniteIntersection(ALine rayA, ALine rayB);
+    static AVector GetClosestPoint(AVector v, AVector w, AVector p);
     static bool CheckHorizontalVerticalCase(ALine ray1, ALine ray2);
 
 };

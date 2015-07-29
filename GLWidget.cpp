@@ -157,6 +157,13 @@ void GLWidget::mouseReleaseEvent(int x, int y)
 
     _sPainter->mouseReleaseEvent(dx, dy);
 
+    QSize meshSize = _sPainter->MeshSize();
+    if(meshSize.width() >= 0 && meshSize.height() > 0)
+    {
+        //std::cout << "mesh are created\n";
+        emit CalculateConformalMap();
+    }
+
     this->repaint();
 }
 

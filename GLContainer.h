@@ -77,7 +77,7 @@ private:
     void UpdateViewport(bool putInMiddle = false);
 
 signals:
-    void CalculateConformalMap();
+    //void CalculateConformalMap();
 
 private slots:
     // vertical scroll

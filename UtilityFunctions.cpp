@@ -150,49 +150,6 @@ void UtilityFunctions::GetMiterJoints(ALine prevLine,
     *pB = GetFiniteIntersection(pRightRay, cRightInvRay);
 }
 
-// beware of a bug since I inadvertently modified the code
-void UtilityFunctions::GetMiterJoints(ALine curLine,
-                             ALine prevLine,
-                             ALine nextLine,
-                             double t0,
-                             double t1,
-                             AVector* pA,
-                             AVector* pB,
-                             AVector* pC,
-                             AVector* pD)
-{
-    AVector pDir  = prevLine.Direction().Norm();
-    AVector cDir  = curLine.Direction().Norm();
-    AVector nDir  = nextLine.Direction().Norm();
-
-    AVector pDirRight(-pDir.y,   pDir.x);
-    AVector pDirLeft(pDir.y,  -pDir.x);
-
-    AVector cDirRight(-cDir.y,   cDir.x);
-    AVector cDirLeft(cDir.y,  -cDir.x);
-
-    AVector nDirRight(-nDir.y,   nDir.x);
-    AVector nDirLeft(nDir.y,  -nDir.x);
-
-    ALine pLeftRay (prevLine.GetPointA() + pDirLeft  * t0, pDir);
-    ALine pRightRay(prevLine.GetPointA() + pDirRight * t1, pDir);
-
-    ALine cLeftRay (curLine.GetPointA()  + cDirLeft  * t0, cDir);
-    ALine cRightRay(curLine.GetPointA()  + cDirRight * t1, cDir);
-    ALine cLeftInvRay (curLine.GetPointB()  + cDirLeft  * t0, AVector(-cDir.x, -cDir.y));
-    ALine cRightInvRay(curLine.GetPointB()  + cDirRight * t1, AVector(-cDir.x, -cDir.y));
-
-    ALine nLeftInvRay (nextLine.GetPointB() + nDirLeft  * t0, AVector(-nDir.x, -nDir.y));
-    ALine nRightInvRay(nextLine.GetPointB() + nDirRight * t1, AVector(-nDir.x, -nDir.y));
-
-    *pA = GetFiniteIntersection(pLeftRay,  cLeftInvRay);
-    *pB = GetFiniteIntersection(pRightRay, cRightInvRay);
-
-    *pC = GetFiniteIntersection(cLeftRay,  nLeftInvRay);
-    *pD = GetFiniteIntersection(cRightRay, nRightInvRay);
-
-}
-
 void UtilityFunctions::GetBisectorJoints(ALine curLine,
                                         ALine prevLine,
                                         ALine nextLine,
@@ -309,4 +266,15 @@ double UtilityFunctions::CurveLength(std::vector<AVector> curves)
     double length = 0.0;
     for(size_t a = 1; a < curves.size(); a++) { length += curves[a].Distance(curves[a-1]); }
     return length;
+}
+
+AVector UtilityFunctions::GetClosestPoint(AVector v, AVector w, AVector p)
+{
+    float eps_float = std::numeric_limits<float>::epsilon();
+    float l2 = v.DistanceSquared(w);
+    if (l2 > -eps_float && l2 < eps_float) return v;
+    float t = (p - v).Dot(w - v) / l2;
+    if (t < 0.0)	  { return  v; }
+    else if (t > 1.0) { return  w; }
+    return v + (w - v) * t;
 }

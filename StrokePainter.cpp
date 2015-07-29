@@ -21,12 +21,12 @@ StrokePainter::~StrokePainter()
 
 void StrokePainter::CalculateInitialRibbon()
 {
-    _points.clear();
+    //_points.clear();
 
     _lLines.clear();
     _rLines.clear();
-    _ribLines.clear();
-    _gridLines.clear();
+    //_ribLines.clear();
+    //_gridLines.clear();
 
     _strokeLines.clear();
 
@@ -51,7 +51,7 @@ void StrokePainter::CalculateInitialRibbon()
             _lLines.push_back(lPoint);
             _rLines.push_back(rPoint);
 
-            _ribLines.push_back(ALine(lPoint, rPoint));
+            //_ribLines.push_back(ALine(lPoint, rPoint));
         }
         else if(_strokeLines.size() >= 3 && a <= _strokeLines.size() - 2)
         {
@@ -67,7 +67,7 @@ void StrokePainter::CalculateInitialRibbon()
             _lLines.push_back(lPoint);
             _rLines.push_back(rPoint);
 
-            _ribLines.push_back(ALine(lPoint, rPoint));
+            //_ribLines.push_back(ALine(lPoint, rPoint));
         }
 
         // add an end
@@ -86,18 +86,18 @@ void StrokePainter::CalculateInitialRibbon()
             _lLines.push_back(lPoint);
             _rLines.push_back(rPoint);
 
-            _ribLines.push_back(ALine(lPoint, rPoint));
+            //_ribLines.push_back(ALine(lPoint, rPoint));
         }
     }
 
-    BuildLinesVertexData(_ribLines, &_ribLinesVbo, &_ribLinesVao, QVector3D(1, 0, 0));
+    //BuildLinesVertexData(_ribLines, &_ribLinesVbo, &_ribLinesVao, QVector3D(1, 0, 0));
 
     BuildLinesVertexData(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(0, 0, 0));
     BuildLinesVertexData(_lLines, &_lLinesVbo, &_lLinesVao, QVector3D(0, 0, 1));
     BuildLinesVertexData(_rLines, &_rLinesVbo, &_rLinesVao, QVector3D(1, 0, 0));
 
-    _points = std::vector<AVector>(_strokeLines);
-    BuildPointsVertexData(_points, &_pointsVbo, &_pointsVao, QVector3D(1, 0, 0));
+    //_points = std::vector<AVector>(_strokeLines);
+    //BuildPointsVertexData(_points, &_pointsVbo, &_pointsVao, QVector3D(1, 0, 0));
 }
 
 void StrokePainter::CalculateVertices()
@@ -168,81 +168,150 @@ void StrokePainter::CalculateVertices()
 
 }
 
+AVector StrokePainter::GetClosestPointFromBorders(AVector pt)
+{
+    AVector closestPt = pt;
+    float dist = std::numeric_limits<float>::max();
+
+    // left
+    for(int a = 0; a < _lLines.size() - 1; a++)
+    {
+        AVector pt1 = _lLines[a];
+        AVector pt2 = _lLines[a+1];
+        AVector cPt = UtilityFunctions::GetClosestPoint(pt1, pt2, pt);
+        if(pt.Distance(cPt) < dist)
+        {
+            dist = pt.Distance(cPt);
+            closestPt = cPt;
+        }
+    }
+
+    // right
+    for(int a = 0; a < _rLines.size() - 1; a++)
+    {
+        AVector pt1 = _rLines[a];
+        AVector pt2 = _rLines[a+1];
+        AVector cPt = UtilityFunctions::GetClosestPoint(pt1, pt2, pt);
+        if(pt.Distance(cPt) < dist)
+        {
+            dist = pt.Distance(cPt);
+            closestPt = cPt;
+        }
+    }
+
+    // start
+    AVector s1 = _lLines[0];
+    AVector s2 = _rLines[0];
+    AVector scPt = UtilityFunctions::GetClosestPoint(s1, s2, pt);
+    if(pt.Distance(scPt) < dist)
+    {
+        dist = pt.Distance(scPt);
+        closestPt = scPt;
+    }
+
+    // end
+    AVector e1 = _lLines[_lLines.size() - 1];
+    AVector e2 = _rLines[_rLines.size() - 1];
+    AVector ecPt = UtilityFunctions::GetClosestPoint(e1, e2, pt);
+    if(pt.Distance(ecPt) < dist)
+    {
+        dist = pt.Distance(ecPt);
+        closestPt = ecPt;
+    }
+
+    return closestPt;
+}
+
 void StrokePainter::ConformalMappingOneStep()
 {
-    std::cout << "ConformalMappingIteration\n";
+    //std::cout << "ConformalMappingIteration\n";
     std::vector<std::vector<PlusSignVertex>> tempVertices = _plusSignVertices;
 
     for(int a = 0; a < _mesh_width; a++)
     {
         for(int b = 0; b < _mesh_height; b++)
         {
-            PlusSignVertex psVertex = tempVertices[a][b];
-            AVector avgPosVec(0, 0);
+            AVector avgPositions(0, 0);
             int numNeighbor = 0;
 
-            // UL
-            if(a == 0 && b == 0)
+            // left
+            if(a > 0)
             {
-                numNeighbor = 2;
+                PlusSignVertex lVertex = tempVertices[a - 1][b];
+                avgPositions = avgPositions + lVertex.position;
+                numNeighbor++;
             }
 
-            // UR
-            else if(a == _mesh_width - 1 && b == 0)
+            // right
+            if(a < _mesh_width - 1)
             {
-                numNeighbor = 2;
+                PlusSignVertex rVertex = tempVertices[a + 1][b];
+                avgPositions = avgPositions + rVertex.position;
+                numNeighbor++;
             }
 
-            // BR
-            else if(a == _mesh_width - 1 && b == _mesh_height - 1)
+            // up
+            if(b > 0)
             {
-                numNeighbor = 2;
+                PlusSignVertex uVertex = tempVertices[a][b - 1];
+                avgPositions = avgPositions + uVertex.position;
+                numNeighbor++;
             }
 
-
-            // BL
-            else if(a == 0 && b == _mesh_height - 1)
+            // bottom
+            if(b < _mesh_height - 1)
             {
-                numNeighbor = 2;
+                PlusSignVertex bVertex = tempVertices[a][b + 1];
+                avgPositions = avgPositions + bVertex.position;
+                numNeighbor++;
             }
 
-            // L
-            else if(a == 0)
-            {
-            }
+            avgPositions = avgPositions / (float)numNeighbor;
 
-            // R
-            else if(a == _mesh_width - 1)
+            if(numNeighbor < 4)
             {
+                AVector closestPt = GetClosestPointFromBorders(avgPositions);
+                tempVertices[a][b].position = closestPt;
             }
-
-            // T
-            else if(b == 0)
+            else
             {
+                tempVertices[a][b].position = avgPositions;
             }
-
-            // B
-            else if(b == _mesh_height - 1)
-            {
-            }
-
-            //std::cout << psVertex.position.x << " " << psVertex.position.y << "\n";
         }
     }
+
+    float sumDist = 0;
+    for(int a = 0; a < _mesh_width; a++)
+    {
+        for(int b = 0; b < _mesh_height; b++)
+        {
+            AVector pt1 = _plusSignVertices[a][b].position;
+            AVector pt2 = tempVertices[a][b].position;
+            sumDist += pt1.Distance(pt2);
+        }
+    }
+    _iterDist = sumDist;
+    //std::cout << sumDist << "\n";
+
+
+    _plusSignVertices = tempVertices;
+
+    BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, QVector3D(1, 0, 0));
+
 }
 
 // mouse press
 void StrokePainter::mousePressEvent(float x, float y)
 {
-    _points.clear();
+    //_points.clear();
     _vertices.clear();
     _plusSignVertices.clear();
 
     _lLines.clear();
     _rLines.clear();
 
-    _ribLines.clear();
-    _gridLines.clear();
+    //_ribLines.clear();
+    //_gridLines.clear();
 
     _strokeLines.clear();
     _oriStrokeLines.clear();
@@ -261,17 +330,39 @@ void StrokePainter::mouseMoveEvent(float x, float y)
 // mouse release
 void StrokePainter::mouseReleaseEvent(float x, float y)
 {
+    //std::cout << "StrokePainter::mouseReleaseEvent\n";
+
     _oriStrokeLines.push_back(AVector(x, y));
     CalculateInitialRibbon();
     CalculateVertices();
-    /*for(uint a = 0; a < _strokeLines.size() - 2; a++)
-        { std::cout << _strokeLines[a].Distance(_strokeLines[a+1]) << " "; }
-    std::cout << "\n";*/
+
+    //std::cout << "_plusSignVertices.size() " << _plusSignVertices.size() << "\n";
 }
 
 void StrokePainter::Draw()
 {
     _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
+
+    if(_plusSignVerticesVao.isCreated() && _plusSignVertices.size() > 0)
+    {
+        int wMin1 = _mesh_width - 1;
+        int hMin1 = _mesh_height - 1;
+
+        int meshSize = ((wMin1 * _mesh_width) + (hMin1 * _mesh_height)) * 2;
+
+        glLineWidth(1.0f);
+        _plusSignVerticesVao.bind();
+        glDrawArrays(GL_LINES, 0, meshSize);
+        _plusSignVerticesVao.release();
+    }
+
+    if(_strokeLinesVao.isCreated() && _plusSignVertices.size() == 0)
+    {
+        glLineWidth(2.0f);
+        _strokeLinesVao.bind();
+        glDrawArrays(GL_LINES, 0, (_strokeLines.size() - 1) * 2);
+        _strokeLinesVao.release();
+    }
 
     /*
     if(_pointsVao.isCreated())
@@ -289,19 +380,6 @@ void StrokePainter::Draw()
         glDrawArrays(GL_POINTS, 0, _vertices.size());
         _verticesVao.release();
     }*/
-
-    if(_plusSignVerticesVao.isCreated() && _plusSignVertices.size() > 0)
-    {
-        int wMin1 = _mesh_width - 1;
-        int hMin1 = _mesh_height - 1;
-
-        int meshSize = ((wMin1 * _mesh_width) + (hMin1 * _mesh_height)) * 2;
-
-        glLineWidth(2.0f);
-        _plusSignVerticesVao.bind();
-        glDrawArrays(GL_LINES, 0, meshSize);
-        _plusSignVerticesVao.release();
-    }
 
     /*
     if(_lLinesVao.isCreated())
@@ -321,13 +399,6 @@ void StrokePainter::Draw()
     }
     */
 
-    if(_strokeLinesVao.isCreated())
-    {
-        glLineWidth(2.0f);
-        _strokeLinesVao.bind();
-        glDrawArrays(GL_LINES, 0, (_strokeLines.size() - 1) * 2);
-        _strokeLinesVao.release();
-    }
 
     /*
     if(_ribLinesVao.isCreated())

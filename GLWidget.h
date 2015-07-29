@@ -44,6 +44,9 @@ private:
 private:
     void SaveToSvg();
 
+signals:
+    void CalculateConformalMap();
+
 protected:
     // qt event
     bool event( QEvent * event );
@@ -63,6 +66,9 @@ public:
 
     QSize GetCanvasSize() { return QSize(_img_width, _img_height); }
     QSize GetMeshSize() { return _sPainter->MeshSize(); }
+    bool IsMouseDown() { return _isMouseDown; }
+
+    bool ShouldStop() { return _sPainter->ShouldStop(); }
 
     void ConformalMappingOneStep();
 

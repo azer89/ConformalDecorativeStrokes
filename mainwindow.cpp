@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->widget, SIGNAL(CalculateConformalMap()), this, SLOT(AnimationStart()));
+    connect(ui->widget->GetGLWidget(), SIGNAL(CalculateConformalMap()), this, SLOT(AnimationStart()));
 
     animTimer = new QTimer(this);
     connect(animTimer, SIGNAL(timeout()), this, SLOT(AnimationThread()));
@@ -21,12 +21,26 @@ MainWindow::~MainWindow()
 
 void MainWindow::AnimationThread()
 {
-    this->ui->widget->GetGLWidget()->ConformalMappingOneStep();
-    this->ui->widget->GetGLWidget()->repaint();
+    if(!ui->widget->GetGLWidget()->IsMouseDown())
+    {
+        this->ui->widget->GetGLWidget()->ConformalMappingOneStep();
+        this->ui->widget->GetGLWidget()->repaint();
+
+        if(this->ui->widget->GetGLWidget()->ShouldStop())
+        {
+            std::cout << "iteration complete\n";
+            animTimer->stop();
+        }
+    }
 }
 
 void MainWindow::AnimationStart()
 {
     //std::cout << "Animation Start\n";
-    animTimer->start(1000);
+
+    if(animTimer->isActive())
+    {
+       animTimer->stop();
+    }
+    animTimer->start();
 }
