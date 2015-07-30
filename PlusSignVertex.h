@@ -11,6 +11,9 @@ struct PlusSignVertex
     QVector2D texCoord;
     QVector3D color;
 
+    float armLength;
+    float angle;
+
 public:
 
     PlusSignVertex(AVector position, QVector2D texCoord, QVector3D color)
@@ -18,6 +21,9 @@ public:
         this->position = position;
         this->texCoord = texCoord;
         this->color = color;
+
+        this->armLength = 0;
+        this->angle = 0;
     }
 
     PlusSignVertex(AVector position, QVector2D texCoord)
@@ -25,6 +31,9 @@ public:
         this->position = position;
         this->texCoord = texCoord;
         this->color = QVector3D();
+
+        this->armLength = 0;
+        this->angle = 0;
     }
 
     PlusSignVertex(AVector position)
@@ -32,13 +41,19 @@ public:
         this->position = position;
         this->texCoord = QVector2D();
         this->color = QVector3D();
+
+        this->armLength = 0;
+        this->angle = 0;
     }
 
     PlusSignVertex()
     {
-        this->position = AVector();
-        this->texCoord = QVector2D();
-        this->color = QVector3D();
+        this->position = AVector(0, 0);
+        this->texCoord = QVector2D(0, 0);
+        this->color = QVector3D(0, 0, 0);
+
+        this->armLength = 0;
+        this->angle = 0;
     }
 };
 

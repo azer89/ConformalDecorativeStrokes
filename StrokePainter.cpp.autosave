@@ -270,11 +270,8 @@ void StrokePainter::ConformalMappingOneStep()
             if(a > 0)
             {
                 PlusSignVertex lVertex = tempVertices[a - 1][b];
-
                 sumPositions += lVertex.position;
-
                 sumArmLengths += curPos.Distance(lVertex.position);
-
                 if(lVertex.position != curPos)
                 {
                     AVector dirVec = (lVertex.position - curPos).Norm();
@@ -295,11 +292,8 @@ void StrokePainter::ConformalMappingOneStep()
             if(a < _mesh_width - 1)
             {
                 PlusSignVertex rVertex = tempVertices[a + 1][b];
-
                 sumPositions = sumPositions + rVertex.position;
-
                 sumArmLengths += curPos.Distance(rVertex.position);
-
                 if(rVertex.position != curPos)
                 {
                     AVector dirVec = (rVertex.position - curPos).Norm();
@@ -320,11 +314,8 @@ void StrokePainter::ConformalMappingOneStep()
             if(b > 0)
             {
                 PlusSignVertex uVertex = tempVertices[a][b - 1];
-
                 sumPositions += uVertex.position;
-
                 sumArmLengths += curPos.Distance(uVertex.position);
-
                 if(uVertex.position != curPos)
                 {
                     AVector dirVec = (uVertex.position - curPos).Norm();
@@ -363,9 +354,7 @@ void StrokePainter::ConformalMappingOneStep()
                 //sumArmAngles += uVertex.angle;
             }
 
-            /*sumPositions  = sumPositions / (float)numNeighbor;
-            sumArmAngles  = sumArmAngles / (float)numNeighbor;
-            sumArmLengths = sumArmLengths / (float)numNeighbor;*/
+            //sumPositions  = sumPositions / (float)numNeighbor;
             sumPositions  = sumPositions / 4.0f;
             sumArmAngles  = sumArmAngles / (float)numNeighbor;
             sumArmLengths = sumArmLengths / (float)numNeighbor;

@@ -25,7 +25,12 @@ public:
     static bool CheckCollinearCase(ALine ray1, ALine ray2);
     static AVector GetFiniteIntersection(ALine rayA, ALine rayB);
     static AVector GetClosestPoint(AVector v, AVector w, AVector p);
+    static float GetRotation(AVector pt1, AVector pt2);
     static bool CheckHorizontalVerticalCase(ALine ray1, ALine ray2);
+
+    // rotate a point around center (0, 0)
+    static AVector Rotate(AVector pt, float rad);
+    static AVector Rotate(AVector pt, AVector centerPt, float rad);
 
 };
 

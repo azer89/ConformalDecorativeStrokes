@@ -159,7 +159,7 @@ public:
     // cross product
     AVector Cross(AVector otherVector)
     {
-        //U x V = Ux*Vy-Uy*Vx
+        //u x v = u.x * v.y - u.y * v.x
         return AVector(x * otherVector.y, y * otherVector.x);
     }
 

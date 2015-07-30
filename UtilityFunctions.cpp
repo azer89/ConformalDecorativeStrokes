@@ -261,6 +261,21 @@ void UtilityFunctions::CombineLines(std::vector<AVector>& oriCurve, std::vector<
     }
 }
 
+
+float UtilityFunctions::GetRotation(AVector pt1, AVector pt2)
+{
+    float perpDot = pt1.x * pt2.y - pt1.y * pt2.x;
+    float rotVal =  (float)atan2(perpDot, pt1.Dot(pt2));
+
+    //if(isnan(rotVal))
+    //{
+    //    std::cout << pt1.x << " " << pt2.y << " " << pt1.y << " " << pt2.x << " " << perpDot << " " << pt1.Dot(pt2) << "\n";
+    //}
+
+    return rotVal;
+}
+
+
 double UtilityFunctions::CurveLength(std::vector<AVector> curves)
 {
     double length = 0.0;
@@ -277,4 +292,21 @@ AVector UtilityFunctions::GetClosestPoint(AVector v, AVector w, AVector p)
     if (t < 0.0)	  { return  v; }
     else if (t > 1.0) { return  w; }
     return v + (w - v) * t;
+}
+
+AVector UtilityFunctions::Rotate(AVector pt, float rad)
+{
+    double cs = cos(rad);
+    double sn = sin(rad);
+
+    double x = pt.x * cs - pt.y * sn;
+    double y = pt.x * sn + pt.y * cs;
+
+    return AVector(x, y);
+}
+
+AVector UtilityFunctions::Rotate(AVector pt, AVector centerPt, float rad)
+{
+    AVector newVec = Rotate(pt - centerPt, rad);
+    return newVec + centerPt;
 }
