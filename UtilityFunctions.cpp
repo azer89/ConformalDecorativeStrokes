@@ -266,12 +266,6 @@ float UtilityFunctions::GetRotation(AVector pt1, AVector pt2)
 {
     float perpDot = pt1.x * pt2.y - pt1.y * pt2.x;
     float rotVal =  (float)atan2(perpDot, pt1.Dot(pt2));
-
-    //if(isnan(rotVal))
-    //{
-    //    std::cout << pt1.x << " " << pt2.y << " " << pt1.y << " " << pt2.x << " " << perpDot << " " << pt1.Dot(pt2) << "\n";
-    //}
-
     return rotVal;
 }
 

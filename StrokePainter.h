@@ -27,7 +27,8 @@ public:
 
     void Draw();
 
-    void ConformalMappingOneStep();
+    void ConformalMappingOneStep1();
+    void ConformalMappingOneStep2();
     bool ShouldStop() { return _iterDist < std::numeric_limits<float>::epsilon(); }
 
 public:
@@ -77,6 +78,16 @@ private:
     //std::vector<AVector>        _points;
     //QOpenGLBuffer               _pointsVbo;
     //QOpenGLVertexArrayObject    _pointsVao;
+
+    // debugging visualization
+    std::vector<AVector>        _debugPoints;
+    QOpenGLBuffer               _debugPointsVbo;
+    QOpenGLVertexArrayObject    _debugPointsVao;
+
+    // debugging visualization
+    std::vector<ALine>          _debugLines;
+    QOpenGLBuffer               _debugLinesVbo;
+    QOpenGLVertexArrayObject    _debugLinesVao;
 
     // vertices of the mesh as a 1D list
     std::vector<AVector>        _vertices;

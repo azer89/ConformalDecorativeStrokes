@@ -222,7 +222,253 @@ AVector StrokePainter::GetClosestPointFromBorders(AVector pt)
     return closestPt;
 }
 
-void StrokePainter::ConformalMappingOneStep()
+void StrokePainter::ConformalMappingOneStep2()
+{
+    _debugLines.clear();
+    _debugPoints.clear();
+
+    std::vector<std::vector<PlusSignVertex>> tempVertices = _plusSignVertices;
+
+    for(int a = 0; a < _mesh_width; a++)
+    {
+        for(int b = 0; b < _mesh_height; b++)
+        {
+            AVector curPos = tempVertices[a][b].position;
+            AVector sumPositions(0, 0);
+            float sumArmLengths = 0;
+            float sumArmAngles = 0;
+            int numNeighbor = 0;
+
+            // have left and right
+            if(a > 0 && a < _mesh_width - 1)
+            {
+                PlusSignVertex lVertex = tempVertices[a - 1][b];
+                PlusSignVertex rVertex = tempVertices[a + 1][b];
+
+                // left
+                sumPositions += lVertex.position;
+                sumArmLengths += curPos.Distance(lVertex.position);
+                //if(lVertex.position != curPos)
+                {
+                    AVector dirVec = (lVertex.position - curPos).Norm();
+                    sumArmAngles += UtilityFunctions::GetRotation(AVector(-1, 0), dirVec);
+                }
+
+                // right
+                sumPositions += rVertex.position;
+                sumArmLengths += curPos.Distance(rVertex.position);
+                //if(rVertex.position != curPos)
+                {
+                    AVector dirVec = (rVertex.position - curPos).Norm();
+                    sumArmAngles += UtilityFunctions::GetRotation(AVector(1, 0), dirVec);
+                }
+
+                numNeighbor += 2;
+            }
+            // have left only
+            else if(a > 0)
+            {
+                PlusSignVertex lVertex = tempVertices[a - 1][b];
+                //sumPositions += lVertex.position;
+                AVector fakeNeighbor = lVertex.position + UtilityFunctions::Rotate( AVector(1, 0) * lVertex.armLength, lVertex.angle);
+
+                float fDist = fakeNeighbor.Distance(curPos);
+                float nDist = curPos.Distance(lVertex.position);
+                if(nDist < fDist)
+                {
+                    //std::cout << "shit l\n";
+                    //sumPositions += lVertex.position;
+                }
+                else
+                {
+                    //std::cout << "ok l\n";
+                    //sumPositions += fakeNeighbor;
+                }
+
+                _debugLines.push_back(ALine(lVertex.position, fakeNeighbor));
+                //_debugPoints.push_back(fakeNeighbor);
+
+                sumPositions += fakeNeighbor;
+                sumArmLengths += curPos.Distance(lVertex.position);
+               // if(lVertex.position != curPos)
+                {
+                    AVector dirVec = (lVertex.position - curPos).Norm();
+                    sumArmAngles += UtilityFunctions::GetRotation(AVector(-1, 0), dirVec);
+                }
+
+                numNeighbor++;
+            }
+            // have right only
+            else if(a < _mesh_width - 1)
+            {
+                PlusSignVertex rVertex = tempVertices[a + 1][b];
+                //sumPositions += rVertex.position;
+                AVector fakeNeighbor = rVertex.position + UtilityFunctions::Rotate( AVector(-1, 0) * rVertex.armLength, rVertex.angle);
+
+                float fDist = fakeNeighbor.Distance(curPos);
+                float nDist = curPos.Distance(rVertex.position);
+                if(nDist < fDist)
+                {
+                    //std::cout << "shit r\n";
+                    //sumPositions += rVertex.position;
+                }
+                else
+                {
+                    //std::cout << "ok r\n";
+                    //sumPositions += fakeNeighbor;
+                }
+
+                _debugLines.push_back(ALine(rVertex.position, fakeNeighbor));
+                //_debugPoints.push_back(fakeNeighbor);
+
+                sumPositions += fakeNeighbor;
+                sumArmLengths += curPos.Distance(rVertex.position);
+                //if(rVertex.position != curPos)
+                {
+                    AVector dirVec = (rVertex.position - curPos).Norm();
+                    sumArmAngles += UtilityFunctions::GetRotation(AVector(1, 0), dirVec);
+                }
+
+                numNeighbor++;
+            }
+
+            // have up and down
+            if(b > 0 && b < _mesh_height - 1)
+            {
+                PlusSignVertex uVertex = tempVertices[a][b - 1];
+                PlusSignVertex bVertex = tempVertices[a][b + 1];
+
+                // up
+                sumPositions += uVertex.position;
+                sumArmLengths += curPos.Distance(uVertex.position);
+                //if(uVertex.position != curPos)
+                {
+                    AVector dirVec = (uVertex.position - curPos).Norm();
+                    sumArmAngles += UtilityFunctions::GetRotation(AVector(0, -1), dirVec);
+                }
+
+                // down
+                sumPositions += bVertex.position;
+                sumArmLengths += curPos.Distance(bVertex.position);
+                //if(bVertex.position != curPos)
+                {
+                    AVector dirVec = (bVertex.position - curPos).Norm();
+                    sumArmAngles += UtilityFunctions::GetRotation(AVector(0, 1), dirVec);
+                }
+
+                numNeighbor += 2;
+            }
+            // have up only
+            else if(b > 0)
+            {
+                PlusSignVertex uVertex = tempVertices[a][b - 1];
+
+                //sumPositions += uVertex.position;
+                AVector fakeNeighbor = uVertex.position + UtilityFunctions::Rotate( AVector(0, 1) * uVertex.armLength, uVertex.angle);
+
+                float fDist = fakeNeighbor.Distance(curPos);
+                float nDist = curPos.Distance(uVertex.position);
+                if(nDist < fDist)
+                {
+                    //std::cout << "shit u\n";
+                    //sumPositions += uVertex.position;
+                }
+                else
+                {
+                    //std::cout << "ok u\n";
+                    //sumPositions += fakeNeighbor;
+                }
+
+                _debugLines.push_back(ALine(uVertex.position, fakeNeighbor));
+                //_debugPoints.push_back(fakeNeighbor);
+
+                sumPositions += fakeNeighbor;
+                sumArmLengths += curPos.Distance(uVertex.position);
+                //if(uVertex.position != curPos)
+                {
+                    AVector dirVec = (uVertex.position - curPos).Norm();
+                    sumArmAngles += UtilityFunctions::GetRotation(AVector(0, -1), dirVec);
+                }
+
+                numNeighbor++;
+            }
+            // have down only
+            else if(b < _mesh_height - 1)
+            {
+                PlusSignVertex bVertex = tempVertices[a][b + 1];
+
+                //sumPositions += bVertex.position;
+                AVector fakeNeighbor = bVertex.position + UtilityFunctions::Rotate( AVector(0, -1) * bVertex.armLength, bVertex.angle);
+
+                float fDist = fakeNeighbor.Distance(curPos);
+                float nDist = curPos.Distance(bVertex.position);
+                if(nDist < fDist)
+                {
+                    //std::cout << "shit d\n";
+                    //sumPositions += bVertex.position;
+                }
+                else
+                {
+                    //std::cout << "ok d\n";
+                    //sumPositions += fakeNeighbor;
+
+                }
+
+                _debugLines.push_back(ALine(bVertex.position, fakeNeighbor));
+                //_debugPoints.push_back(fakeNeighbor);
+
+                sumPositions += fakeNeighbor;
+                sumArmLengths += curPos.Distance(bVertex.position);
+                //if(bVertex.position != curPos)
+                {
+                    AVector dirVec = (bVertex.position - curPos).Norm();
+                    sumArmAngles += UtilityFunctions::GetRotation(AVector(0, 1), dirVec);
+                }
+
+                numNeighbor++;
+            }
+
+            sumPositions  = sumPositions / (float)numNeighbor;
+            sumArmAngles  = sumArmAngles / (float)numNeighbor;
+            sumArmLengths = sumArmLengths / (float)numNeighbor;
+
+            tempVertices[a][b].armLength = sumArmLengths;
+            tempVertices[a][b].angle = sumArmAngles;
+
+            if(numNeighbor < 4)
+            {
+                _debugPoints.push_back(sumPositions);
+
+                AVector closestPt = GetClosestPointFromBorders(sumPositions);
+                tempVertices[a][b].position = closestPt;
+            }
+            else
+            {
+                tempVertices[a][b].position = sumPositions;
+            }
+        }
+    }
+
+    float sumDist = 0;
+    for(int a = 0; a < _mesh_width; a++)
+    {
+        for(int b = 0; b < _mesh_height; b++)
+        {
+            AVector pt1 = _plusSignVertices[a][b].position;
+            AVector pt2 = tempVertices[a][b].position;
+            sumDist += pt1.Distance(pt2);
+        }
+    }
+    _iterDist = sumDist;
+
+    _plusSignVertices = tempVertices;
+    BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, QVector3D(1, 0, 0));
+
+    BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0, 1));
+    BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.5, 0));
+}
+
+void StrokePainter::ConformalMappingOneStep1()
 {
     //std::cout << "ConformalMappingIteration\n";
 
@@ -270,11 +516,8 @@ void StrokePainter::ConformalMappingOneStep()
             if(a > 0)
             {
                 PlusSignVertex lVertex = tempVertices[a - 1][b];
-
                 sumPositions += lVertex.position;
-
                 sumArmLengths += curPos.Distance(lVertex.position);
-
                 if(lVertex.position != curPos)
                 {
                     AVector dirVec = (lVertex.position - curPos).Norm();
@@ -295,11 +538,8 @@ void StrokePainter::ConformalMappingOneStep()
             if(a < _mesh_width - 1)
             {
                 PlusSignVertex rVertex = tempVertices[a + 1][b];
-
                 sumPositions = sumPositions + rVertex.position;
-
                 sumArmLengths += curPos.Distance(rVertex.position);
-
                 if(rVertex.position != curPos)
                 {
                     AVector dirVec = (rVertex.position - curPos).Norm();
@@ -320,11 +560,8 @@ void StrokePainter::ConformalMappingOneStep()
             if(b > 0)
             {
                 PlusSignVertex uVertex = tempVertices[a][b - 1];
-
                 sumPositions += uVertex.position;
-
                 sumArmLengths += curPos.Distance(uVertex.position);
-
                 if(uVertex.position != curPos)
                 {
                     AVector dirVec = (uVertex.position - curPos).Norm();
@@ -363,9 +600,7 @@ void StrokePainter::ConformalMappingOneStep()
                 //sumArmAngles += uVertex.angle;
             }
 
-            /*sumPositions  = sumPositions / (float)numNeighbor;
-            sumArmAngles  = sumArmAngles / (float)numNeighbor;
-            sumArmLengths = sumArmLengths / (float)numNeighbor;*/
+            //sumPositions  = sumPositions / (float)numNeighbor;
             sumPositions  = sumPositions / 4.0f;
             sumArmAngles  = sumArmAngles / (float)numNeighbor;
             sumArmLengths = sumArmLengths / (float)numNeighbor;
@@ -448,6 +683,22 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
 void StrokePainter::Draw()
 {
     _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
+
+    if(_debugPointsVao.isCreated())
+    {
+        glPointSize(4.0f);
+        _debugPointsVao.bind();
+        glDrawArrays(GL_POINTS, 0, _debugPoints.size());
+        _debugPointsVao.release();
+    }
+
+    if(_debugLinesVao.isCreated())
+    {
+        glLineWidth(2.0f);
+        _debugLinesVao.bind();
+        glDrawArrays(GL_LINES, 0, _debugLines.size() * 2);
+        _debugLinesVao.release();
+    }
 
     if(_plusSignVerticesVao.isCreated() && _plusSignVertices.size() > 0)
     {

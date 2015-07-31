@@ -107,7 +107,7 @@ public:
 
     // operator overloading
     bool operator!= (const AVector& other)
-    { return (abs(this->x - other.x) >= std::numeric_limits<float>::epsilon() || abs(this->y - other.y) >= std::numeric_limits<float>::epsilon()); }
+    { return (abs(this->x - other.x) > std::numeric_limits<float>::epsilon() || abs(this->y - other.y) > std::numeric_limits<float>::epsilon()); }
 
     // operator overloading
     AVector operator+= (const AVector& other)
