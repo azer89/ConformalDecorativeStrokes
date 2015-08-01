@@ -224,8 +224,8 @@ AVector StrokePainter::GetClosestPointFromBorders(AVector pt)
 
 void StrokePainter::ConformalMappingOneStep2()
 {
-    _debugLines.clear();
-    _debugPoints.clear();
+    //_debugLines.clear();
+    //_debugPoints.clear();
 
     std::vector<std::vector<PlusSignVertex>> tempVertices = _plusSignVertices;
 
@@ -272,25 +272,12 @@ void StrokePainter::ConformalMappingOneStep2()
                 //sumPositions += lVertex.position;
                 AVector fakeNeighbor = lVertex.position + UtilityFunctions::Rotate( AVector(1, 0) * lVertex.armLength, lVertex.angle);
 
-                float fDist = fakeNeighbor.Distance(curPos);
-                float nDist = curPos.Distance(lVertex.position);
-                if(nDist < fDist)
-                {
-                    //std::cout << "shit l\n";
-                    //sumPositions += lVertex.position;
-                }
-                else
-                {
-                    //std::cout << "ok l\n";
-                    //sumPositions += fakeNeighbor;
-                }
-
-                _debugLines.push_back(ALine(lVertex.position, fakeNeighbor));
+                //_debugLines.push_back(ALine(lVertex.position, fakeNeighbor));
                 //_debugPoints.push_back(fakeNeighbor);
 
                 sumPositions += fakeNeighbor;
                 sumArmLengths += curPos.Distance(lVertex.position);
-               // if(lVertex.position != curPos)
+                //if(lVertex.position != curPos)
                 {
                     AVector dirVec = (lVertex.position - curPos).Norm();
                     sumArmAngles += UtilityFunctions::GetRotation(AVector(-1, 0), dirVec);
@@ -304,21 +291,7 @@ void StrokePainter::ConformalMappingOneStep2()
                 PlusSignVertex rVertex = tempVertices[a + 1][b];
                 //sumPositions += rVertex.position;
                 AVector fakeNeighbor = rVertex.position + UtilityFunctions::Rotate( AVector(-1, 0) * rVertex.armLength, rVertex.angle);
-
-                float fDist = fakeNeighbor.Distance(curPos);
-                float nDist = curPos.Distance(rVertex.position);
-                if(nDist < fDist)
-                {
-                    //std::cout << "shit r\n";
-                    //sumPositions += rVertex.position;
-                }
-                else
-                {
-                    //std::cout << "ok r\n";
-                    //sumPositions += fakeNeighbor;
-                }
-
-                _debugLines.push_back(ALine(rVertex.position, fakeNeighbor));
+                //_debugLines.push_back(ALine(rVertex.position, fakeNeighbor));
                 //_debugPoints.push_back(fakeNeighbor);
 
                 sumPositions += fakeNeighbor;
@@ -366,20 +339,7 @@ void StrokePainter::ConformalMappingOneStep2()
                 //sumPositions += uVertex.position;
                 AVector fakeNeighbor = uVertex.position + UtilityFunctions::Rotate( AVector(0, 1) * uVertex.armLength, uVertex.angle);
 
-                float fDist = fakeNeighbor.Distance(curPos);
-                float nDist = curPos.Distance(uVertex.position);
-                if(nDist < fDist)
-                {
-                    //std::cout << "shit u\n";
-                    //sumPositions += uVertex.position;
-                }
-                else
-                {
-                    //std::cout << "ok u\n";
-                    //sumPositions += fakeNeighbor;
-                }
-
-                _debugLines.push_back(ALine(uVertex.position, fakeNeighbor));
+                //_debugLines.push_back(ALine(uVertex.position, fakeNeighbor));
                 //_debugPoints.push_back(fakeNeighbor);
 
                 sumPositions += fakeNeighbor;
@@ -400,21 +360,7 @@ void StrokePainter::ConformalMappingOneStep2()
                 //sumPositions += bVertex.position;
                 AVector fakeNeighbor = bVertex.position + UtilityFunctions::Rotate( AVector(0, -1) * bVertex.armLength, bVertex.angle);
 
-                float fDist = fakeNeighbor.Distance(curPos);
-                float nDist = curPos.Distance(bVertex.position);
-                if(nDist < fDist)
-                {
-                    //std::cout << "shit d\n";
-                    //sumPositions += bVertex.position;
-                }
-                else
-                {
-                    //std::cout << "ok d\n";
-                    //sumPositions += fakeNeighbor;
-
-                }
-
-                _debugLines.push_back(ALine(bVertex.position, fakeNeighbor));
+                //_debugLines.push_back(ALine(bVertex.position, fakeNeighbor));
                 //_debugPoints.push_back(fakeNeighbor);
 
                 sumPositions += fakeNeighbor;
@@ -437,7 +383,7 @@ void StrokePainter::ConformalMappingOneStep2()
 
             if(numNeighbor < 4)
             {
-                _debugPoints.push_back(sumPositions);
+                //_debugPoints.push_back(sumPositions);
 
                 AVector closestPt = GetClosestPointFromBorders(sumPositions);
                 tempVertices[a][b].position = closestPt;
@@ -464,8 +410,8 @@ void StrokePainter::ConformalMappingOneStep2()
     _plusSignVertices = tempVertices;
     BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, QVector3D(1, 0, 0));
 
-    BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0, 1));
-    BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.5, 0));
+    //BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0, 1));
+    //BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.5, 0));
 }
 
 void StrokePainter::ConformalMappingOneStep1()
@@ -684,21 +630,21 @@ void StrokePainter::Draw()
 {
     _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
 
-    if(_debugPointsVao.isCreated())
+    /*if(_debugPointsVao.isCreated())
     {
         glPointSize(4.0f);
         _debugPointsVao.bind();
         glDrawArrays(GL_POINTS, 0, _debugPoints.size());
         _debugPointsVao.release();
-    }
+    }*/
 
-    if(_debugLinesVao.isCreated())
+    /*if(_debugLinesVao.isCreated())
     {
         glLineWidth(2.0f);
         _debugLinesVao.bind();
         glDrawArrays(GL_LINES, 0, _debugLines.size() * 2);
         _debugLinesVao.release();
-    }
+    }*/
 
     if(_plusSignVerticesVao.isCreated() && _plusSignVertices.size() > 0)
     {

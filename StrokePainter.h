@@ -80,14 +80,14 @@ private:
     //QOpenGLVertexArrayObject    _pointsVao;
 
     // debugging visualization
-    std::vector<AVector>        _debugPoints;
-    QOpenGLBuffer               _debugPointsVbo;
-    QOpenGLVertexArrayObject    _debugPointsVao;
+    //std::vector<AVector>        _debugPoints;
+    //QOpenGLBuffer               _debugPointsVbo;
+    //QOpenGLVertexArrayObject    _debugPointsVao;
 
     // debugging visualization
-    std::vector<ALine>          _debugLines;
-    QOpenGLBuffer               _debugLinesVbo;
-    QOpenGLVertexArrayObject    _debugLinesVao;
+    //std::vector<ALine>          _debugLines;
+    //QOpenGLBuffer               _debugLinesVbo;
+    //QOpenGLVertexArrayObject    _debugLinesVao;
 
     // vertices of the mesh as a 1D list
     std::vector<AVector>        _vertices;
