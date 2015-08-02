@@ -102,7 +102,9 @@ void StrokePainter::CalculateInitialRibbon()
 
 void StrokePainter::CalculateVertices()
 {
-    _vertices.clear();
+    //_debugPoints.clear();
+
+    //_vertices.clear();
     _plusSignVertices.clear();
 
     for(int a = 0; a < _strokeLines.size() - 1; a++)
@@ -126,10 +128,13 @@ void StrokePainter::CalculateVertices()
         int xLoop = intMeshWidth;
         int yLoop = intMeshHeight + 1;
 
+        bool isTheEnd = false;
         if(a == _strokeLines.size() - 2)
         {
+            isTheEnd = true;
             xLoop++;
         }
+
 
         //int widthSum = 0;
 
@@ -147,11 +152,37 @@ void StrokePainter::CalculateVertices()
                 AVector pt = lStartPt + vVec * yFactor;
                 pt = pt + hVec * xFactor;
 
-                _vertices.push_back(pt);
-                columnVertices.push_back(PlusSignVertex(pt));
+                bool shouldMove = true;
+                if(SystemParams::enforce_miter_joint && xIter == 0 && yIter == 0)
+                {
+                    shouldMove = false;
+                    //_debugPoints.push_back(pt);
+                }
+                else if(SystemParams::enforce_miter_joint && xIter == 0 && yIter == yLoop - 1 )
+                {
+                    shouldMove = false;
+                    //_debugPoints.push_back(pt);
+                }
+                else if(SystemParams::enforce_miter_joint && isTheEnd && xIter == xLoop - 1 && yIter == 0)
+                {
+                    shouldMove = false;
+                    //_debugPoints.push_back(pt);
+                }
+                else if(SystemParams::enforce_miter_joint && isTheEnd && xIter == xLoop - 1 && yIter == yLoop - 1 )
+                {
+                    shouldMove = false;
+                    //_debugPoints.push_back(pt);
+                }
+
+                //_vertices.push_back(pt);
+                columnVertices.push_back(PlusSignVertex(pt, shouldMove));
+
+
             }
 
             _plusSignVertices.push_back(columnVertices);
+
+
         }
         //std::cout << "_vertices.size() " << _vertices.size() << "\n";
     }
@@ -162,6 +193,7 @@ void StrokePainter::CalculateVertices()
     //BuildPointsVertexData(_vertices, &_verticesVbo, &_verticesVao, QVector3D(0, 0, 1));
     BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, QVector3D(1, 0, 0));
 
+    //BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.5, 0));
 }
 
 AVector StrokePainter::GetClosestPointFromBorders(AVector pt)
@@ -226,6 +258,11 @@ void StrokePainter::ConformalMappingOneStep2()
     {
         for(int b = 0; b < _mesh_height; b++)
         {
+            if(!tempVertices[a][b].shouldMove)
+            {
+                continue;
+            }
+
             AVector curPos = tempVertices[a][b].position;
             AVector sumPositions(0, 0);
             float sumArmLengths = 0;
@@ -435,7 +472,7 @@ void StrokePainter::ConformalMappingOneStep1()
 void StrokePainter::mousePressEvent(float x, float y)
 {
     //_points.clear();
-    _vertices.clear();
+    //_vertices.clear();
     _plusSignVertices.clear();
 
     _lLines.clear();
@@ -461,13 +498,9 @@ void StrokePainter::mouseMoveEvent(float x, float y)
 // mouse release
 void StrokePainter::mouseReleaseEvent(float x, float y)
 {
-    //std::cout << "StrokePainter::mouseReleaseEvent\n";
-
     _oriStrokeLines.push_back(AVector(x, y));
     CalculateInitialRibbon();
     CalculateVertices();
-
-    //std::cout << "_plusSignVertices.size() " << _plusSignVertices.size() << "\n";
 }
 
 void StrokePainter::Draw()
@@ -587,10 +620,7 @@ void StrokePainter::BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuf
 
     BuildVboWithColor(data, linesVbo);
 
-    if(isInit)
-    {
-        linesVao->release();
-    }
+    if(isInit) { linesVao->release(); }
 }
 
 void StrokePainter::BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol)
@@ -648,10 +678,7 @@ void StrokePainter::BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>
 
     BuildVboWithColor(data, linesVbo);
 
-    if(isInit)
-    {
-        linesVao->release();
-    }
+    if(isInit) { linesVao->release(); }
 }
 
 void StrokePainter::BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol)
@@ -673,10 +700,7 @@ void StrokePainter::BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer
 
     BuildVboWithColor(data, linesVbo);
 
-    if(isInit)
-    {
-        linesVao->release();
-    }
+    if(isInit) { linesVao->release(); }
 }
 
 void StrokePainter::BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol)
@@ -697,18 +721,12 @@ void StrokePainter::BuildPointsVertexData(std::vector<AVector> points, QOpenGLBu
 
     BuildVboWithColor(data, ptsVbo);
 
-    if(isInit)
-    {
-        ptsVao->release();
-    }
+    if(isInit) { ptsVao->release(); }
 }
 
 void StrokePainter::BuildVboWithColor(QVector<VertexData> data, QOpenGLBuffer* vbo)
 {
-    if(!vbo->isCreated())
-    {
-        vbo->create();
-    }
+    if(!vbo->isCreated()) { vbo->create(); }
     vbo->bind();
     vbo->allocate(data.data(), data.size() * sizeof(VertexData));
 

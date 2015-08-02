@@ -54,7 +54,7 @@
    <property name="minimumSize">
     <size>
      <width>224</width>
-     <height>243</height>
+     <height>271</height>
     </size>
    </property>
    <attribute name="dockWidgetArea">
@@ -84,6 +84,13 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QCheckBox" name="miterCheckBox">
+       <property name="text">
+        <string>Enforce Miter Joints</string>
        </property>
       </widget>
      </item>

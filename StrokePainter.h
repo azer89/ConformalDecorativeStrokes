@@ -89,10 +89,10 @@ private:
     //QOpenGLBuffer               _debugLinesVbo;
     //QOpenGLVertexArrayObject    _debugLinesVao;
 
-    // vertices of the mesh as a 1D list
-    std::vector<AVector>        _vertices;
-    QOpenGLBuffer               _verticesVbo;
-    QOpenGLVertexArrayObject    _verticesVao;
+    // vertices of the mesh as a 1D list (debugging visualization)
+    //std::vector<AVector>        _vertices;
+    //QOpenGLBuffer               _verticesVbo;
+    //QOpenGLVertexArrayObject    _verticesVao;
 
     // vertices of the mesh as 2D list
     std::vector<std::vector<PlusSignVertex>> _plusSignVertices;

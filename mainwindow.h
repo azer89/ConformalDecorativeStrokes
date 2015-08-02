@@ -24,6 +24,8 @@ private:
 private slots:
     void AnimationThread();
     void AnimationStart();
+
+    void SetParams();
 };
 
 #endif // MAINWINDOW_H

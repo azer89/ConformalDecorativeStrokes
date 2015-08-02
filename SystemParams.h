@@ -15,6 +15,8 @@ public:
     // simplifying drawn strokes
     static float rdp_epsilon;
 
+    static bool enforce_miter_joint;
+
 };
 
 #endif // SYSTEMPARAMS_H

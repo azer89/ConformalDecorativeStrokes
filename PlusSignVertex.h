@@ -13,6 +13,7 @@ struct PlusSignVertex
 
     float armLength;
     float angle;
+    bool shouldMove;
 
 public:
 
@@ -24,6 +25,7 @@ public:
 
         this->armLength = 0;
         this->angle = 0;
+        this->shouldMove = true;
     }
 
     PlusSignVertex(AVector position, QVector2D texCoord)
@@ -34,6 +36,7 @@ public:
 
         this->armLength = 0;
         this->angle = 0;
+        this->shouldMove = true;
     }
 
     PlusSignVertex(AVector position)
@@ -44,6 +47,18 @@ public:
 
         this->armLength = 0;
         this->angle = 0;
+        this->shouldMove = true;
+    }
+
+    PlusSignVertex(AVector position, bool shouldMove)
+    {
+        this->position = position;
+        this->texCoord = QVector2D();
+        this->color = QVector3D();
+
+        this->armLength = 0;
+        this->angle = 0;
+        this->shouldMove = shouldMove;
     }
 
     PlusSignVertex()
@@ -54,6 +69,7 @@ public:
 
         this->armLength = 0;
         this->angle = 0;
+        this->shouldMove = true;
     }
 };
 
