@@ -10,7 +10,8 @@
 
 StrokePainter::StrokePainter() :
     _mesh_width(0),
-    _mesh_height(0)
+    _mesh_height(0),
+    _imgTexture(0)
 {
 }
 
@@ -18,6 +19,31 @@ StrokePainter::~StrokePainter()
 {
 }
 
+void StrokePainter::SetImage(QString img)
+{
+    /*if(_img.isNull())
+    {
+        std::cout << "image is empty\n";
+    }
+    else
+    {
+        std::cout << "image is legit\n";
+    }
+    std::cout << img.toStdString() << "\n";*/
+
+    _img.load(img);
+    _imgTexture = new QOpenGLTexture(_img);
+
+    /*if(_img.isNull())
+    {
+        std::cout << "image is empty\n";
+    }
+    else
+    {
+        std::cout << "image is legit\n";
+    }*/
+
+}
 
 void StrokePainter::CalculateInitialRibbon()
 {
@@ -135,7 +161,6 @@ void StrokePainter::CalculateVertices()
             xLoop++;
         }
 
-
         //int widthSum = 0;
 
         for(int xIter = 0; xIter < xLoop; xIter++)
@@ -154,30 +179,15 @@ void StrokePainter::CalculateVertices()
 
                 bool shouldMove = true;
                 if(SystemParams::enforce_miter_joint && xIter == 0 && yIter == 0)
-                {
-                    shouldMove = false;
-                    //_debugPoints.push_back(pt);
-                }
+                    { shouldMove = false; }
                 else if(SystemParams::enforce_miter_joint && xIter == 0 && yIter == yLoop - 1 )
-                {
-                    shouldMove = false;
-                    //_debugPoints.push_back(pt);
-                }
+                    { shouldMove = false; }
                 else if(SystemParams::enforce_miter_joint && isTheEnd && xIter == xLoop - 1 && yIter == 0)
-                {
-                    shouldMove = false;
-                    //_debugPoints.push_back(pt);
-                }
+                    { shouldMove = false; }
                 else if(SystemParams::enforce_miter_joint && isTheEnd && xIter == xLoop - 1 && yIter == yLoop - 1 )
-                {
-                    shouldMove = false;
-                    //_debugPoints.push_back(pt);
-                }
+                    { shouldMove = false; }
 
-                //_vertices.push_back(pt);
                 columnVertices.push_back(PlusSignVertex(pt, shouldMove));
-
-
             }
 
             _plusSignVertices.push_back(columnVertices);
@@ -189,10 +199,28 @@ void StrokePainter::CalculateVertices()
 
     _mesh_width = _plusSignVertices.size();
     _mesh_height = _plusSignVertices[0].size();
-    //std::cout << _mesh_width << " " << _mesh_height << "\n";
-    //BuildPointsVertexData(_vertices, &_verticesVbo, &_verticesVao, QVector3D(0, 0, 1));
-    BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, QVector3D(1, 0, 0));
 
+    int heightMinOne = _mesh_height - 1;
+
+    // set tex coord
+    for(int a = 0; a < _mesh_width; a++)
+    {
+        for(int b = 0; b < _mesh_height; b++)
+        {
+            float xCoord = (float)(a % heightMinOne) / (float)heightMinOne;
+            float yCoord = (float)(b % heightMinOne) / (float)heightMinOne;
+
+            //std::cout << xCoord << " " << yCoord << "\n";
+            std::cout << yCoord << "\n";
+
+            _plusSignVertices[a][b].texCoord = QVector2D(xCoord, yCoord);
+        }
+    }
+
+
+    // don't create vertex data here
+    //BuildPointsVertexData(_vertices, &_verticesVbo, &_verticesVao, QVector3D(0, 0, 1));
+    //BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, QVector3D(1, 0, 0));
     //BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.5, 0));
 }
 
@@ -362,8 +390,6 @@ void StrokePainter::ConformalMappingOneStep2()
 
             if(numNeighbor < 4)
             {
-                //_debugPoints.push_back(sumPositions);
-
                 AVector closestPt = GetClosestPointFromBorders(sumPositions);
                 tempVertices[a][b].position = closestPt;
             }
@@ -388,6 +414,7 @@ void StrokePainter::ConformalMappingOneStep2()
 
     _plusSignVertices = tempVertices;
     BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, QVector3D(1, 0, 0));
+    BuildTexturedStrokeVertexData(_plusSignVertices, &_texturedStrokeVbo, &_texturedStrokeVao);
 
     //BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0, 1));
     //BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.5, 0));
@@ -483,7 +510,6 @@ void StrokePainter::mousePressEvent(float x, float y)
 
     _strokeLines.clear();
     _oriStrokeLines.clear();
-
     _oriStrokeLines.push_back(AVector(x, y));
 }
 
@@ -505,7 +531,7 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
 
 void StrokePainter::Draw()
 {
-    _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
+
 
     /*if(_debugPointsVao.isCreated())
     {
@@ -523,8 +549,11 @@ void StrokePainter::Draw()
         _debugLinesVao.release();
     }*/
 
+
     if(_plusSignVerticesVao.isCreated() && _plusSignVertices.size() > 0)
     {
+        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
+
         int wMin1 = _mesh_width - 1;
         int hMin1 = _mesh_height - 1;
 
@@ -536,8 +565,31 @@ void StrokePainter::Draw()
         _plusSignVerticesVao.release();
     }
 
+
+    //_texturedStrokeVao
+    if(_texturedStrokeVao.isCreated() && _plusSignVertices.size() > 0)
+    {
+        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)0.0);
+
+        int wMin1 = _mesh_width - 1;
+        int hMin1 = _mesh_height - 1;
+
+        int meshSize = wMin1 * hMin1 * 4;
+
+        glLineWidth(1.0f);
+        if(_imgTexture)
+            _imgTexture->bind();
+        _texturedStrokeVao.bind();
+        glDrawArrays(GL_QUADS, 0, meshSize);
+        _texturedStrokeVao.release();
+        if(_imgTexture)
+            _imgTexture->release();
+    }
+
     if(_strokeLinesVao.isCreated() && _plusSignVertices.size() == 0)
     {
+        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
+
         glLineWidth(2.0f);
         _strokeLinesVao.bind();
         glDrawArrays(GL_LINES, 0, (_strokeLines.size() - 1) * 2);
@@ -578,7 +630,6 @@ void StrokePainter::Draw()
         _rLinesVao.release();
     }
     */
-
 
     /*
     if(_ribLinesVao.isCreated())
@@ -623,6 +674,83 @@ void StrokePainter::BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuf
     if(isInit) { linesVao->release(); }
 }
 
+void StrokePainter::BuildTexturedStrokeVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao)
+{
+    if(plusSignVertices.size() == 0) return;
+
+    bool isInit = false;
+    if(!vao->isCreated())
+    {
+        vao->create();
+        vao->bind();
+        isInit = true;
+    }
+
+    QVector<VertexData> data;
+    for(int a = 0; a < _mesh_width - 1; a++)
+    {
+        for(int b = 0; b < _mesh_height - 1; b++)
+        {
+            AVector aVec = plusSignVertices[a][b].position;
+            AVector bVec = plusSignVertices[a+1][b].position;
+            AVector cVec = plusSignVertices[a+1][b+1].position;
+            AVector dVec = plusSignVertices[a][b+1].position;
+
+            QVector2D aTexCoord = plusSignVertices[a][b].texCoord;
+            QVector2D bTexCoord = plusSignVertices[a+1][b].texCoord;
+            QVector2D cTexCoord = plusSignVertices[a+1][b+1].texCoord;
+            QVector2D dTexCoord = plusSignVertices[a][b+1].texCoord;
+
+            data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), aTexCoord));
+            data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), bTexCoord));
+            data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), cTexCoord));
+            data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), dTexCoord));
+        }
+    }
+
+    if(!vbo->isCreated()) { vbo->create(); }
+    vbo->bind();
+    vbo->allocate(data.data(), data.size() * sizeof(VertexData));
+
+    //BuildVboWithColor(data, vbo);
+    quintptr offset = 0;
+    // vertex
+    int vertexLocation = _shaderProgram->attributeLocation("vert");
+    _shaderProgram->enableAttributeArray(vertexLocation);
+    _shaderProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+    offset += sizeof(QVector3D);
+
+    // uv
+    int texcoordLocation = _shaderProgram->attributeLocation("uv");
+    _shaderProgram->enableAttributeArray(texcoordLocation);
+    _shaderProgram->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
+
+    if(isInit) { vao->release(); }
+}
+
+void StrokePainter::BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol)
+{
+    bool isInit = false;
+    if(!linesVao->isCreated())
+    {
+        linesVao->create();
+        linesVao->bind();
+        isInit = true;
+    }
+
+    QVector<VertexData> data;
+    for(uint a = 0; a < lines.size(); a++)
+    {
+        data.append(VertexData(QVector3D(lines[a].XA, lines[a].YA,  0), QVector2D(), vecCol));
+        data.append(VertexData(QVector3D(lines[a].XB, lines[a].YB,  0), QVector2D(), vecCol));
+    }
+
+    BuildVboWithColor(data, linesVbo);
+
+    if(isInit) { linesVao->release(); }
+}
+
 void StrokePainter::BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol)
 {
     if(plusSignVertices.size() == 0) return;
@@ -635,17 +763,6 @@ void StrokePainter::BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>
         isInit = true;
     }
 
-    /*
-    QVector<VertexData> data;
-    for(int a = 0; a < _mesh_width; a++)
-    {
-        for(int b = 0; b < _mesh_height; b++)
-        {
-            AVector aVec = plusSignVertices[a][b].position;
-            data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(), vecCol));
-        }
-    }
-    */
     QVector<VertexData> data;
     for(int a = 0; a < _mesh_width - 1; a++)
     {
@@ -681,27 +798,7 @@ void StrokePainter::BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>
     if(isInit) { linesVao->release(); }
 }
 
-void StrokePainter::BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol)
-{
-    bool isInit = false;
-    if(!linesVao->isCreated())
-    {
-        linesVao->create();
-        linesVao->bind();
-        isInit = true;
-    }
 
-    QVector<VertexData> data;
-    for(uint a = 0; a < lines.size(); a++)
-    {
-        data.append(VertexData(QVector3D(lines[a].XA, lines[a].YA,  0), QVector2D(), vecCol));
-        data.append(VertexData(QVector3D(lines[a].XB, lines[a].YB,  0), QVector2D(), vecCol));
-    }
-
-    BuildVboWithColor(data, linesVbo);
-
-    if(isInit) { linesVao->release(); }
-}
 
 void StrokePainter::BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol)
 {
@@ -723,6 +820,8 @@ void StrokePainter::BuildPointsVertexData(std::vector<AVector> points, QOpenGLBu
 
     if(isInit) { ptsVao->release(); }
 }
+
+
 
 void StrokePainter::BuildVboWithColor(QVector<VertexData> data, QOpenGLBuffer* vbo)
 {

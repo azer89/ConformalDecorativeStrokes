@@ -9,6 +9,7 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLTexture>
 
 class StrokePainter
 {
@@ -31,6 +32,8 @@ public:
     void ConformalMappingOneStep2();
     bool ShouldStop() { return _iterDist < std::numeric_limits<float>::epsilon(); }
 
+    void SetImage(QString img);
+
 public:
     QOpenGLShaderProgram* _shaderProgram;
     int         _colorLocation;
@@ -38,6 +41,12 @@ public:
     int         _use_color_location;
 
 private:
+
+    // texture
+    QImage _img;
+    QOpenGLTexture* _imgTexture;
+    QOpenGLBuffer               _texturedStrokeVbo;
+    QOpenGLVertexArrayObject    _texturedStrokeVao;
 
     int _mesh_width;
     int _mesh_height;
@@ -107,7 +116,10 @@ private:
 
     void BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
     void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
+
     void BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
+    void BuildTexturedStrokeVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao);
+
     void BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol);
     void BuildVboWithColor(QVector<VertexData> data, QOpenGLBuffer* vbo);
 };

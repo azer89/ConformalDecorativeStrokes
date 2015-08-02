@@ -70,6 +70,8 @@ public:
 
     bool ShouldStop() { return _sPainter->ShouldStop(); }
 
+    void SetImage(QString img) { _sPainter->SetImage(img); }
+
     void ConformalMappingOneStep();
 
     // zoom in handle
