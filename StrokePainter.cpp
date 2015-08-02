@@ -153,16 +153,12 @@ void StrokePainter::CalculateVertices()
 
             _plusSignVertices.push_back(columnVertices);
         }
-
-
         //std::cout << "_vertices.size() " << _vertices.size() << "\n";
     }
 
     _mesh_width = _plusSignVertices.size();
     _mesh_height = _plusSignVertices[0].size();
-
     //std::cout << _mesh_width << " " << _mesh_height << "\n";
-
     //BuildPointsVertexData(_vertices, &_verticesVbo, &_verticesVao, QVector3D(0, 0, 1));
     BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, QVector3D(1, 0, 0));
 
@@ -224,9 +220,6 @@ AVector StrokePainter::GetClosestPointFromBorders(AVector pt)
 
 void StrokePainter::ConformalMappingOneStep2()
 {
-    //_debugLines.clear();
-    //_debugPoints.clear();
-
     std::vector<std::vector<PlusSignVertex>> tempVertices = _plusSignVertices;
 
     for(int a = 0; a < _mesh_width; a++)
@@ -248,20 +241,13 @@ void StrokePainter::ConformalMappingOneStep2()
                 // left
                 sumPositions += lVertex.position;
                 sumArmLengths += curPos.Distance(lVertex.position);
-                //if(lVertex.position != curPos)
-                {
-                    AVector dirVec = (lVertex.position - curPos).Norm();
-                    sumArmAngles += UtilityFunctions::GetRotation(AVector(-1, 0), dirVec);
-                }
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(-1, 0), (lVertex.position - curPos).Norm());
+
 
                 // right
                 sumPositions += rVertex.position;
                 sumArmLengths += curPos.Distance(rVertex.position);
-                //if(rVertex.position != curPos)
-                {
-                    AVector dirVec = (rVertex.position - curPos).Norm();
-                    sumArmAngles += UtilityFunctions::GetRotation(AVector(1, 0), dirVec);
-                }
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(1, 0), (rVertex.position - curPos).Norm());
 
                 numNeighbor += 2;
             }
@@ -269,19 +255,10 @@ void StrokePainter::ConformalMappingOneStep2()
             else if(a > 0)
             {
                 PlusSignVertex lVertex = tempVertices[a - 1][b];
-                //sumPositions += lVertex.position;
                 AVector fakeNeighbor = lVertex.position + UtilityFunctions::Rotate( AVector(1, 0) * lVertex.armLength, lVertex.angle);
-
-                //_debugLines.push_back(ALine(lVertex.position, fakeNeighbor));
-                //_debugPoints.push_back(fakeNeighbor);
-
                 sumPositions += fakeNeighbor;
                 sumArmLengths += curPos.Distance(lVertex.position);
-                //if(lVertex.position != curPos)
-                {
-                    AVector dirVec = (lVertex.position - curPos).Norm();
-                    sumArmAngles += UtilityFunctions::GetRotation(AVector(-1, 0), dirVec);
-                }
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(-1, 0), (lVertex.position - curPos).Norm());
 
                 numNeighbor++;
             }
@@ -289,18 +266,11 @@ void StrokePainter::ConformalMappingOneStep2()
             else if(a < _mesh_width - 1)
             {
                 PlusSignVertex rVertex = tempVertices[a + 1][b];
-                //sumPositions += rVertex.position;
                 AVector fakeNeighbor = rVertex.position + UtilityFunctions::Rotate( AVector(-1, 0) * rVertex.armLength, rVertex.angle);
-                //_debugLines.push_back(ALine(rVertex.position, fakeNeighbor));
-                //_debugPoints.push_back(fakeNeighbor);
 
                 sumPositions += fakeNeighbor;
                 sumArmLengths += curPos.Distance(rVertex.position);
-                //if(rVertex.position != curPos)
-                {
-                    AVector dirVec = (rVertex.position - curPos).Norm();
-                    sumArmAngles += UtilityFunctions::GetRotation(AVector(1, 0), dirVec);
-                }
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(1, 0), (rVertex.position - curPos).Norm());
 
                 numNeighbor++;
             }
@@ -314,20 +284,12 @@ void StrokePainter::ConformalMappingOneStep2()
                 // up
                 sumPositions += uVertex.position;
                 sumArmLengths += curPos.Distance(uVertex.position);
-                //if(uVertex.position != curPos)
-                {
-                    AVector dirVec = (uVertex.position - curPos).Norm();
-                    sumArmAngles += UtilityFunctions::GetRotation(AVector(0, -1), dirVec);
-                }
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(0, -1), (uVertex.position - curPos).Norm());
 
                 // down
                 sumPositions += bVertex.position;
                 sumArmLengths += curPos.Distance(bVertex.position);
-                //if(bVertex.position != curPos)
-                {
-                    AVector dirVec = (bVertex.position - curPos).Norm();
-                    sumArmAngles += UtilityFunctions::GetRotation(AVector(0, 1), dirVec);
-                }
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(0, 1), (bVertex.position - curPos).Norm());
 
                 numNeighbor += 2;
             }
@@ -335,20 +297,10 @@ void StrokePainter::ConformalMappingOneStep2()
             else if(b > 0)
             {
                 PlusSignVertex uVertex = tempVertices[a][b - 1];
-
-                //sumPositions += uVertex.position;
                 AVector fakeNeighbor = uVertex.position + UtilityFunctions::Rotate( AVector(0, 1) * uVertex.armLength, uVertex.angle);
-
-                //_debugLines.push_back(ALine(uVertex.position, fakeNeighbor));
-                //_debugPoints.push_back(fakeNeighbor);
-
                 sumPositions += fakeNeighbor;
                 sumArmLengths += curPos.Distance(uVertex.position);
-                //if(uVertex.position != curPos)
-                {
-                    AVector dirVec = (uVertex.position - curPos).Norm();
-                    sumArmAngles += UtilityFunctions::GetRotation(AVector(0, -1), dirVec);
-                }
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(0, -1), (uVertex.position - curPos).Norm());
 
                 numNeighbor++;
             }
@@ -356,20 +308,10 @@ void StrokePainter::ConformalMappingOneStep2()
             else if(b < _mesh_height - 1)
             {
                 PlusSignVertex bVertex = tempVertices[a][b + 1];
-
-                //sumPositions += bVertex.position;
                 AVector fakeNeighbor = bVertex.position + UtilityFunctions::Rotate( AVector(0, -1) * bVertex.armLength, bVertex.angle);
-
-                //_debugLines.push_back(ALine(bVertex.position, fakeNeighbor));
-                //_debugPoints.push_back(fakeNeighbor);
-
                 sumPositions += fakeNeighbor;
                 sumArmLengths += curPos.Distance(bVertex.position);
-                //if(bVertex.position != curPos)
-                {
-                    AVector dirVec = (bVertex.position - curPos).Norm();
-                    sumArmAngles += UtilityFunctions::GetRotation(AVector(0, 1), dirVec);
-                }
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(0, 1), (bVertex.position - curPos).Norm());
 
                 numNeighbor++;
             }
@@ -416,68 +358,21 @@ void StrokePainter::ConformalMappingOneStep2()
 
 void StrokePainter::ConformalMappingOneStep1()
 {
-    //std::cout << "ConformalMappingIteration\n";
-
-    //AVector test1(1, 0);
-    //AVector test2(0, 1);
-    //std::cout << UtilityFunctions::GetRotation(test1, test2) << "\n";
-
-    //AVector test1(1, 0);
-    //AVector test2 = UtilityFunctions::Rotate(test1, M_PI / 2.0f);
-    //std::cout << test2.x << " " << test2.y << "\n";
-
-
-    // note:
-    // in this system, a rotation with a postitive angle is counter clockwise
-    // for example,
-    // (1.0) right rotated with -1.5708 angle results (0, -1) up
-    // (1.0) right rotated with  1.5708 angle results (0,  1) bottom
-
     std::vector<std::vector<PlusSignVertex>> tempVertices = _plusSignVertices;
 
     for(int a = 0; a < _mesh_width; a++)
     {
         for(int b = 0; b < _mesh_height; b++)
         {
-            AVector curPos = tempVertices[a][b].position;
             AVector sumPositions(0, 0);
-            float sumArmLengths = 0;
-            float sumArmAngles = 0;
             int numNeighbor = 0;
-
-            //std::cout << atan2(0) << "\n";
-
-            if(isnan(tempVertices[a][b].angle))
-            {
-                std::cout << "shit1\n";
-            }
-
-            if(tempVertices[a][b].armLength < 0)
-            {
-                std::cout << "shit2\n";
-            }
-            //std::cout << tempVertices[a][b].angle << "\n";
 
             // left
             if(a > 0)
             {
                 PlusSignVertex lVertex = tempVertices[a - 1][b];
                 sumPositions += lVertex.position;
-                sumArmLengths += curPos.Distance(lVertex.position);
-                if(lVertex.position != curPos)
-                {
-                    AVector dirVec = (lVertex.position - curPos).Norm();
-                    sumArmAngles += UtilityFunctions::GetRotation(AVector(-1, 0), dirVec);
-                }
                 numNeighbor++;
-            }
-            else
-            {
-                PlusSignVertex rVertex = tempVertices[a + 1][b];
-                AVector fakeNeighbor = curPos + UtilityFunctions::Rotate( AVector(-1, 0), rVertex.angle) * rVertex.armLength;
-                sumPositions += fakeNeighbor;
-                //sumArmLengths += rVertex.armLength;
-                //sumArmAngles += rVertex.angle;
             }
 
             // right
@@ -485,21 +380,7 @@ void StrokePainter::ConformalMappingOneStep1()
             {
                 PlusSignVertex rVertex = tempVertices[a + 1][b];
                 sumPositions = sumPositions + rVertex.position;
-                sumArmLengths += curPos.Distance(rVertex.position);
-                if(rVertex.position != curPos)
-                {
-                    AVector dirVec = (rVertex.position - curPos).Norm();
-                    sumArmAngles += UtilityFunctions::GetRotation(AVector(1, 0), dirVec);
-                }
                 numNeighbor++;
-            }
-            else
-            {
-                PlusSignVertex lVertex = tempVertices[a - 1][b];
-                AVector fakeNeighbor = curPos + UtilityFunctions::Rotate( AVector(1, 0), lVertex.angle) * lVertex.armLength;
-                sumPositions += fakeNeighbor;
-                //sumArmLengths += lVertex.armLength;
-                //sumArmAngles += lVertex.angle;
             }
 
             // up
@@ -507,21 +388,7 @@ void StrokePainter::ConformalMappingOneStep1()
             {
                 PlusSignVertex uVertex = tempVertices[a][b - 1];
                 sumPositions += uVertex.position;
-                sumArmLengths += curPos.Distance(uVertex.position);
-                if(uVertex.position != curPos)
-                {
-                    AVector dirVec = (uVertex.position - curPos).Norm();
-                    sumArmAngles += UtilityFunctions::GetRotation(AVector(0, -1), dirVec);
-                }
                 numNeighbor++;
-            }
-            else
-            {
-                PlusSignVertex bVertex = tempVertices[a][b + 1];
-                AVector fakeNeighbor = curPos + UtilityFunctions::Rotate( AVector(0, -1), bVertex.angle) * bVertex.armLength;
-                sumPositions += fakeNeighbor;
-                //sumArmLengths += bVertex.armLength;
-                //sumArmAngles += bVertex.angle;
             }
 
             // bottom
@@ -529,35 +396,14 @@ void StrokePainter::ConformalMappingOneStep1()
             {
                 PlusSignVertex bVertex = tempVertices[a][b + 1];
                 sumPositions += bVertex.position;
-                sumArmLengths += curPos.Distance(bVertex.position);
-                if(bVertex.position != curPos)
-                {
-                    AVector dirVec = (bVertex.position - curPos).Norm();
-                    sumArmAngles += UtilityFunctions::GetRotation(AVector(0, 1), dirVec);
-                }
                 numNeighbor++;
             }
-            else
-            {
-                PlusSignVertex uVertex = tempVertices[a][b - 1];
-                AVector fakeNeighbor = curPos + UtilityFunctions::Rotate( AVector(0, 1), uVertex.angle) * uVertex.armLength;
-                sumPositions += fakeNeighbor;
-                //sumArmLengths += uVertex.armLength;
-                //sumArmAngles += uVertex.angle;
-            }
 
-            //sumPositions  = sumPositions / (float)numNeighbor;
-            sumPositions  = sumPositions / 4.0f;
-            sumArmAngles  = sumArmAngles / (float)numNeighbor;
-            sumArmLengths = sumArmLengths / (float)numNeighbor;
-
-            tempVertices[a][b].armLength = sumArmLengths;
-            tempVertices[a][b].angle = sumArmAngles;
+            sumPositions  = sumPositions / (float)numNeighbor;
 
             if(numNeighbor < 4)
             {
                 AVector closestPt = GetClosestPointFromBorders(sumPositions);
-
                 tempVertices[a][b].position = closestPt;
             }
             else
@@ -578,8 +424,6 @@ void StrokePainter::ConformalMappingOneStep1()
         }
     }
     _iterDist = sumDist;
-    //std::cout << sumDist << "\n";
-
 
     _plusSignVertices = tempVertices;
 
