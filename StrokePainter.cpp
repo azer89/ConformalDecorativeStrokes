@@ -200,23 +200,23 @@ void StrokePainter::CalculateVertices()
     _mesh_width = _plusSignVertices.size();
     _mesh_height = _plusSignVertices[0].size();
 
+    /*
+    // don't build texture coordinates here
     int heightMinOne = _mesh_height - 1;
-
     // set tex coord
     for(int a = 0; a < _mesh_width; a++)
     {
+        float xCoord = (float)(a % (heightMinOne + 1)) / (float)heightMinOne;
+        std::cout << a << " " << a % (heightMinOne + 1) << " " << heightMinOne << "\n";
+
         for(int b = 0; b < _mesh_height; b++)
         {
-            float xCoord = (float)(a % heightMinOne) / (float)heightMinOne;
-            float yCoord = (float)(b % heightMinOne) / (float)heightMinOne;
 
-            //std::cout << xCoord << " " << yCoord << "\n";
-            std::cout << yCoord << "\n";
-
+            float yCoord = (float)b / (float)heightMinOne;
             _plusSignVertices[a][b].texCoord = QVector2D(xCoord, yCoord);
         }
     }
-
+    */
 
     // don't create vertex data here
     //BuildPointsVertexData(_vertices, &_verticesVbo, &_verticesVao, QVector3D(0, 0, 1));
@@ -535,6 +535,7 @@ void StrokePainter::Draw()
 
     /*if(_debugPointsVao.isCreated())
     {
+        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
         glPointSize(4.0f);
         _debugPointsVao.bind();
         glDrawArrays(GL_POINTS, 0, _debugPoints.size());
@@ -543,6 +544,7 @@ void StrokePainter::Draw()
 
     /*if(_debugLinesVao.isCreated())
     {
+        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
         glLineWidth(2.0f);
         _debugLinesVao.bind();
         glDrawArrays(GL_LINES, 0, _debugLines.size() * 2);
@@ -550,7 +552,7 @@ void StrokePainter::Draw()
     }*/
 
 
-    if(_plusSignVerticesVao.isCreated() && _plusSignVertices.size() > 0)
+    if(SystemParams::show_mesh && _plusSignVerticesVao.isCreated() && _plusSignVertices.size() > 0)
     {
         _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
 
@@ -567,7 +569,7 @@ void StrokePainter::Draw()
 
 
     //_texturedStrokeVao
-    if(_texturedStrokeVao.isCreated() && _plusSignVertices.size() > 0)
+    if(SystemParams::show_texture && _texturedStrokeVao.isCreated() && _plusSignVertices.size() > 0)
     {
         _shaderProgram->setUniformValue(_use_color_location, (GLfloat)0.0);
 
@@ -599,6 +601,7 @@ void StrokePainter::Draw()
     /*
     if(_pointsVao.isCreated())
     {
+        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
         glPointSize(10.0f);
         _pointsVao.bind();
         glDrawArrays(GL_POINTS, 0, _points.size());
@@ -607,6 +610,7 @@ void StrokePainter::Draw()
 
     /*if(_verticesVao.isCreated())
     {
+        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
         glPointSize(10.0f);
         _verticesVao.bind();
         glDrawArrays(GL_POINTS, 0, _vertices.size());
@@ -616,6 +620,7 @@ void StrokePainter::Draw()
     /*
     if(_lLinesVao.isCreated())
     {
+        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
         glLineWidth(2.0f);
         _lLinesVao.bind();
         glDrawArrays(GL_LINES, 0, (_lLines.size() - 1) * 2);
@@ -624,6 +629,7 @@ void StrokePainter::Draw()
 
     if(_rLinesVao.isCreated())
     {
+        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
         glLineWidth(2.0f);
         _rLinesVao.bind();
         glDrawArrays(GL_LINES, 0, (_rLines.size() - 1) * 2);
@@ -634,6 +640,7 @@ void StrokePainter::Draw()
     /*
     if(_ribLinesVao.isCreated())
     {
+        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
         glLineWidth(2.0f);
         _ribLinesVao.bind();
         glDrawArrays(GL_LINES, 0, _ribLines.size() * 2);
@@ -642,6 +649,7 @@ void StrokePainter::Draw()
 
     if(_gridLinesVao.isCreated())
     {
+        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
         glLineWidth(2.0f);
         _gridLinesVao.bind();
         glDrawArrays(GL_LINES, 0, _gridLines.size() * 2);
@@ -686,20 +694,33 @@ void StrokePainter::BuildTexturedStrokeVertexData(std::vector<std::vector<PlusSi
         isInit = true;
     }
 
+
+    int heightMinOne = _mesh_height - 1;
+
     QVector<VertexData> data;
     for(int a = 0; a < _mesh_width - 1; a++)
     {
+        float aNominator = a % heightMinOne;
+
+        float xCoord1 = (aNominator) / (float)heightMinOne;
+        float xCoord2 = (aNominator + 1.0f) / (float)heightMinOne;
+
         for(int b = 0; b < _mesh_height - 1; b++)
         {
+            float yCoord1 = (float)b / (float)heightMinOne;
+            float yCoord2 = (float)(b+1) / (float)heightMinOne;
+
+            //std::cout << a << " " << b << " " << xCoord1 << " " << xCoord2 << " "<< yCoord1 << " " << yCoord2 << "\n";
+
             AVector aVec = plusSignVertices[a][b].position;
             AVector bVec = plusSignVertices[a+1][b].position;
             AVector cVec = plusSignVertices[a+1][b+1].position;
             AVector dVec = plusSignVertices[a][b+1].position;
 
-            QVector2D aTexCoord = plusSignVertices[a][b].texCoord;
-            QVector2D bTexCoord = plusSignVertices[a+1][b].texCoord;
-            QVector2D cTexCoord = plusSignVertices[a+1][b+1].texCoord;
-            QVector2D dTexCoord = plusSignVertices[a][b+1].texCoord;
+            QVector2D aTexCoord(xCoord1, yCoord1);
+            QVector2D bTexCoord(xCoord2, yCoord1);
+            QVector2D cTexCoord(xCoord2, yCoord2);
+            QVector2D dTexCoord(xCoord1, yCoord2);
 
             data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), aTexCoord));
             data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), bTexCoord));

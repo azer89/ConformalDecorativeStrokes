@@ -13,6 +13,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->widget->GetGLWidget(), SIGNAL(CalculateConformalMap()), this, SLOT(AnimationStart()));
     connect(ui->miterCheckBox,	 SIGNAL(stateChanged(int)), this, SLOT(SetParams()));
+    connect(ui->meshCheckBox,	 SIGNAL(stateChanged(int)), this, SLOT(SetParams()));
+    connect(ui->textureCheckBox,	 SIGNAL(stateChanged(int)), this, SLOT(SetParams()));
+    connect(ui->quadSizeSpinBox, SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
     connect(ui->actionOpenImage,	 SIGNAL(triggered()), this, SLOT(FileOpen()));
 
     animTimer = new QTimer(this);
@@ -66,4 +69,9 @@ void MainWindow::SetParams()
     //std::cout << "SetParams\n";
     //std::cout << ui->miterCheckBox->isChecked() << "\n";
     SystemParams::enforce_miter_joint = ui->miterCheckBox->isChecked();
+    SystemParams::show_mesh = ui->meshCheckBox->isChecked();
+    SystemParams::show_texture = ui->textureCheckBox->isChecked();
+    SystemParams::mesh_size = ui->quadSizeSpinBox->value();
+
+    this->ui->widget->GetGLWidget()->repaint();
 }

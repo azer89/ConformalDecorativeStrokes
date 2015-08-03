@@ -8,7 +8,7 @@
 struct PlusSignVertex
 {
     AVector position;
-    QVector2D texCoord;
+    QVector2D texCoord; // should delete this because it is useless
     QVector3D color;
 
     float armLength;

@@ -17,6 +17,9 @@ public:
 
     static bool enforce_miter_joint;
 
+    static bool show_mesh;
+    static bool show_texture;
+
 };
 
 #endif // SYSTEMPARAMS_H

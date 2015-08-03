@@ -12,3 +12,7 @@ float SystemParams::mesh_size = 1.0f;
 float SystemParams::rdp_epsilon = 5.0f;
 
 bool SystemParams::enforce_miter_joint = false;
+
+bool SystemParams::show_mesh = true;
+
+bool SystemParams::show_texture = true;
