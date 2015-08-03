@@ -74,11 +74,13 @@ private:
     //QOpenGLVertexArrayObject    _gridLinesVao;
 
     // left lines of the strokes
+    // I need these lines to calculate closest points on the borders
     std::vector<AVector>        _lLines;
     QOpenGLBuffer               _lLinesVbo;
     QOpenGLVertexArrayObject    _lLinesVao;
 
     // right lines of the stroke
+    // I need these lines to calculate closest points on the borders
     std::vector<AVector>        _rLines;
     QOpenGLBuffer               _rLinesVbo;
     QOpenGLVertexArrayObject    _rLinesVao;
@@ -112,7 +114,8 @@ private:
     AVector GetClosestPointFromBorders(AVector pt);
 
     void CalculateInitialRibbon();
-    void CalculateVertices();
+    void CalculateVertices1();
+    void CalculateVertices2();
 
     void BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
     void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);

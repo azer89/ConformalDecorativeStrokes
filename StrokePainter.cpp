@@ -126,7 +126,24 @@ void StrokePainter::CalculateInitialRibbon()
     //BuildPointsVertexData(_points, &_pointsVbo, &_pointsVao, QVector3D(1, 0, 0));
 }
 
-void StrokePainter::CalculateVertices()
+void StrokePainter::CalculateVertices2()
+{
+    _plusSignVertices.clear();
+
+    for(int a = 0; a < _strokeLines.size() - 1; a++)
+    {
+        AVector mStartPt = _strokeLines[a];
+        AVector mEndPt   = _strokeLines[a + 1];
+
+        int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
+        int intMeshWidth =  mStartPt.Distance(mEndPt) / SystemParams::stroke_width * SystemParams::mesh_size;
+    }
+
+    _mesh_width = _plusSignVertices.size();
+    _mesh_height = _plusSignVertices[0].size();
+}
+
+void StrokePainter::CalculateVertices1()
 {
     //_debugPoints.clear();
 
@@ -137,8 +154,16 @@ void StrokePainter::CalculateVertices()
     {
         AVector mStartPt = _strokeLines[a];
         AVector mEndPt   = _strokeLines[a + 1];
-        int intMeshWidth = mStartPt.Distance(mEndPt) / SystemParams::mesh_size;
+
+        // no corner avoidance
+        //int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
+        //int intMeshWidth = mStartPt.Distance(mEndPt) / SystemParams::mesh_size;
+
+
+        // with corner avoidance
         int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
+        int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
+
 
         AVector lStartPt = _lLines[a];
         AVector lEndPt   = _lLines[a + 1];
@@ -160,8 +185,6 @@ void StrokePainter::CalculateVertices()
             isTheEnd = true;
             xLoop++;
         }
-
-        //int widthSum = 0;
 
         for(int xIter = 0; xIter < xLoop; xIter++)
         {
@@ -187,6 +210,36 @@ void StrokePainter::CalculateVertices()
                 else if(SystemParams::enforce_miter_joint && isTheEnd && xIter == xLoop - 1 && yIter == yLoop - 1 )
                     { shouldMove = false; }
 
+                /*
+                if(intMeshHeight % 2 == 0) // even
+                {
+                    int yMid1 = intMeshHeight / 2;
+                    int yMid2 = yMid1 + 1;
+
+                    if(xIter == 0 && yIter == 0)
+                        { shouldMove = false; }
+                    else if(xIter == 0 && (yIter == yMid1 || yIter == yMid2) )
+                        { shouldMove = false; }
+                    else if(isTheEnd && xIter == xLoop - 1 && (yIter == yMid1 || yIter == yMid2))
+                        { shouldMove = false; }
+                    else if(isTheEnd && xIter == xLoop - 1 && (yIter == yMid1 || yIter == yMid2) )
+                        { shouldMove = false; }
+                }
+                else // odd
+                {
+                    int yMid = intMeshHeight / 2 + 1;
+
+                    if(xIter == 0 && yIter == 0)
+                        { shouldMove = false; }
+                    else if(xIter == 0 && (yIter == yMid) )
+                        { shouldMove = false; }
+                    else if(isTheEnd && xIter == xLoop - 1 && (yIter == yMid))
+                        { shouldMove = false; }
+                    else if(isTheEnd && xIter == xLoop - 1 && (yIter == yMid) )
+                        { shouldMove = false; }
+                }
+                */
+
                 columnVertices.push_back(PlusSignVertex(pt, shouldMove));
             }
 
@@ -194,29 +247,11 @@ void StrokePainter::CalculateVertices()
 
 
         }
-        //std::cout << "_vertices.size() " << _vertices.size() << "\n";
+
     }
 
     _mesh_width = _plusSignVertices.size();
     _mesh_height = _plusSignVertices[0].size();
-
-    /*
-    // don't build texture coordinates here
-    int heightMinOne = _mesh_height - 1;
-    // set tex coord
-    for(int a = 0; a < _mesh_width; a++)
-    {
-        float xCoord = (float)(a % (heightMinOne + 1)) / (float)heightMinOne;
-        std::cout << a << " " << a % (heightMinOne + 1) << " " << heightMinOne << "\n";
-
-        for(int b = 0; b < _mesh_height; b++)
-        {
-
-            float yCoord = (float)b / (float)heightMinOne;
-            _plusSignVertices[a][b].texCoord = QVector2D(xCoord, yCoord);
-        }
-    }
-    */
 
     // don't create vertex data here
     //BuildPointsVertexData(_vertices, &_verticesVbo, &_verticesVao, QVector3D(0, 0, 1));
@@ -526,7 +561,7 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
 {
     _oriStrokeLines.push_back(AVector(x, y));
     CalculateInitialRibbon();
-    CalculateVertices();
+    CalculateVertices1();
 }
 
 void StrokePainter::Draw()
