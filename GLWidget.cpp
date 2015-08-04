@@ -62,6 +62,8 @@ void GLWidget::initializeGL()
     _sPainter->_colorLocation = _colorLocation;
     _sPainter->_vertexLocation = _vertexLocation;
     _sPainter->_use_color_location = _use_color_location;
+
+    this->SetImage("/home/azer/workspace/cpp/ConformalDecorativeStrokes/weyland_yutani.png");
 }
 
 bool GLWidget::event( QEvent * event )

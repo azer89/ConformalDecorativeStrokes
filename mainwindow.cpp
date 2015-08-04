@@ -20,6 +20,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     animTimer = new QTimer(this);
     connect(animTimer, SIGNAL(timeout()), this, SLOT(AnimationThread()));
+
+    QString qFilename("/home/azer/workspace/cpp/ConformalDecorativeStrokes/weyland_yutani.png");
+    QPixmap image(qFilename);
+    ui->inputImageLabel->setPixmap(image);
+    //ui->widget->GetGLWidget()->SetImage(qFilename);
 }
 
 MainWindow::~MainWindow()

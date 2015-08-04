@@ -73,6 +73,10 @@ private:
     //QOpenGLBuffer               _gridLinesVbo;
     //QOpenGLVertexArrayObject    _gridLinesVao;
 
+    std::vector<ALine>          _midVerticalLines;
+    QOpenGLBuffer               _midVerticalLinesVbo;
+    QOpenGLVertexArrayObject    _midVerticalLinesVao;
+
     // left lines of the strokes
     // I need these lines to calculate closest points on the borders
     std::vector<AVector>        _lLines;
@@ -94,6 +98,9 @@ private:
     //std::vector<AVector>        _debugPoints;
     //QOpenGLBuffer               _debugPointsVbo;
     //QOpenGLVertexArrayObject    _debugPointsVao;
+    int _numConstrainedPoints;
+    QOpenGLBuffer               _constrainedPointsVbo;
+    QOpenGLVertexArrayObject    _constrainedPointsVao;
 
     // debugging visualization
     //std::vector<ALine>          _debugLines;
@@ -112,6 +119,7 @@ private:
 
 private:
     AVector GetClosestPointFromBorders(AVector pt);
+    AVector GetClosestPointFromMiddleVerticalLines(AVector pt);
 
     void CalculateInitialRibbon();
     void CalculateVertices1();
@@ -122,6 +130,7 @@ private:
 
     void BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
     void BuildTexturedStrokeVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao);
+    void BuildConstrainedPointsVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, QVector3D vecCol);
 
     void BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol);
     void BuildVboWithColor(QVector<VertexData> data, QOpenGLBuffer* vbo);
