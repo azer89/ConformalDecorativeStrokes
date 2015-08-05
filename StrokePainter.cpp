@@ -9,6 +9,7 @@
 #include <iostream>
 
 StrokePainter::StrokePainter() :
+    _isMouseDown(false),
     _mesh_width(0),
     _mesh_height(0),
     _imgTexture(0)
@@ -108,7 +109,7 @@ void StrokePainter::CalculateInitialRibbon()
             _rLines.push_back(rPoint);
         }
     }
-    BuildLinesVertexData(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(0, 0, 0));
+    BuildLinesVertexData(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(0.5, 0.5, 1));
     BuildLinesVertexData(_midVerticalLines, &_midVerticalLinesVbo, &_midVerticalLinesVao, QVector3D(0.5, 0.5, 1));
     BuildLinesVertexData(_lLines, &_lLinesVbo, &_lLinesVao, QVector3D(0.5, 0.5, 1));
     BuildLinesVertexData(_rLines, &_rLinesVbo, &_rLinesVao, QVector3D(0.5, 0.5, 1));
@@ -190,6 +191,7 @@ void StrokePainter::CalculateVertices1()
 
                 bool shouldMove = true;
                 bool midVerticalConstrained = false;
+                bool midHorizontalConstrained = false;
                 if(SystemParams::enforce_miter_joint && xIter == 0 && yIter == 0)
                     { shouldMove = false; }
                 else if(SystemParams::enforce_miter_joint && xIter == 0 && yIter == yLoop - 1 )
@@ -204,11 +206,22 @@ void StrokePainter::CalculateVertices1()
                     midVerticalConstrained = true;
                 }
 
+                // odd only
+                if(yLoop % 2 != 0)
+                {
+                    int yMid = yLoop / 2;
+                    if(yIter == yMid)
+                    {
+                        midHorizontalConstrained = true;
+                    }
+                }
+
+
                 /*
                 if(yLoop % 2 == 0) // even
                 {
                     int yMid1 = yLoop / 2;
-                    int yMid2 = yMid1 + 1;
+                    int yMid2 = yMid1 - 1;
 
                     if(xIter == 0 && (yIter == yMid1 || yIter == yMid2) )
                         { shouldMove = false; }
@@ -219,7 +232,9 @@ void StrokePainter::CalculateVertices1()
                 }
                 else // odd
                 {
-                    int yMid = yLoop / 2 + 1;
+
+                    int yMid = yLoop / 2;
+                    std::cout << yMid << "\n";
 
                     if(xIter == 0 && (yIter == yMid) )
                         { shouldMove = false; }
@@ -229,7 +244,7 @@ void StrokePainter::CalculateVertices1()
                         { shouldMove = false; }
                 }*/
 
-                columnVertices.push_back(PlusSignVertex(pt, shouldMove, midVerticalConstrained));
+                columnVertices.push_back(PlusSignVertex(pt, shouldMove, midVerticalConstrained, midHorizontalConstrained));
             }
 
             _plusSignVertices.push_back(columnVertices);
@@ -263,6 +278,44 @@ AVector StrokePainter::GetClosestPointFromMiddleVerticalLines(AVector pt)
             closestPt = cPt;
         }
     }
+    return closestPt;
+}
+
+AVector StrokePainter::GetClosestPointFromStrokePoints(AVector pt)
+{
+    AVector closestPt = pt;
+    float dist = std::numeric_limits<float>::max();
+
+    for(int a = 0; a < _strokeLines.size(); a++)
+    {
+        AVector cPt = _strokeLines[a];
+        if(pt.Distance(cPt) < dist)
+        {
+            dist = pt.Distance(cPt);
+            closestPt = cPt;
+        }
+    }
+
+    return closestPt;
+}
+
+AVector StrokePainter::GetClosestPointFromStrokeLines(AVector pt)
+{
+    AVector closestPt = pt;
+    float dist = std::numeric_limits<float>::max();
+
+    for(int a = 0; a < _strokeLines.size() - 1; a++)
+    {
+        AVector pt1 = _strokeLines[a];
+        AVector pt2 = _strokeLines[a+1];
+        AVector cPt = UtilityFunctions::GetClosestPoint(pt1, pt2, pt);
+        if(pt.Distance(cPt) < dist)
+        {
+            dist = pt.Distance(cPt);
+            closestPt = cPt;
+        }
+    }
+
     return closestPt;
 }
 
@@ -435,11 +488,26 @@ void StrokePainter::ConformalMappingOneStep2()
                 AVector closestPt = GetClosestPointFromBorders(sumPositions);
                 tempVertices[a][b].position = closestPt;
             }
+
+            else if(tempVertices[a][b].midHorizontalConstrained && tempVertices[a][b].midVerticalConstrained)
+            {
+
+                AVector closestPt = GetClosestPointFromStrokePoints(sumPositions);
+                tempVertices[a][b].position = closestPt;
+            }
+
+            else if(tempVertices[a][b].midHorizontalConstrained)
+            {
+                AVector closestPt = GetClosestPointFromStrokeLines(sumPositions);
+                tempVertices[a][b].position = closestPt;
+            }
+
             else if(tempVertices[a][b].midVerticalConstrained)
             {
                 AVector closestPt = GetClosestPointFromMiddleVerticalLines(sumPositions);
                 tempVertices[a][b].position = closestPt;
             }
+
             else
             {
                 tempVertices[a][b].position = sumPositions;
@@ -545,6 +613,8 @@ void StrokePainter::ConformalMappingOneStep1()
 // mouse press
 void StrokePainter::mousePressEvent(float x, float y)
 {
+    _isMouseDown = true;
+
     //_points.clear();
     //_vertices.clear();
     _plusSignVertices.clear();
@@ -573,6 +643,8 @@ void StrokePainter::mouseMoveEvent(float x, float y)
 // mouse release
 void StrokePainter::mouseReleaseEvent(float x, float y)
 {
+    _isMouseDown = false;
+
     _oriStrokeLines.push_back(AVector(x, y));
     CalculateInitialRibbon();
     CalculateVertices1();
@@ -599,6 +671,16 @@ void StrokePainter::Draw()
         glDrawArrays(GL_LINES, 0, _debugLines.size() * 2);
         _debugLinesVao.release();
     }*/
+
+    if((_isMouseDown || SystemParams::show_mesh) &&_strokeLinesVao.isCreated())
+    {
+        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
+
+        glLineWidth(2.0f);
+        _strokeLinesVao.bind();
+        glDrawArrays(GL_LINES, 0, _strokeLines.size() * 2);
+        _strokeLinesVao.release();
+    }
 
     if(SystemParams::show_mesh && _midVerticalLinesVao.isCreated())
         {
@@ -658,6 +740,7 @@ void StrokePainter::Draw()
             _imgTexture->release();
     }
 
+    /*
     if(_strokeLinesVao.isCreated() && _plusSignVertices.size() == 0)
     {
         _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
@@ -666,7 +749,7 @@ void StrokePainter::Draw()
         _strokeLinesVao.bind();
         glDrawArrays(GL_LINES, 0, (_strokeLines.size() - 1) * 2);
         _strokeLinesVao.release();
-    }
+    }*/
 
     /*
     if(_pointsVao.isCreated())

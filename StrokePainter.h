@@ -42,6 +42,8 @@ public:
 
 private:
 
+    bool _isMouseDown;
+
     // texture
     QImage _img;
     QOpenGLTexture* _imgTexture;
@@ -120,6 +122,8 @@ private:
 private:
     AVector GetClosestPointFromBorders(AVector pt);
     AVector GetClosestPointFromMiddleVerticalLines(AVector pt);
+    AVector GetClosestPointFromStrokeLines(AVector pt);
+    AVector GetClosestPointFromStrokePoints(AVector pt);
 
     void CalculateInitialRibbon();
     void CalculateVertices1();

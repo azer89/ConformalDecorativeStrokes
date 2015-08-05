@@ -15,6 +15,7 @@ struct PlusSignVertex
     float angle;
     bool shouldMove;
     bool midVerticalConstrained;
+    bool midHorizontalConstrained;
 
 public:
 
@@ -28,6 +29,7 @@ public:
         this->angle = 0;
         this->shouldMove = true;
         this->midVerticalConstrained = false;
+        this->midHorizontalConstrained = false;
     }
 
     PlusSignVertex(AVector position, QVector2D texCoord)
@@ -40,6 +42,7 @@ public:
         this->angle = 0;
         this->shouldMove = true;
         this->midVerticalConstrained = false;
+        this->midHorizontalConstrained = false;
     }
 
     PlusSignVertex(AVector position)
@@ -52,6 +55,20 @@ public:
         this->angle = 0;
         this->shouldMove = true;
         this->midVerticalConstrained = false;
+        this->midHorizontalConstrained = false;
+    }
+
+    PlusSignVertex(AVector position, bool shouldMove, bool midVerticalConstrained, bool midHorizontalConstrained)
+    {
+        this->position = position;
+        this->texCoord = QVector2D();
+        this->color = QVector3D();
+
+        this->armLength = 0;
+        this->angle = 0;
+        this->shouldMove = shouldMove;
+        this->midVerticalConstrained = midVerticalConstrained;
+        this->midHorizontalConstrained = midHorizontalConstrained;
     }
 
     PlusSignVertex(AVector position, bool shouldMove, bool midVerticalConstrained)
@@ -64,6 +81,7 @@ public:
         this->angle = 0;
         this->shouldMove = shouldMove;
         this->midVerticalConstrained = midVerticalConstrained;
+        this->midHorizontalConstrained = false;
     }
 
     PlusSignVertex(AVector position, bool shouldMove)
@@ -76,6 +94,7 @@ public:
         this->angle = 0;
         this->shouldMove = shouldMove;
         this->midVerticalConstrained = false;
+        this->midHorizontalConstrained = false;
     }
 
     PlusSignVertex()
@@ -88,6 +107,7 @@ public:
         this->angle = 0;
         this->shouldMove = true;
         this->midVerticalConstrained = false;
+        this->midHorizontalConstrained = false;
     }
 };
 
