@@ -11,7 +11,11 @@ float SystemParams::mesh_size = 1.0f;
 
 float SystemParams::rdp_epsilon = 5.0f;
 
-bool SystemParams::enforce_miter_joint = true;
+bool SystemParams::miter_joint_constraint = true;
+
+bool SystemParams::junction_ribs_constraint = true;
+
+bool SystemParams::spines_constraint = false;
 
 bool SystemParams::show_mesh = true;
 

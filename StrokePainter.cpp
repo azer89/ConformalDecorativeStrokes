@@ -190,29 +190,29 @@ void StrokePainter::CalculateVertices1()
                 pt = pt + hVec * xFactor;
 
                 bool shouldMove = true;
-                bool midVerticalConstrained = false;
-                bool midHorizontalConstrained = false;
-                if(SystemParams::enforce_miter_joint && xIter == 0 && yIter == 0)
+                bool junctionRibsConstrained = false;
+                bool spinesConstrained = false;
+                if(SystemParams::miter_joint_constraint && xIter == 0 && yIter == 0)
                     { shouldMove = false; }
-                else if(SystemParams::enforce_miter_joint && xIter == 0 && yIter == yLoop - 1 )
+                else if(SystemParams::miter_joint_constraint && xIter == 0 && yIter == yLoop - 1 )
                     { shouldMove = false; }
-                else if(SystemParams::enforce_miter_joint && isTheEnd && xIter == xLoop - 1 && yIter == 0)
+                else if(SystemParams::miter_joint_constraint && isTheEnd && xIter == xLoop - 1 && yIter == 0)
                     { shouldMove = false; }
-                else if(SystemParams::enforce_miter_joint && isTheEnd && xIter == xLoop - 1 && yIter == yLoop - 1 )
+                else if(SystemParams::miter_joint_constraint && isTheEnd && xIter == xLoop - 1 && yIter == yLoop - 1 )
                     { shouldMove = false; }
 
-                if(a > 0 && xIter == 0)
+                if(SystemParams::junction_ribs_constraint &&  a > 0 && xIter == 0)
                 {
-                    midVerticalConstrained = true;
+                    junctionRibsConstrained = true;
                 }
 
                 // odd only
-                if(yLoop % 2 != 0)
+                if(SystemParams::spines_constraint && yLoop % 2 != 0)
                 {
                     int yMid = yLoop / 2;
                     if(yIter == yMid)
                     {
-                        midHorizontalConstrained = true;
+                        spinesConstrained = true;
                     }
                 }
 
@@ -244,7 +244,7 @@ void StrokePainter::CalculateVertices1()
                         { shouldMove = false; }
                 }*/
 
-                columnVertices.push_back(PlusSignVertex(pt, shouldMove, midVerticalConstrained, midHorizontalConstrained));
+                columnVertices.push_back(PlusSignVertex(pt, shouldMove, junctionRibsConstrained, spinesConstrained));
             }
 
             _plusSignVertices.push_back(columnVertices);
@@ -672,7 +672,7 @@ void StrokePainter::Draw()
         _debugLinesVao.release();
     }*/
 
-    if((_isMouseDown || SystemParams::show_mesh) &&_strokeLinesVao.isCreated())
+    if((_isMouseDown || SystemParams::spines_constraint) &&_strokeLinesVao.isCreated())
     {
         _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
 
@@ -682,7 +682,7 @@ void StrokePainter::Draw()
         _strokeLinesVao.release();
     }
 
-    if(SystemParams::show_mesh && _midVerticalLinesVao.isCreated())
+    if(SystemParams::junction_ribs_constraint && _midVerticalLinesVao.isCreated())
         {
             _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
             glLineWidth(2.0f);
@@ -691,7 +691,7 @@ void StrokePainter::Draw()
             _midVerticalLinesVao.release();
         }
 
-    if(SystemParams::show_mesh && SystemParams::enforce_miter_joint && _constrainedPointsVao.isCreated())
+    if(SystemParams::show_mesh && SystemParams::miter_joint_constraint && _constrainedPointsVao.isCreated())
     {
         _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
 
