@@ -145,14 +145,15 @@ void StrokePainter::CalculateVertices1()
         AVector mEndPt   = _strokeLines[a + 1];
 
         // no corner avoidance
-        //int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
-        //int intMeshWidth = mStartPt.Distance(mEndPt) / SystemParams::mesh_size;
-
-
-        // with corner avoidance
         int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
-        int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
+        int intMeshWidth = mStartPt.Distance(mEndPt) / SystemParams::mesh_size;
 
+        if(SystemParams::junction_ribs_constraint)
+        {
+            // with corner avoidance
+            intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
+            intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
+        }
 
         AVector lStartPt = _lLines[a];
         AVector lEndPt   = _lLines[a + 1];
@@ -258,9 +259,9 @@ void StrokePainter::CalculateVertices1()
     _mesh_height = _plusSignVertices[0].size();
 
     // don't create vertex data here
-    //BuildPointsVertexData(_vertices, &_verticesVbo, &_verticesVao, QVector3D(0, 0, 1));
-    //BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, QVector3D(1, 0, 0));
-    //BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.5, 0));
+    BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, QVector3D(1, 0, 0));
+    BuildTexturedStrokeVertexData(_plusSignVertices, &_texturedStrokeVbo, &_texturedStrokeVao);
+    BuildConstrainedPointsVertexData(_plusSignVertices, &_constrainedPointsVbo, &_constrainedPointsVao, QVector3D(0.5, 0.5, 1));
 }
 
 AVector StrokePainter::GetClosestPointFromMiddleVerticalLines(AVector pt)

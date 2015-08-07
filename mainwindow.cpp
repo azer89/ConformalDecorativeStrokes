@@ -62,13 +62,13 @@ void MainWindow::AnimationThread()
 
 void MainWindow::AnimationStart()
 {
-    //std::cout << "Animation Start\n";
-
+    /*
     if(animTimer->isActive())
     {
        animTimer->stop();
     }
     animTimer->start();
+    */
 }
 
 void MainWindow::SetParams()
