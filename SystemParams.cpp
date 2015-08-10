@@ -5,6 +5,7 @@ SystemParams::SystemParams()
 }
 
 float SystemParams::stroke_resample_length = 10.0f;
+
 float SystemParams::stroke_width = 10.0f;
 
 float SystemParams::mesh_size = 1.0f;
@@ -19,4 +20,4 @@ bool SystemParams::spines_constraint = false;
 
 bool SystemParams::show_mesh = true;
 
-bool SystemParams::show_texture = true;
+bool SystemParams::show_texture = false;
