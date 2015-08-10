@@ -46,7 +46,67 @@ void StrokePainter::SetImage(QString img)
 
 }
 
-void StrokePainter::CalculateInitialRibbon()
+void StrokePainter::CalculateInitialRibbon2()
+{
+    _strokeLines.clear();
+    _debugLines.clear();
+
+    std::vector<AVector> tempLine;
+    CurveRDP::SimplifyRDP(_oriStrokeLines, tempLine, SystemParams::rdp_epsilon);
+    _strokeLines = std::vector<AVector>(tempLine);
+
+    for(uint a = 0; a < _strokeLines.size(); a++)
+    {
+        if(a == 0)
+        {
+            AVector pt1 = _strokeLines[0];
+            AVector pt2 = _strokeLines[1];
+            AVector dirVec = (pt2 - pt1).Norm() * (SystemParams::stroke_width / 2.0f);
+
+            AVector rightVec (-dirVec.y,  dirVec.x);
+            AVector leftVec( dirVec.y, -dirVec.x);
+
+            AVector l1 = pt1 + leftVec;
+            AVector r1 = pt1 + rightVec;
+            AVector l2 = pt2 + leftVec;
+            AVector r2 = pt2 + rightVec;
+
+            _debugLines.push_back(ALine(l1, r1));
+            _debugLines.push_back(ALine(l2, r2));
+            _debugLines.push_back(ALine(l1, l2));
+            _debugLines.push_back(ALine(r1, r2));
+        }
+        else if(_strokeLines.size() >= 3 && a <= _strokeLines.size() - 2)
+        {
+        }
+
+        // add an end
+        if(a == _strokeLines.size() - 2)
+        {
+            AVector pt1 = _strokeLines[a];
+            AVector pt2 = _strokeLines[a + 1];
+            AVector dirVec = (pt2 - pt1).Norm() * (SystemParams::stroke_width / 2.0f);
+
+            AVector rightVec (-dirVec.y,  dirVec.x);
+            AVector leftVec( dirVec.y, -dirVec.x);
+
+            AVector l1 = pt1 + leftVec;
+            AVector r1 = pt1 + rightVec;
+            AVector l2 = pt2 + leftVec;
+            AVector r2 = pt2 + rightVec;
+
+            _debugLines.push_back(ALine(l1, r1));
+            _debugLines.push_back(ALine(l2, r2));
+            _debugLines.push_back(ALine(l1, l2));
+            _debugLines.push_back(ALine(r1, r2));
+        }
+    }
+
+    BuildLinesVertexData(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(0.5, 0.5, 1));
+    BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(1, 0, 0));
+}
+
+void StrokePainter::CalculateInitialRibbon1()
 {
     _lLines.clear();
     _rLines.clear();
@@ -124,18 +184,19 @@ void StrokePainter::CalculateVertices2()
         AVector mStartPt = _strokeLines[a];
         AVector mEndPt   = _strokeLines[a + 1];
 
-        int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
-        int intMeshWidth =  mStartPt.Distance(mEndPt) / SystemParams::stroke_width * SystemParams::mesh_size;
+        //int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
+        //int intMeshWidth =  mStartPt.Distance(mEndPt) / SystemParams::stroke_width * SystemParams::mesh_size;
     }
 
-    _mesh_width = _plusSignVertices.size();
-    _mesh_height = _plusSignVertices[0].size();
+    //_mesh_width = _plusSignVertices.size();
+    //_mesh_height = _plusSignVertices[0].size();
 }
 
+
+// global conformal mapping
+// so it does not consider corners as special cases
 void StrokePainter::CalculateVertices1()
 {
-    //_debugPoints.clear();
-
     //_vertices.clear();
     _plusSignVertices.clear();
 
@@ -247,12 +308,8 @@ void StrokePainter::CalculateVertices1()
 
                 columnVertices.push_back(PlusSignVertex(pt, shouldMove, junctionRibsConstrained, spinesConstrained));
             }
-
             _plusSignVertices.push_back(columnVertices);
-
-
         }
-
     }
 
     _mesh_width = _plusSignVertices.size();
@@ -647,14 +704,14 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
     _isMouseDown = false;
 
     _oriStrokeLines.push_back(AVector(x, y));
-    CalculateInitialRibbon();
-    CalculateVertices1();
+    //CalculateInitialRibbon1();    // modification
+    CalculateInitialRibbon2();    // modification
+    //CalculateVertices1(); // modification
+    CalculateVertices2(); // modification
 }
 
 void StrokePainter::Draw()
 {
-
-
     /*if(_debugPointsVao.isCreated())
     {
         _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
@@ -664,16 +721,17 @@ void StrokePainter::Draw()
         _debugPointsVao.release();
     }*/
 
-    /*if(_debugLinesVao.isCreated())
+    if(_debugLinesVao.isCreated())
     {
         _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
         glLineWidth(2.0f);
         _debugLinesVao.bind();
         glDrawArrays(GL_LINES, 0, _debugLines.size() * 2);
         _debugLinesVao.release();
-    }*/
+    }
 
-    if((_isMouseDown || SystemParams::spines_constraint) &&_strokeLinesVao.isCreated())
+    // modification
+    if(/*(_isMouseDown || SystemParams::spines_constraint ) &&*/ _strokeLinesVao.isCreated())
     {
         _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
 

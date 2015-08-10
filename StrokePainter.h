@@ -105,9 +105,9 @@ private:
     QOpenGLVertexArrayObject    _constrainedPointsVao;
 
     // debugging visualization
-    //std::vector<ALine>          _debugLines;
-    //QOpenGLBuffer               _debugLinesVbo;
-    //QOpenGLVertexArrayObject    _debugLinesVao;
+    std::vector<ALine>          _debugLines;
+    QOpenGLBuffer               _debugLinesVbo;
+    QOpenGLVertexArrayObject    _debugLinesVao;
 
     // vertices of the mesh as a 1D list (debugging visualization)
     //std::vector<AVector>        _vertices;
@@ -125,7 +125,9 @@ private:
     AVector GetClosestPointFromStrokeLines(AVector pt);
     AVector GetClosestPointFromStrokePoints(AVector pt);
 
-    void CalculateInitialRibbon();
+    void CalculateInitialRibbon1();
+    void CalculateInitialRibbon2();
+
     void CalculateVertices1();
     void CalculateVertices2();
 
