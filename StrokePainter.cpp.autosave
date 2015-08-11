@@ -110,7 +110,7 @@ void StrokePainter::CalculateInitialRibbon1()
 {
     _leftLines.clear();
     _rightLines.clear();
-    _junctionSpinesLines.clear();
+    _junctionSpineLines.clear();
 
     _strokeLines.clear();
 
@@ -149,7 +149,7 @@ void StrokePainter::CalculateInitialRibbon1()
             _leftLines.push_back(lPoint);
             _rightLines.push_back(rPoint);
 
-            _junctionSpinesLines.push_back(ALine(lPoint, rPoint));
+            _junctionSpineLines.push_back(ALine(lPoint, rPoint));
         }
 
         // add an end
@@ -170,7 +170,7 @@ void StrokePainter::CalculateInitialRibbon1()
         }
     }
     BuildLinesVertexData(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(0.5, 0.5, 1));
-    BuildLinesVertexData(_junctionSpinesLines, &_midVerticalLinesVbo, &_midVerticalLinesVao, QVector3D(0.5, 0.5, 1));
+    BuildLinesVertexData(_junctionSpineLines, &_junctionSpineLinesVbo, &_midVerticalLinesVao, QVector3D(0.5, 0.5, 1));
     BuildLinesVertexData(_leftLines, &_leftLinesVbo, &_leftLinesVao, QVector3D(0.5, 0.5, 1));
     BuildLinesVertexData(_rightLines, &_rightLinesVbo, &_rightLinesVao, QVector3D(0.5, 0.5, 1));
 }
@@ -325,10 +325,10 @@ AVector StrokePainter::GetClosestPointFromMiddleVerticalLines(AVector pt)
 {
     AVector closestPt = pt;
     float dist = std::numeric_limits<float>::max();
-    for(int a = 0; a < _junctionSpinesLines.size(); a++)
+    for(int a = 0; a < _junctionSpineLines.size(); a++)
     {
-        AVector pt1 = _junctionSpinesLines[a].GetPointA();
-        AVector pt2 = _junctionSpinesLines[a].GetPointB();
+        AVector pt1 = _junctionSpineLines[a].GetPointA();
+        AVector pt2 = _junctionSpineLines[a].GetPointB();
         AVector cPt = UtilityFunctions::GetClosestPoint(pt1, pt2, pt);
         if(pt.Distance(cPt) < dist)
         {
@@ -677,7 +677,7 @@ void StrokePainter::mousePressEvent(float x, float y)
     //_vertices.clear();
     _plusSignVertices.clear();
 
-    _junctionSpinesLines.clear();
+    _junctionSpineLines.clear();
     _leftLines.clear();
     _rightLines.clear();
 
@@ -746,7 +746,7 @@ void StrokePainter::Draw()
             _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
             glLineWidth(2.0f);
             _midVerticalLinesVao.bind();
-            glDrawArrays(GL_LINES, 0, _junctionSpinesLines.size() * 2);
+            glDrawArrays(GL_LINES, 0, _junctionSpineLines.size() * 2);
             _midVerticalLinesVao.release();
         }
 

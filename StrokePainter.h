@@ -75,21 +75,21 @@ private:
     //QOpenGLBuffer               _gridLinesVbo;
     //QOpenGLVertexArrayObject    _gridLinesVao;
 
-    std::vector<ALine>          _midVerticalLines;
-    QOpenGLBuffer               _midVerticalLinesVbo;
-    QOpenGLVertexArrayObject    _midVerticalLinesVao;
+    std::vector<ALine>          _junctionSpineLines;
+    QOpenGLBuffer               _junctionSpineLinesVbo;
+    QOpenGLVertexArrayObject    _junctionSpineLinesVao;
 
     // left lines of the strokes
     // I need these lines to calculate closest points on the borders
-    std::vector<AVector>        _lLines;
-    QOpenGLBuffer               _lLinesVbo;
-    QOpenGLVertexArrayObject    _lLinesVao;
+    std::vector<AVector>        _leftLines;
+    QOpenGLBuffer               _leftLinesVbo;
+    QOpenGLVertexArrayObject    _leftLinesVao;
 
     // right lines of the stroke
     // I need these lines to calculate closest points on the borders
-    std::vector<AVector>        _rLines;
-    QOpenGLBuffer               _rLinesVbo;
-    QOpenGLVertexArrayObject    _rLinesVao;
+    std::vector<AVector>        _rightLines;
+    QOpenGLBuffer               _rightLinesVbo;
+    QOpenGLVertexArrayObject    _rightLinesVao;
 
     // debugging visualization
     //std::vector<AVector>        _points;
