@@ -57,9 +57,10 @@ private:
 
     // strokes
     std::vector<AVector>        _oriStrokeLines;    // original
-    std::vector<AVector>        _strokeLines;       // resampled and simplified
-    QOpenGLBuffer               _strokeLinesVbo;
-    QOpenGLVertexArrayObject    _strokeLinesVao;
+
+    std::vector<AVector>        _spineLines;       // resampled and simplified from strokeLines
+    QOpenGLBuffer               _spineLinesVbo;
+    QOpenGLVertexArrayObject    _spineLinesVao;
 
     //std::vector<ALine>          _borderLines;
     //QOpenGLBuffer               _borderLinesVbo;
@@ -75,9 +76,9 @@ private:
     //QOpenGLBuffer               _gridLinesVbo;
     //QOpenGLVertexArrayObject    _gridLinesVao;
 
-    std::vector<ALine>          _junctionSpineLines;
-    QOpenGLBuffer               _junctionSpineLinesVbo;
-    QOpenGLVertexArrayObject    _junctionSpineLinesVao;
+    std::vector<ALine>          _junctionRibLines;
+    QOpenGLBuffer               _junctionRibLinesVbo;
+    QOpenGLVertexArrayObject    _junctionRibLinesVao;
 
     // left lines of the strokes
     // I need these lines to calculate closest points on the borders
@@ -125,8 +126,8 @@ private:
     AVector GetClosestPointFromStrokeLines(AVector pt);
     AVector GetClosestPointFromStrokePoints(AVector pt);
 
-    void CalculateInitialRibbon1();
-    void CalculateInitialRibbon2();
+    void CalculateInitialRibbon();
+    //void CalculateInitialRibbon2();
 
     void CalculateVertices1();
     void CalculateVertices2();

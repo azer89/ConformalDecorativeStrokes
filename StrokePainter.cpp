@@ -46,6 +46,7 @@ void StrokePainter::SetImage(QString img)
 
 }
 
+/*
 void StrokePainter::CalculateInitialRibbon2()
 {
     _strokeLines.clear();
@@ -55,75 +56,31 @@ void StrokePainter::CalculateInitialRibbon2()
     CurveRDP::SimplifyRDP(_oriStrokeLines, tempLine, SystemParams::rdp_epsilon);
     _strokeLines = std::vector<AVector>(tempLine);
 
-    for(uint a = 0; a < _strokeLines.size(); a++)
-    {
-        if(a == 0)
-        {
-            AVector pt1 = _strokeLines[0];
-            AVector pt2 = _strokeLines[1];
-            AVector dirVec = (pt2 - pt1).Norm() * (SystemParams::stroke_width / 2.0f);
-
-            AVector rightVec (-dirVec.y,  dirVec.x);
-            AVector leftVec( dirVec.y, -dirVec.x);
-
-            AVector l1 = pt1 + leftVec;
-            AVector r1 = pt1 + rightVec;
-            AVector l2 = pt2 + leftVec;     // wrong
-            AVector r2 = pt2 + rightVec;    // wrong
-
-            _debugLines.push_back(ALine(l1, r1));
-            _debugLines.push_back(ALine(l2, r2));
-            _debugLines.push_back(ALine(l1, l2));
-            _debugLines.push_back(ALine(r1, r2));
-        }
-        else if(_strokeLines.size() >= 3 && a <= _strokeLines.size() - 2)
-        {
-        }
-
-        // add an end
-        if(a == _strokeLines.size() - 2)
-        {
-            AVector pt1 = _strokeLines[a];
-            AVector pt2 = _strokeLines[a + 1];
-            AVector dirVec = (pt2 - pt1).Norm() * (SystemParams::stroke_width / 2.0f);
-
-            AVector rightVec (-dirVec.y,  dirVec.x);
-            AVector leftVec( dirVec.y, -dirVec.x);
-
-            AVector l1 = pt1 + leftVec;
-            AVector r1 = pt1 + rightVec;
-            AVector l2 = pt2 + leftVec;
-            AVector r2 = pt2 + rightVec;
-
-            _debugLines.push_back(ALine(l1, r1));
-            _debugLines.push_back(ALine(l2, r2));
-            _debugLines.push_back(ALine(l1, l2));
-            _debugLines.push_back(ALine(r1, r2));
-        }
-    }
-
     BuildLinesVertexData(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(0.5, 0.5, 1));
     BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(1, 0, 0));
 }
+*/
 
-void StrokePainter::CalculateInitialRibbon1()
+void StrokePainter::CalculateInitialRibbon()
 {
-    _leftLines.clear();
-    _rightLines.clear();
-    _junctionSpinesLines.clear();
+    _debugLines.clear();
 
-    _strokeLines.clear();
-
+    // calculate spine lines
+    _spineLines.clear();
     std::vector<AVector> tempLine;
     CurveRDP::SimplifyRDP(_oriStrokeLines, tempLine, SystemParams::rdp_epsilon);
-    _strokeLines = std::vector<AVector>(tempLine);
+    _spineLines = std::vector<AVector>(tempLine);
 
-    for(uint a = 0; a < _strokeLines.size(); a++)
+    // calculate left, right, and junction ribs;
+    _leftLines.clear();
+    _rightLines.clear();
+    _junctionRibLines.clear();
+    for(uint a = 0; a < _spineLines.size(); a++)
     {
         if(a == 0)
         {
-            AVector pt1 = _strokeLines[0];
-            AVector pt2 = _strokeLines[1];
+            AVector pt1 = _spineLines[0];
+            AVector pt2 = _spineLines[1];
             AVector dirVec = (pt2 - pt1).Norm() * (SystemParams::stroke_width / 2.0f);
 
             AVector rightVec (-dirVec.y,  dirVec.x);
@@ -135,10 +92,10 @@ void StrokePainter::CalculateInitialRibbon1()
             _leftLines.push_back(lPoint);
             _rightLines.push_back(rPoint);
         }
-        else if(_strokeLines.size() >= 3 && a <= _strokeLines.size() - 2)
+        else if(_spineLines.size() >= 3 && a <= _spineLines.size() - 2)
         {
-            ALine prevLine(_strokeLines[a-1], _strokeLines[a]);
-            ALine curLine(_strokeLines[a], _strokeLines[a+1]);
+            ALine prevLine(_spineLines[a-1], _spineLines[a]);
+            ALine curLine(_spineLines[a], _spineLines[a+1]);
 
             AVector lPoint, rPoint;
 
@@ -149,40 +106,146 @@ void StrokePainter::CalculateInitialRibbon1()
             _leftLines.push_back(lPoint);
             _rightLines.push_back(rPoint);
 
-            _junctionSpinesLines.push_back(ALine(lPoint, rPoint));
+            _junctionRibLines.push_back(ALine(lPoint, rPoint));
         }
 
         // add an end
-        if(a == _strokeLines.size() - 2)
+        if(a == _spineLines.size() - 2)
         {
-            AVector pt1 = _strokeLines[a];
-            AVector pt2 = _strokeLines[a + 1];
+            AVector pt1 = _spineLines[a];
+            AVector pt2 = _spineLines[a + 1];
+
             AVector dirVec = (pt2 - pt1).Norm() * (SystemParams::stroke_width / 2.0f);
-
-            AVector rightVec (-dirVec.y,  dirVec.x);
-            AVector leftVec( dirVec.y, -dirVec.x);
-
-            AVector lPoint = pt2 + leftVec;
-            AVector rPoint = pt2 + rightVec;
+            AVector lPoint = pt2 + AVector( dirVec.y,  -dirVec.x);
+            AVector rPoint = pt2 + AVector(-dirVec.y,  dirVec.x);
 
             _leftLines.push_back(lPoint);
             _rightLines.push_back(rPoint);
         }
     }
-    BuildLinesVertexData(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(0.5, 0.5, 1));
-    BuildLinesVertexData(_junctionSpinesLines, &_midVerticalLinesVbo, &_midVerticalLinesVao, QVector3D(0.5, 0.5, 1));
+
+
+    // calculate non-corner
+    for(uint a = 0; a < _spineLines.size() - 1; a++)
+    {
+        if(a == 0 && _spineLines.size() > 2)    // START
+        {
+            ALine curLine(_spineLines[a], _spineLines[a+1]);
+            ALine nextLine(_spineLines[a+1], _spineLines[a+2]);
+
+            AVector dir1 = curLine.Direction().Norm();
+            AVector dir2 = nextLine.Direction().Norm();
+            float rot = UtilityFunctions::GetRotation(dir1, dir2);
+            //std::cout << rot << "\n";
+
+            AVector leftEnd = _leftLines[a+1];
+            AVector rightEnd = _rightLines[a+1];
+            if(rot > 0)
+            {
+                // turn right: positive
+                // use right
+                AVector leftDir(dir1.y, -dir1.x);
+                leftEnd = _rightLines[a+1] + leftDir * SystemParams::stroke_width;
+            }
+            else if(rot < 0)
+            {
+                // turn left: negative
+                // use left
+                AVector rightDir(-dir1.y, dir1.x);
+                rightEnd = _leftLines[a+1] + rightDir * SystemParams::stroke_width;
+            }
+
+            _debugLines.push_back(ALine(_leftLines[a], leftEnd));
+            _debugLines.push_back(ALine(_rightLines[a], rightEnd));
+            _debugLines.push_back(ALine(_leftLines[a], _rightLines[a]));
+            _debugLines.push_back(ALine(leftEnd, rightEnd));
+
+        }
+        else if(a == 0 && _spineLines.size() == 2)  // START
+        {
+            _debugLines.push_back(ALine(_leftLines[a], _leftLines[a+1]));
+            _debugLines.push_back(ALine(_rightLines[a], _rightLines[a+1]));
+            _debugLines.push_back(ALine(_leftLines[a], _rightLines[a]));
+            _debugLines.push_back(ALine(_leftLines[a+1], _rightLines[a+1]));
+        }
+
+        else if(a == _spineLines.size() - 2 && _spineLines.size() > 2) // END
+        {
+            ALine prevLine(_spineLines[a-1], _spineLines[a]);
+            ALine curLine(_spineLines[a], _spineLines[a+1]);
+            AVector dir1 = prevLine.Direction().Norm();
+            AVector dir2 = curLine.Direction().Norm();
+            float rot = UtilityFunctions::GetRotation(dir1, dir2);
+
+            AVector leftStart = _leftLines[a];
+            AVector rightStart = _rightLines[a];
+            if(rot > 0)
+            {
+                // turn right: positive
+                // use right
+                AVector leftDir(dir2.y, -dir2.x);
+                leftStart = _rightLines[a] + leftDir * SystemParams::stroke_width;
+            }
+            else if(rot < 0)
+            {
+                // turn left: negative
+                // use left
+                AVector rightDir(-dir2.y, dir2.x);
+                rightStart = _leftLines[a] + rightDir * SystemParams::stroke_width;
+            }
+            _debugLines.push_back(ALine(leftStart, _leftLines[a+1]));
+            _debugLines.push_back(ALine(rightStart, _rightLines[a+1]));
+            _debugLines.push_back(ALine(leftStart, rightStart));
+            _debugLines.push_back(ALine(_leftLines[a+1], _rightLines[a+1]));
+        }
+
+        else if(a > 0)  // MIDDLE
+        {
+            ALine prevLine(_spineLines[a-1], _spineLines[a]);
+            ALine curLine(_spineLines[a], _spineLines[a+1]);
+            ALine nextLine(_spineLines[a+1], _spineLines[a+2]);
+
+            float dir1 = prevLine.Direction().Norm();
+            float dir2 = curLine.Direction().Norm();
+            float dir3 = nextLine.Direction().Norm();
+
+            float rot1 = UtilityFunctions::GetRotation(dir1, dir2);
+            float rot2 = UtilityFunctions::GetRotation(dir2, dir3);
+
+            if(rot1 > 0)
+            {
+            }
+            else if(rot1 < 0)
+            {
+            }
+
+            if(rot2 > 0)
+            {
+            }
+            else if(rot2 < 0)
+            {
+            }
+        }
+    }
+
+
+
+    BuildLinesVertexData(_spineLines, &_spineLinesVbo, &_spineLinesVao, QVector3D(0.5, 0.5, 1));
+    BuildLinesVertexData(_junctionRibLines, &_junctionRibLinesVbo, &_junctionRibLinesVao, QVector3D(0.5, 0.5, 1));
     BuildLinesVertexData(_leftLines, &_leftLinesVbo, &_leftLinesVao, QVector3D(0.5, 0.5, 1));
     BuildLinesVertexData(_rightLines, &_rightLinesVbo, &_rightLinesVao, QVector3D(0.5, 0.5, 1));
+
+    BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(1, 0, 0)); // modification
 }
 
 void StrokePainter::CalculateVertices2()
 {
     _plusSignVertices.clear();
 
-    for(int a = 0; a < _strokeLines.size() - 1; a++)
+    for(int a = 0; a < _spineLines.size() - 1; a++)
     {
-        AVector mStartPt = _strokeLines[a];
-        AVector mEndPt   = _strokeLines[a + 1];
+        AVector mStartPt = _spineLines[a];
+        AVector mEndPt   = _spineLines[a + 1];
 
         //int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
         //int intMeshWidth =  mStartPt.Distance(mEndPt) / SystemParams::stroke_width * SystemParams::mesh_size;
@@ -200,10 +263,10 @@ void StrokePainter::CalculateVertices1()
     //_vertices.clear();
     _plusSignVertices.clear();
 
-    for(int a = 0; a < _strokeLines.size() - 1; a++)
+    for(int a = 0; a < _spineLines.size() - 1; a++)
     {
-        AVector mStartPt = _strokeLines[a];
-        AVector mEndPt   = _strokeLines[a + 1];
+        AVector mStartPt = _spineLines[a];
+        AVector mEndPt   = _spineLines[a + 1];
 
         // no corner avoidance
         int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
@@ -231,7 +294,7 @@ void StrokePainter::CalculateVertices1()
         int yLoop = intMeshHeight + 1;
 
         bool isTheEnd = false;
-        if(a == _strokeLines.size() - 2)
+        if(a == _spineLines.size() - 2)
         {
             isTheEnd = true;
             xLoop++;
@@ -325,10 +388,10 @@ AVector StrokePainter::GetClosestPointFromMiddleVerticalLines(AVector pt)
 {
     AVector closestPt = pt;
     float dist = std::numeric_limits<float>::max();
-    for(int a = 0; a < _junctionSpinesLines.size(); a++)
+    for(int a = 0; a < _junctionRibLines.size(); a++)
     {
-        AVector pt1 = _junctionSpinesLines[a].GetPointA();
-        AVector pt2 = _junctionSpinesLines[a].GetPointB();
+        AVector pt1 = _junctionRibLines[a].GetPointA();
+        AVector pt2 = _junctionRibLines[a].GetPointB();
         AVector cPt = UtilityFunctions::GetClosestPoint(pt1, pt2, pt);
         if(pt.Distance(cPt) < dist)
         {
@@ -344,9 +407,9 @@ AVector StrokePainter::GetClosestPointFromStrokePoints(AVector pt)
     AVector closestPt = pt;
     float dist = std::numeric_limits<float>::max();
 
-    for(int a = 0; a < _strokeLines.size(); a++)
+    for(int a = 0; a < _spineLines.size(); a++)
     {
-        AVector cPt = _strokeLines[a];
+        AVector cPt = _spineLines[a];
         if(pt.Distance(cPt) < dist)
         {
             dist = pt.Distance(cPt);
@@ -362,10 +425,10 @@ AVector StrokePainter::GetClosestPointFromStrokeLines(AVector pt)
     AVector closestPt = pt;
     float dist = std::numeric_limits<float>::max();
 
-    for(int a = 0; a < _strokeLines.size() - 1; a++)
+    for(int a = 0; a < _spineLines.size() - 1; a++)
     {
-        AVector pt1 = _strokeLines[a];
-        AVector pt2 = _strokeLines[a+1];
+        AVector pt1 = _spineLines[a];
+        AVector pt2 = _spineLines[a+1];
         AVector cPt = UtilityFunctions::GetClosestPoint(pt1, pt2, pt);
         if(pt.Distance(cPt) < dist)
         {
@@ -677,7 +740,7 @@ void StrokePainter::mousePressEvent(float x, float y)
     //_vertices.clear();
     _plusSignVertices.clear();
 
-    _junctionSpinesLines.clear();
+    _junctionRibLines.clear();
     _leftLines.clear();
     _rightLines.clear();
 
@@ -685,7 +748,7 @@ void StrokePainter::mousePressEvent(float x, float y)
     //_gridLines.clear();
     _numConstrainedPoints = 0;
 
-    _strokeLines.clear();
+    _spineLines.clear();
     _oriStrokeLines.clear();
     _oriStrokeLines.push_back(AVector(x, y));
 }
@@ -694,8 +757,8 @@ void StrokePainter::mousePressEvent(float x, float y)
 void StrokePainter::mouseMoveEvent(float x, float y)
 {
     _oriStrokeLines.push_back(AVector(x, y));
-    _strokeLines = std::vector<AVector>(_oriStrokeLines);
-    BuildLinesVertexData(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(0, 0, 0));
+    _spineLines = std::vector<AVector>(_oriStrokeLines);
+    BuildLinesVertexData(_spineLines, &_spineLinesVbo, &_spineLinesVao, QVector3D(0, 0, 0));
 }
 
 // mouse release
@@ -704,8 +767,7 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
     _isMouseDown = false;
 
     _oriStrokeLines.push_back(AVector(x, y));
-    //CalculateInitialRibbon1();    // modification
-    CalculateInitialRibbon2();    // modification
+    CalculateInitialRibbon();    // modification
     //CalculateVertices1(); // modification
     CalculateVertices2(); // modification
 }
@@ -731,23 +793,23 @@ void StrokePainter::Draw()
     }
 
     // modification
-    if(/*(_isMouseDown || SystemParams::spines_constraint ) &&*/ _strokeLinesVao.isCreated())
+    if(/*(_isMouseDown || SystemParams::spines_constraint ) &&*/ _spineLinesVao.isCreated())
     {
         _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
 
         glLineWidth(2.0f);
-        _strokeLinesVao.bind();
-        glDrawArrays(GL_LINES, 0, _strokeLines.size() * 2);
-        _strokeLinesVao.release();
+        _spineLinesVao.bind();
+        glDrawArrays(GL_LINES, 0, _spineLines.size() * 2);
+        _spineLinesVao.release();
     }
 
-    if(SystemParams::junction_ribs_constraint && _midVerticalLinesVao.isCreated())
+    if(SystemParams::junction_ribs_constraint && _junctionRibLinesVao.isCreated())
         {
             _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
             glLineWidth(2.0f);
-            _midVerticalLinesVao.bind();
-            glDrawArrays(GL_LINES, 0, _junctionSpinesLines.size() * 2);
-            _midVerticalLinesVao.release();
+            _junctionRibLinesVao.bind();
+            glDrawArrays(GL_LINES, 0, _junctionRibLines.size() * 2);
+            _junctionRibLinesVao.release();
         }
 
     if(SystemParams::show_mesh && SystemParams::miter_joint_constraint && _constrainedPointsVao.isCreated())
@@ -830,15 +892,16 @@ void StrokePainter::Draw()
     }*/
 
     /*
-    if(_lLinesVao.isCreated())
+    if(_leftLinesVao.isCreated())
     {
         _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
         glLineWidth(2.0f);
-        _lLinesVao.bind();
-        glDrawArrays(GL_LINES, 0, (_lLines.size() - 1) * 2);
-        _lLinesVao.release();
+        _leftLinesVao.bind();
+        glDrawArrays(GL_LINES, 0, (_leftLines.size() - 1) * 2);
+        _leftLinesVao.release();
     }
-
+    */
+    /*
     if(_rLinesVao.isCreated())
     {
         _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
