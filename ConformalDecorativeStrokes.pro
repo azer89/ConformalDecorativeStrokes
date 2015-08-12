@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     StrokePainter.cpp \
     UtilityFunctions.cpp \
     SystemParams.cpp \
-    CurveRDP.cpp
+    CurveRDP.cpp \
+    VertexDataHelper.cpp
 
 HEADERS  += mainwindow.h \
     AVector.h \
@@ -31,7 +32,8 @@ HEADERS  += mainwindow.h \
     UtilityFunctions.h \
     SystemParams.h \
     CurveRDP.h \
-    PlusSignVertex.h
+    PlusSignVertex.h \
+    VertexDataHelper.h
 
 FORMS    += mainwindow.ui
 

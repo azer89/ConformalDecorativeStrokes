@@ -5,6 +5,7 @@
 #include "AVector.h"
 #include "VertexData.h"
 #include "PlusSignVertex.h"
+#include "VertexDataHelper.h"
 
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
@@ -34,15 +35,24 @@ public:
 
     void SetImage(QString img);
 
+    void SetupVertexDataHelper(QOpenGLShaderProgram* shaderProgram);
+
 public:
+    /*
+    // VertexDataHelper
     QOpenGLShaderProgram* _shaderProgram;
     int         _colorLocation;
     int         _vertexLocation;
     int         _use_color_location;
+    */
 
 private:
 
     bool _isMouseDown;
+
+    VertexDataHelper* _vDataHelper;
+    //QOpenGLShaderProgram* _shaderProgram;
+    //int         _use_color_location;
 
     // texture
     QImage _img;
@@ -132,6 +142,8 @@ private:
     void CalculateVertices1();
     void CalculateVertices2();
 
+    /*
+    // VertexDataHelper
     void BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
     void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
     void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol1, QVector3D vecCol2);
@@ -142,6 +154,7 @@ private:
 
     void BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol);
     void BuildVboWithColor(QVector<VertexData> data, QOpenGLBuffer* vbo);
+    */
 };
 
 #endif // STROKEPAINTER_H
