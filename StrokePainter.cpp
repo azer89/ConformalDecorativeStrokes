@@ -205,25 +205,86 @@ void StrokePainter::CalculateInitialRibbon()
             ALine curLine(_spineLines[a], _spineLines[a+1]);
             ALine nextLine(_spineLines[a+1], _spineLines[a+2]);
 
-            float dir1 = prevLine.Direction().Norm();
-            float dir2 = curLine.Direction().Norm();
-            float dir3 = nextLine.Direction().Norm();
+            AVector dir1 = prevLine.Direction().Norm();
+            AVector dir2 = curLine.Direction().Norm();
+            AVector dir3 = nextLine.Direction().Norm();
 
             float rot1 = UtilityFunctions::GetRotation(dir1, dir2);
             float rot2 = UtilityFunctions::GetRotation(dir2, dir3);
 
+            AVector leftStart = _leftLines[a];
+            AVector rightStart = _rightLines[a];
+            AVector leftEnd = _leftLines[a+1];
+            AVector rightEnd = _rightLines[a+1];
+
+            // start
             if(rot1 > 0)
             {
+                AVector leftDir(dir2.y, -dir2.x);
+                leftStart = _rightLines[a] + leftDir * SystemParams::stroke_width;
             }
             else if(rot1 < 0)
             {
+                AVector rightDir(-dir2.y, dir2.x);
+                rightStart = _leftLines[a] + rightDir * SystemParams::stroke_width;
             }
 
+            // end
             if(rot2 > 0)
             {
+                AVector leftDir(dir2.y, -dir2.x);
+                leftEnd = _rightLines[a+1] + leftDir * SystemParams::stroke_width;
             }
             else if(rot2 < 0)
             {
+                AVector rightDir(-dir2.y, dir2.x);
+                rightEnd = _leftLines[a+1] + rightDir * SystemParams::stroke_width;
+            }
+
+            _debugLines.push_back(ALine(leftStart,  leftEnd));
+            _debugLines.push_back(ALine(rightStart, rightEnd));
+            _debugLines.push_back(ALine(leftStart,  rightStart));
+            _debugLines.push_back(ALine(leftEnd,    rightEnd));
+        }
+    }
+
+    // calculate kites
+    for(uint a = 0; a < _spineLines.size() - 1; a++)
+    {
+        if(a > 0 && _spineLines.size() >= 3)
+        {
+            ALine prevLine(_spineLines[a-1], _spineLines[a]);
+            ALine curLine(_spineLines[a], _spineLines[a+1]);
+
+            AVector dir1 = prevLine.Direction().Norm();
+            AVector dir2 = curLine.Direction().Norm();
+
+            float rot1 = UtilityFunctions::GetRotation(dir1, dir2);
+            if(rot1 > 0)
+            {
+                // turn right: positive
+                AVector lMid = _leftLines[a];
+                AVector rMid = _rightLines[a];
+                AVector lStart = rMid + AVector(dir1.y, -dir1.x) * SystemParams::stroke_width;   // left
+                AVector lEnd = rMid + AVector(dir2.y, -dir2.x) * SystemParams::stroke_width; // left
+
+                _debugLines.push_back(ALine(lStart,  rMid));
+                _debugLines.push_back(ALine(lEnd, rMid));
+                _debugLines.push_back(ALine(lStart, lMid));
+                _debugLines.push_back(ALine(lMid, lEnd));
+            }
+            else if(rot1 < 0)
+            {
+                // turn right: negative
+                AVector lMid = _leftLines[a];
+                AVector rMid = _rightLines[a];
+                AVector rStart = lMid + AVector(-dir1.y, dir1.x) * SystemParams::stroke_width;
+                AVector rEnd  = lMid + AVector(-dir2.y, dir2.x) * SystemParams::stroke_width;
+
+                _debugLines.push_back(ALine(lMid,  rStart));
+                _debugLines.push_back(ALine(lMid,  rEnd));
+                _debugLines.push_back(ALine(rStart,  rMid));
+                _debugLines.push_back(ALine(rMid,  rEnd));
             }
         }
     }
