@@ -33,7 +33,8 @@ HEADERS  += mainwindow.h \
     SystemParams.h \
     CurveRDP.h \
     PlusSignVertex.h \
-    VertexDataHelper.h
+    VertexDataHelper.h \
+    QuadMesh.h
 
 FORMS    += mainwindow.ui
 
