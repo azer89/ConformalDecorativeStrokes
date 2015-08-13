@@ -24,35 +24,13 @@ StrokePainter::~StrokePainter()
 
 void StrokePainter::SetupVertexDataHelper(QOpenGLShaderProgram* shaderProgram)
 {
-    //_shaderProgram = shaderProgram;
-    //_use_color_location = _shaderProgram->uniformLocation("use_color");
     _vDataHelper = new VertexDataHelper(shaderProgram);
 }
 
 void StrokePainter::SetImage(QString img)
 {
-    /*if(_img.isNull())
-    {
-        std::cout << "image is empty\n";
-    }
-    else
-    {
-        std::cout << "image is legit\n";
-    }
-    std::cout << img.toStdString() << "\n";*/
-
     _img.load(img);
     _imgTexture = new QOpenGLTexture(_img);
-
-    /*if(_img.isNull())
-    {
-        std::cout << "image is empty\n";
-    }
-    else
-    {
-        std::cout << "image is legit\n";
-    }*/
-
 }
 
 /*
@@ -301,8 +279,6 @@ void StrokePainter::CalculateInitialRibbon()
             }
         }
     }
-
-
 
     _vDataHelper->BuildLinesVertexData(_spineLines, &_spineLinesVbo, &_spineLinesVao, QVector3D(0.5, 0.5, 1));
     _vDataHelper->BuildLinesVertexData(_junctionRibLines, &_junctionRibLinesVbo, &_junctionRibLinesVao, QVector3D(0.5, 0.5, 1));
@@ -744,32 +720,28 @@ void StrokePainter::ConformalMappingOneStep1()
             // left
             if(a > 0)
             {
-                PlusSignVertex lVertex = tempVertices[a - 1][b];
-                sumPositions += lVertex.position;
+                sumPositions += tempVertices[a - 1][b].position;
                 numNeighbor++;
             }
 
             // right
             if(a < _mesh_width - 1)
             {
-                PlusSignVertex rVertex = tempVertices[a + 1][b];
-                sumPositions = sumPositions + rVertex.position;
+                sumPositions = sumPositions + tempVertices[a + 1][b].position;
                 numNeighbor++;
             }
 
             // up
             if(b > 0)
             {
-                PlusSignVertex uVertex = tempVertices[a][b - 1];
-                sumPositions += uVertex.position;
+                sumPositions += tempVertices[a][b - 1].position;
                 numNeighbor++;
             }
 
             // bottom
             if(b < _mesh_height - 1)
             {
-                PlusSignVertex bVertex = tempVertices[a][b + 1];
-                sumPositions += bVertex.position;
+                sumPositions += tempVertices[a][b + 1].position;
                 numNeighbor++;
             }
 
@@ -798,9 +770,7 @@ void StrokePainter::ConformalMappingOneStep1()
         }
     }
     _iterDist = sumDist;
-
     _plusSignVertices = tempVertices;
-
     _vDataHelper->BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, _mesh_width, _mesh_height, QVector3D(1, 0, 0));
 
 }

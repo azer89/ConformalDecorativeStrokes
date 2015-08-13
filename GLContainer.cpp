@@ -1,10 +1,5 @@
 
 
-
-
-
-//#include "stdafx.h"
-
 #include "GLContainer.h"
 
 #include <iostream>
