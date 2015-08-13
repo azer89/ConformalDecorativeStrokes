@@ -16,7 +16,24 @@ public:
     {        
     }
 
+    void AddBorders(std::vector<AVector> lines)
+    {
+        for(int a = 0; a < lines.size() - 1; a++)
+        {
+            _borderLines.push_back(ALine(lines[a], lines[a+1]));
+        }
+    }
+
+    void AddBorder(ALine aline)
+    {
+        _borderLines.push_back(aline);
+    }
+
+
 public:
+    int _mesh_width;
+    int _mesh_height;
+
     // Vertices
     std::vector<std::vector<PlusSignVertex>> _plusSignVertices;
     QOpenGLBuffer               _plusSignVerticesVbo;
@@ -24,8 +41,8 @@ public:
 
     // Mesh
     std::vector<ALine>        _borderLines;
-    QOpenGLBuffer             _borderLinesVbo;
-    QOpenGLVertexArrayObject  _borderLinesVao;
+    //QOpenGLBuffer             _borderLinesVbo; // do I need this ?
+    //QOpenGLVertexArrayObject  _borderLinesVao; // do I need this ?
 
     // Texture
     // Every mesh has its own texture

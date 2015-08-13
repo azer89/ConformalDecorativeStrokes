@@ -20,14 +20,11 @@ public:
     StrokePainter();
     ~StrokePainter();
 
-    // mouse press
     void mousePressEvent(float x, float y);
-    // mouse move
     void mouseMoveEvent(float x, float y);
-    // mouse release
     void mouseReleaseEvent(float x, float y);
 
-    QSize MeshSize(){ return QSize(_mesh_width, _mesh_height); }
+    QSize MeshSize(){ return QSize(_aQuadMesh._mesh_width, _aQuadMesh._mesh_height); }
 
     void Draw();
 
@@ -39,13 +36,6 @@ public:
     void SetVertexDataHelper(QOpenGLShaderProgram* shaderProgram);
 
 public:
-    /*
-    // VertexDataHelper
-    QOpenGLShaderProgram* _shaderProgram;
-    int         _colorLocation;
-    int         _vertexLocation;
-    int         _use_color_location;
-    */
 
 private:
 
@@ -53,20 +43,14 @@ private:
 
     VertexDataHelper* _vDataHelper;
 
-    int _mesh_width;
-    int _mesh_height;
-
     float _iterDist;
 
     // modification
     QuadMesh _aQuadMesh;
 
-    // Modification
     // texture
-    //QImage _img;
-    //QOpenGLTexture* _imgTexture;
-    //QOpenGLBuffer               _texturedStrokeVbo;
-    //QOpenGLVertexArrayObject    _texturedStrokeVao;
+    //QImage _masterImg;
+    //QOpenGLTexture* _masterImgTexture;
 
     // strokes
     std::vector<AVector>        _oriStrokeLines;    // original
@@ -103,41 +87,10 @@ private:
     QOpenGLBuffer               _debugLinesVbo;
     QOpenGLVertexArrayObject    _debugLinesVao;
 
-    // modification
-    // vertices of the mesh as 2D list
-    //std::vector<std::vector<PlusSignVertex>> _plusSignVertices;
-    //QOpenGLBuffer               _plusSignVerticesVbo;
-    //QOpenGLVertexArrayObject    _plusSignVerticesVao;
-
-    // debugging visualization
-    //std::vector<AVector>        _points;
-    //QOpenGLBuffer               _pointsVbo;
-    //QOpenGLVertexArrayObject    _pointsVao;
-
     // debugging visualization
     //std::vector<AVector>        _debugPoints;
     //QOpenGLBuffer               _debugPointsVbo;
     //QOpenGLVertexArrayObject    _debugPointsVao;
-
-    // vertices of the mesh as a 1D list (debugging visualization)
-    //std::vector<AVector>        _vertices;
-    //QOpenGLBuffer               _verticesVbo;
-    //QOpenGLVertexArrayObject    _verticesVao;
-
-    // delete (?)
-    //std::vector<ALine>          _borderLines;
-    //QOpenGLBuffer               _borderLinesVbo;
-    //QOpenGLVertexArrayObject    _borderLinesVao;
-
-    // debugging visualization delete (?)
-    //std::vector<ALine>          _ribLines;
-    //QOpenGLBuffer               _ribLinesVbo;
-    //QOpenGLVertexArrayObject    _ribLinesVao;
-
-    // debugging visualization delete (?)
-    //std::vector<ALine>          _gridLines;
-    //QOpenGLBuffer               _gridLinesVbo;
-    //QOpenGLVertexArrayObject    _gridLinesVao;
 
 
 private:
