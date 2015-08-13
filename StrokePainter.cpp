@@ -12,8 +12,9 @@ StrokePainter::StrokePainter() :
     _isMouseDown(false),
     _vDataHelper(0),
     _mesh_width(0),
-    _mesh_height(0),
-    _imgTexture(0)
+    _mesh_height(0)/*,
+    // modification
+    _imgTexture(0)*/
 {
 }
 
@@ -22,15 +23,18 @@ StrokePainter::~StrokePainter()
     if(_vDataHelper) delete _vDataHelper;
 }
 
-void StrokePainter::SetupVertexDataHelper(QOpenGLShaderProgram* shaderProgram)
+void StrokePainter::SetVertexDataHelper(QOpenGLShaderProgram* shaderProgram)
 {
     _vDataHelper = new VertexDataHelper(shaderProgram);
 }
 
 void StrokePainter::SetImage(QString img)
 {
-    _img.load(img);
-    _imgTexture = new QOpenGLTexture(_img);
+    // modification
+    //_img.load(img);
+    //_imgTexture = new QOpenGLTexture(_img);
+    _aQuadMesh._img.load(img);
+    _aQuadMesh._imgTexture = new QOpenGLTexture(_aQuadMesh._img);
 }
 
 /*
@@ -691,9 +695,7 @@ void StrokePainter::ConformalMappingOneStep2()
     {
         for(int b = 0; b < _mesh_height; b++)
         {
-            AVector pt1 = _plusSignVertices[a][b].position;
-            AVector pt2 = tempVertices[a][b].position;
-            sumDist += pt1.Distance(pt2);
+            sumDist += _plusSignVertices[a][b].position.Distance(tempVertices[a][b].position);
         }
     }
     _iterDist = sumDist;
@@ -706,6 +708,7 @@ void StrokePainter::ConformalMappingOneStep2()
     //_vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.5, 0));
 }
 
+// a very simple version
 void StrokePainter::ConformalMappingOneStep1()
 {
     std::vector<std::vector<PlusSignVertex>> tempVertices = _plusSignVertices;
@@ -764,9 +767,7 @@ void StrokePainter::ConformalMappingOneStep1()
     {
         for(int b = 0; b < _mesh_height; b++)
         {
-            AVector pt1 = _plusSignVertices[a][b].position;
-            AVector pt2 = tempVertices[a][b].position;
-            sumDist += pt1.Distance(pt2);
+            sumDist += _plusSignVertices[a][b].position.Distance(tempVertices[a][b].position);
         }
     }
     _iterDist = sumDist;
@@ -813,24 +814,15 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
 
     _oriStrokeLines.push_back(AVector(x, y));
     CalculateInitialRibbon();    // modification
-    //CalculateVertices1(); // modification
-    CalculateVertices2(); // modification
+    CalculateVertices1(); // modification
+    //CalculateVertices2(); // modification
 }
 
 void StrokePainter::Draw()
 {
-    /*if(_debugPointsVao.isCreated())
-    {
-        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
-        glPointSize(4.0f);
-        _debugPointsVao.bind();
-        glDrawArrays(GL_POINTS, 0, _debugPoints.size());
-        _debugPointsVao.release();
-    }*/
-
+    // Debug
     if(_debugLinesVao.isCreated())
     {
-        //_shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
         _vDataHelper->NeedToDrawWithColor(1.0);
         glLineWidth(2.0f);
         _debugLinesVao.bind();
@@ -841,9 +833,7 @@ void StrokePainter::Draw()
     // modification
     if(/*(_isMouseDown || SystemParams::spines_constraint ) &&*/ _spineLinesVao.isCreated())
     {
-        //_shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
         _vDataHelper->NeedToDrawWithColor(1.0);
-
         glLineWidth(2.0f);
         _spineLinesVao.bind();
         glDrawArrays(GL_LINES, 0, _spineLines.size() * 2);
@@ -851,71 +841,94 @@ void StrokePainter::Draw()
     }
 
     if(SystemParams::junction_ribs_constraint && _junctionRibLinesVao.isCreated())
-        {
-            //_shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
+    {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glLineWidth(2.0f);
-            _junctionRibLinesVao.bind();
-            glDrawArrays(GL_LINES, 0, _junctionRibLines.size() * 2);
-            _junctionRibLinesVao.release();
-        }
+        _junctionRibLinesVao.bind();
+        glDrawArrays(GL_LINES, 0, _junctionRibLines.size() * 2);
+        _junctionRibLinesVao.release();
+    }
 
     if(SystemParams::show_mesh && SystemParams::miter_joint_constraint && _constrainedPointsVao.isCreated())
     {
-        //_shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
         _vDataHelper->NeedToDrawWithColor(1.0);
-
         glPointSize(10.0f);
         _constrainedPointsVao.bind();
         glDrawArrays(GL_POINTS, 0, _numConstrainedPoints);
         _constrainedPointsVao.release();
     }
 
-
-    if(SystemParams::show_mesh && _plusSignVerticesVao.isCreated() && _plusSignVertices.size() > 0)
+    // Modification
+    // Quad mesh
+    if(SystemParams::show_mesh && _aQuadMesh._plusSignVerticesVao.isCreated() && _aQuadMesh._plusSignVertices.size() > 0)
     {
-        //_shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
         _vDataHelper->NeedToDrawWithColor(1.0);
-
         int wMin1 = _mesh_width - 1;
         int hMin1 = _mesh_height - 1;
-
         int meshSize = ((wMin1 * _mesh_width) + (hMin1 * _mesh_height)) * 2;
+        glLineWidth(1.0f);
+        _aQuadMesh._plusSignVerticesVao.bind();
+        glDrawArrays(GL_LINES, 0, meshSize);
+        _aQuadMesh._plusSignVerticesVao.release();
+    }
 
+
+    // Quad mesh
+    /*
+    if(SystemParams::show_mesh && _plusSignVerticesVao.isCreated() && _plusSignVertices.size() > 0)
+    {
+        _vDataHelper->NeedToDrawWithColor(1.0);
+        int wMin1 = _mesh_width - 1;
+        int hMin1 = _mesh_height - 1;
+        int meshSize = ((wMin1 * _mesh_width) + (hMin1 * _mesh_height)) * 2;
         glLineWidth(1.0f);
         _plusSignVerticesVao.bind();
         glDrawArrays(GL_LINES, 0, meshSize);
         _plusSignVerticesVao.release();
     }
+    */
 
-
-
-
-    //_texturedStrokeVao
-    if(SystemParams::show_texture && _texturedStrokeVao.isCreated() && _plusSignVertices.size() > 0)
+    // modification
+    // Texture
+    if(SystemParams::show_texture && _texturedStrokeVao.isCreated() && _aQuadMesh._plusSignVertices.size() > 0)
     {
-        //_shaderProgram->setUniformValue(_use_color_location, (GLfloat)0.0);
         _vDataHelper->NeedToDrawWithColor(0.0);
-
-        int wMin1 = _mesh_width - 1;
-        int hMin1 = _mesh_height - 1;
-
-        int meshSize = wMin1 * hMin1 * 4;
-
+        int meshSize = (_mesh_width - 1) * (_mesh_height - 1) * 4;
         glLineWidth(1.0f);
-        if(_imgTexture)
-            _imgTexture->bind();
+        if(_imgTexture) { _imgTexture->bind(); }
         _texturedStrokeVao.bind();
         glDrawArrays(GL_QUADS, 0, meshSize);
         _texturedStrokeVao.release();
-        if(_imgTexture)
-            _imgTexture->release();
+        if(_imgTexture) { _imgTexture->release(); }
     }
+
+    // Texture
+    /*if(SystemParams::show_texture && _texturedStrokeVao.isCreated() && _plusSignVertices.size() > 0)
+    {
+        _vDataHelper->NeedToDrawWithColor(0.0);
+        int meshSize = (_mesh_width - 1) * (_mesh_height - 1) * 4;
+        glLineWidth(1.0f);
+        if(_imgTexture) { _imgTexture->bind(); }
+        _texturedStrokeVao.bind();
+        glDrawArrays(GL_QUADS, 0, meshSize);
+        _texturedStrokeVao.release();
+        if(_imgTexture) { _imgTexture->release(); }
+    }*/
+
+    /*if(_debugPointsVao.isCreated())
+    {
+        _vDataHelper->NeedToDrawWithColor(1.0);
+        glPointSize(4.0f);
+        _debugPointsVao.bind();
+        glDrawArrays(GL_POINTS, 0, _debugPoints.size());
+        _debugPointsVao.release();
+    }*/
+
 
     /*
     if(_strokeLinesVao.isCreated() && _plusSignVertices.size() == 0)
     {
-        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
+        _vDataHelper->NeedToDrawWithColor(1.0);
 
         glLineWidth(2.0f);
         _strokeLinesVao.bind();
@@ -926,7 +939,8 @@ void StrokePainter::Draw()
     /*
     if(_pointsVao.isCreated())
     {
-        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
+        _vDataHelper->NeedToDrawWithColor(1.0);
+
         glPointSize(10.0f);
         _pointsVao.bind();
         glDrawArrays(GL_POINTS, 0, _points.size());
@@ -935,7 +949,8 @@ void StrokePainter::Draw()
 
     /*if(_verticesVao.isCreated())
     {
-        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
+        _vDataHelper->NeedToDrawWithColor(1.0);
+
         glPointSize(10.0f);
         _verticesVao.bind();
         glDrawArrays(GL_POINTS, 0, _vertices.size());
@@ -945,7 +960,8 @@ void StrokePainter::Draw()
     /*
     if(_leftLinesVao.isCreated())
     {
-        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
+        _vDataHelper->NeedToDrawWithColor(1.0);
+
         glLineWidth(2.0f);
         _leftLinesVao.bind();
         glDrawArrays(GL_LINES, 0, (_leftLines.size() - 1) * 2);
@@ -955,7 +971,8 @@ void StrokePainter::Draw()
     /*
     if(_rLinesVao.isCreated())
     {
-        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
+        _vDataHelper->NeedToDrawWithColor(1.0);
+
         glLineWidth(2.0f);
         _rLinesVao.bind();
         glDrawArrays(GL_LINES, 0, (_rLines.size() - 1) * 2);
@@ -966,7 +983,8 @@ void StrokePainter::Draw()
     /*
     if(_ribLinesVao.isCreated())
     {
-        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
+        _vDataHelper->NeedToDrawWithColor(1.0);
+
         glLineWidth(2.0f);
         _ribLinesVao.bind();
         glDrawArrays(GL_LINES, 0, _ribLines.size() * 2);
@@ -975,7 +993,8 @@ void StrokePainter::Draw()
 
     if(_gridLinesVao.isCreated())
     {
-        _shaderProgram->setUniformValue(_use_color_location, (GLfloat)1.0);
+        _vDataHelper->NeedToDrawWithColor(1.0);
+
         glLineWidth(2.0f);
         _gridLinesVao.bind();
         glDrawArrays(GL_LINES, 0, _gridLines.size() * 2);

@@ -58,7 +58,7 @@ void GLWidget::initializeGL()
     _use_color_location = _shaderProgram->uniformLocation("use_color");
 
     _sPainter = new StrokePainter();
-    _sPainter->SetupVertexDataHelper(_shaderProgram);
+    _sPainter->SetVertexDataHelper(_shaderProgram);
 
     this->SetImage("/home/azer/workspace/cpp/ConformalDecorativeStrokes/weyland_yutani.png");
 }

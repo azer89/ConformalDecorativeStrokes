@@ -14,8 +14,8 @@ struct PlusSignVertex
     float armLength;
     float angle;
     bool shouldMove;
-    bool midVerticalConstrained;
-    bool midHorizontalConstrained;
+    bool midVerticalConstrained;    // is fixed to a junction rib
+    bool midHorizontalConstrained;  // is fixed to a spine
 
 public:
 
