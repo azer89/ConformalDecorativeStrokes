@@ -294,7 +294,7 @@ void StrokePainter::CalculateInitialRibbon()
 
 void StrokePainter::CalculateVertices2()
 {
-    _plusSignVertices.clear();
+    _aQuadMesh._plusSignVertices.clear();
 
     for(int a = 0; a < _spineLines.size() - 1; a++)
     {
@@ -315,7 +315,7 @@ void StrokePainter::CalculateVertices2()
 void StrokePainter::CalculateVertices1()
 {
     //_vertices.clear();
-    _plusSignVertices.clear();
+    _aQuadMesh._plusSignVertices.clear();
 
     for(int a = 0; a < _spineLines.size() - 1; a++)
     {
@@ -425,17 +425,25 @@ void StrokePainter::CalculateVertices1()
 
                 columnVertices.push_back(PlusSignVertex(pt, shouldMove, junctionRibsConstrained, spinesConstrained));
             }
-            _plusSignVertices.push_back(columnVertices);
+            _aQuadMesh._plusSignVertices.push_back(columnVertices);
         }
     }
 
-    _mesh_width = _plusSignVertices.size();
-    _mesh_height = _plusSignVertices[0].size();
+    _mesh_width = _aQuadMesh._plusSignVertices.size();
+    _mesh_height = _aQuadMesh._plusSignVertices[0].size();
 
+    // modification
     // don't create vertex data here
-    _vDataHelper->BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, _mesh_width, _mesh_height, QVector3D(1, 0, 0));
-    _vDataHelper->BuildTexturedStrokeVertexData(_plusSignVertices, &_texturedStrokeVbo, &_texturedStrokeVao, _mesh_width, _mesh_height);
-    _vDataHelper->BuildConstrainedPointsVertexData(_plusSignVertices, &_constrainedPointsVbo, &_constrainedPointsVao, &_numConstrainedPoints, _mesh_width, _mesh_height, QVector3D(0.5, 0.5, 1));
+    //_vDataHelper->BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, _mesh_width, _mesh_height, QVector3D(1, 0, 0));
+    //_vDataHelper->BuildTexturedStrokeVertexData(_plusSignVertices, &_texturedStrokeVbo, &_texturedStrokeVao, _mesh_width, _mesh_height);
+    //_vDataHelper->BuildConstrainedPointsVertexData(_plusSignVertices, &_constrainedPointsVbo, &_constrainedPointsVao, &_numConstrainedPoints, _mesh_width, _mesh_height, QVector3D(0.5, 0.5, 1));
+
+    // modification
+    // don't create vertex data here
+    _vDataHelper->BuildLinesVertexData(_aQuadMesh._plusSignVertices, &_aQuadMesh._plusSignVerticesVbo, &_aQuadMesh._plusSignVerticesVao, _mesh_width, _mesh_height, QVector3D(1, 0, 0));
+    _vDataHelper->BuildTexturedStrokeVertexData(_aQuadMesh._plusSignVertices, &_aQuadMesh._texturedStrokeVbo, &_aQuadMesh._texturedStrokeVao, _mesh_width, _mesh_height);
+    _vDataHelper->BuildConstrainedPointsVertexData(_aQuadMesh._plusSignVertices, &_constrainedPointsVbo, &_constrainedPointsVao, &_numConstrainedPoints, _mesh_width, _mesh_height, QVector3D(0.5, 0.5, 1));
+
 }
 
 AVector StrokePainter::GetClosestPointFromMiddleVerticalLines(AVector pt)
@@ -550,7 +558,7 @@ AVector StrokePainter::GetClosestPointFromBorders(AVector pt)
 
 void StrokePainter::ConformalMappingOneStep2()
 {
-    std::vector<std::vector<PlusSignVertex>> tempVertices = _plusSignVertices;
+    std::vector<std::vector<PlusSignVertex>> tempVertices = _aQuadMesh._plusSignVertices;
 
     for(int a = 0; a < _mesh_width; a++)
     {
@@ -695,15 +703,27 @@ void StrokePainter::ConformalMappingOneStep2()
     {
         for(int b = 0; b < _mesh_height; b++)
         {
-            sumDist += _plusSignVertices[a][b].position.Distance(tempVertices[a][b].position);
+            // modification
+            //sumDist +=          _plusSignVertices[a][b].position.Distance(tempVertices[a][b].position);
+            sumDist += _aQuadMesh._plusSignVertices[a][b].position.Distance(tempVertices[a][b].position);
         }
     }
     _iterDist = sumDist;
 
+    // modification
+    /*
     _plusSignVertices = tempVertices;
     _vDataHelper->BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, _mesh_width, _mesh_height, QVector3D(1, 0, 0));
     _vDataHelper->BuildTexturedStrokeVertexData(_plusSignVertices, &_texturedStrokeVbo, &_texturedStrokeVao, _mesh_width, _mesh_height);
     _vDataHelper->BuildConstrainedPointsVertexData(_plusSignVertices, &_constrainedPointsVbo, &_constrainedPointsVao, &_numConstrainedPoints, _mesh_width, _mesh_height, QVector3D(0.5, 0.5, 1));
+    //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0, 1));
+    //_vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.5, 0));*/
+
+    // modification
+    _aQuadMesh._plusSignVertices = tempVertices;
+    _vDataHelper->BuildLinesVertexData(_aQuadMesh._plusSignVertices, &_aQuadMesh._plusSignVerticesVbo, &_aQuadMesh._plusSignVerticesVao, _mesh_width, _mesh_height, QVector3D(1, 0, 0));
+    _vDataHelper->BuildTexturedStrokeVertexData(_aQuadMesh._plusSignVertices, &_aQuadMesh._texturedStrokeVbo, &_aQuadMesh._texturedStrokeVao, _mesh_width, _mesh_height);
+    _vDataHelper->BuildConstrainedPointsVertexData(_aQuadMesh._plusSignVertices, &_constrainedPointsVbo, &_constrainedPointsVao, &_numConstrainedPoints, _mesh_width, _mesh_height, QVector3D(0.5, 0.5, 1));
     //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0, 1));
     //_vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.5, 0));
 }
@@ -711,7 +731,7 @@ void StrokePainter::ConformalMappingOneStep2()
 // a very simple version
 void StrokePainter::ConformalMappingOneStep1()
 {
-    std::vector<std::vector<PlusSignVertex>> tempVertices = _plusSignVertices;
+    std::vector<std::vector<PlusSignVertex>> tempVertices = _aQuadMesh._plusSignVertices;
 
     for(int a = 0; a < _mesh_width; a++)
     {
@@ -767,12 +787,12 @@ void StrokePainter::ConformalMappingOneStep1()
     {
         for(int b = 0; b < _mesh_height; b++)
         {
-            sumDist += _plusSignVertices[a][b].position.Distance(tempVertices[a][b].position);
+            sumDist += _aQuadMesh._plusSignVertices[a][b].position.Distance(tempVertices[a][b].position);
         }
     }
     _iterDist = sumDist;
-    _plusSignVertices = tempVertices;
-    _vDataHelper->BuildLinesVertexData(_plusSignVertices, &_plusSignVerticesVbo, &_plusSignVerticesVao, _mesh_width, _mesh_height, QVector3D(1, 0, 0));
+    _aQuadMesh._plusSignVertices = tempVertices;
+    _vDataHelper->BuildLinesVertexData(_aQuadMesh._plusSignVertices, &_aQuadMesh._plusSignVerticesVbo, &_aQuadMesh._plusSignVerticesVao, _mesh_width, _mesh_height, QVector3D(1, 0, 0));
 
 }
 
@@ -783,7 +803,7 @@ void StrokePainter::mousePressEvent(float x, float y)
 
     //_points.clear();
     //_vertices.clear();
-    _plusSignVertices.clear();
+    _aQuadMesh._plusSignVertices.clear();
 
     _debugLines.clear();
     _junctionRibLines.clear();
@@ -890,16 +910,16 @@ void StrokePainter::Draw()
 
     // modification
     // Texture
-    if(SystemParams::show_texture && _texturedStrokeVao.isCreated() && _aQuadMesh._plusSignVertices.size() > 0)
+    if(SystemParams::show_texture && _aQuadMesh._texturedStrokeVao.isCreated() && _aQuadMesh._plusSignVertices.size() > 0)
     {
         _vDataHelper->NeedToDrawWithColor(0.0);
         int meshSize = (_mesh_width - 1) * (_mesh_height - 1) * 4;
         glLineWidth(1.0f);
-        if(_imgTexture) { _imgTexture->bind(); }
-        _texturedStrokeVao.bind();
+        if(_aQuadMesh._imgTexture) { _aQuadMesh._imgTexture->bind(); }
+        _aQuadMesh._texturedStrokeVao.bind();
         glDrawArrays(GL_QUADS, 0, meshSize);
-        _texturedStrokeVao.release();
-        if(_imgTexture) { _imgTexture->release(); }
+        _aQuadMesh._texturedStrokeVao.release();
+        if(_aQuadMesh._imgTexture) { _aQuadMesh._imgTexture->release(); }
     }
 
     // Texture

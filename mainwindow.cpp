@@ -65,13 +65,13 @@ void MainWindow::AnimationStart()
     /*
      * Comment these if you don't want conformal mapping
      */
-    /*
+
     if(animTimer->isActive())
     {
        animTimer->stop();
     }
     animTimer->start();
-    */
+
 }
 
 void MainWindow::SetParams()
