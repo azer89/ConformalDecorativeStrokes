@@ -39,7 +39,12 @@ public:
     QOpenGLBuffer               _plusSignVerticesVbo;
     QOpenGLVertexArrayObject    _plusSignVerticesVao;
 
-    // Mesh
+
+    ALine _topLine;
+    ALine _rightLine;
+    ALine _bottomLine;
+    ALine _leftLine;
+
     std::vector<ALine>        _borderLines;
     //QOpenGLBuffer             _borderLinesVbo; // do I need this ?
     //QOpenGLVertexArrayObject  _borderLinesVao; // do I need this ?

@@ -48,6 +48,8 @@ private:
     // modification
     QuadMesh _aQuadMesh;
 
+    std::vector<QuadMesh> _quadMeshes;
+
     // texture
     //QImage _masterImg;
     //QOpenGLTexture* _masterImgTexture;
@@ -100,6 +102,9 @@ private:
     AVector GetClosestPointFromStrokePoints(AVector pt);
 
     void CalculateInitialRibbon();
+    void CalculateLeftRightLines();
+    void CalculateKitesAndRectangles();
+    void CalculateSpines();
     //void CalculateInitialRibbon2();
 
     void CalculateVertices1();

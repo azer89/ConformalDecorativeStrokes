@@ -45,23 +45,14 @@ void StrokePainter::CalculateInitialRibbon2()
 }
 */
 
-void StrokePainter::CalculateInitialRibbon()
+void StrokePainter::CalculateLeftRightLines()
 {
-    _debugLines.clear();
-
     float halfStrokeWidth = SystemParams::stroke_width / 2.0f;
-    float strokeWidth = SystemParams::stroke_width;
-
-    // calculate spine lines
-    _spineLines.clear();
-    std::vector<AVector> tempLine;
-    CurveRDP::SimplifyRDP(_oriStrokeLines, tempLine, SystemParams::rdp_epsilon);
-    _spineLines = std::vector<AVector>(tempLine);
 
     // calculate left, right, and junction ribs;
     _leftLines.clear();
     _rightLines.clear();
-    _junctionRibLines.clear();    
+    _junctionRibLines.clear();
     for(uint a = 0; a < _spineLines.size(); a++)
     {
         if(a == 0)
@@ -69,8 +60,8 @@ void StrokePainter::CalculateInitialRibbon()
             AVector pt1 = _spineLines[0];
             AVector pt2 = _spineLines[1];
             AVector dirVec = (pt2 - pt1).Norm() * halfStrokeWidth;
-            _leftLines.push_back(pt1 + AVector(-dirVec.y,  dirVec.x));
-            _rightLines.push_back(pt1 + AVector( dirVec.y, -dirVec.x));
+            _leftLines.push_back(pt1 + AVector(  dirVec.y,  -dirVec.x));
+            _rightLines.push_back(pt1 + AVector(-dirVec.y,   dirVec.x));
         }
         else if(_spineLines.size() >= 3 && a <= _spineLines.size() - 2)
         {
@@ -94,10 +85,81 @@ void StrokePainter::CalculateInitialRibbon()
         }
     }
 
+}
 
-    // calculate non-corner
+void StrokePainter::CalculateInitialRibbon()
+{
+    CalculateSpines();
+    CalculateLeftRightLines();
+    CalculateKitesAndRectangles();
+
+    _vDataHelper->BuildLinesVertexData(_spineLines, &_spineLinesVbo, &_spineLinesVao, QVector3D(0.5, 0.5, 1));
+    _vDataHelper->BuildLinesVertexData(_junctionRibLines, &_junctionRibLinesVbo, &_junctionRibLinesVao, QVector3D(0.5, 0.5, 1));
+    _vDataHelper->BuildLinesVertexData(_leftLines, &_leftLinesVbo, &_leftLinesVao, QVector3D(0.5, 0.5, 1));
+    _vDataHelper->BuildLinesVertexData(_rightLines, &_rightLinesVbo, &_rightLinesVao, QVector3D(0.5, 0.5, 1));
+
+    _vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(1, 0, 0), QVector3D(0, 1, 0)); // modification
+}
+
+void StrokePainter::CalculateSpines()
+{
+    // calculate spines
+    _spineLines.clear();
+    std::vector<AVector> tempLine;
+    CurveRDP::SimplifyRDP(_oriStrokeLines, tempLine, SystemParams::rdp_epsilon);
+    _spineLines = std::vector<AVector>(tempLine);
+}
+
+void StrokePainter::CalculateKitesAndRectangles()
+{
+    _debugLines.clear();
+
+    float strokeWidth = SystemParams::stroke_width;
+
     for(uint a = 0; a < _spineLines.size() - 1; a++)
     {
+        // KITES
+        if(a > 0 && _spineLines.size() >= 3)
+        {
+            ALine prevLine(_spineLines[a-1], _spineLines[a]);
+            ALine curLine(_spineLines[a], _spineLines[a+1]);
+
+            AVector dir1 = prevLine.Direction().Norm();
+            AVector dir2 = curLine.Direction().Norm();
+
+            float rot1 = UtilityFunctions::GetRotation(dir1, dir2);
+            if(rot1 > 0)
+            {
+                // turn right: positive
+                AVector lMid = _leftLines[a];
+                AVector rMid = _rightLines[a];
+                AVector lStart = rMid + AVector(dir1.y, -dir1.x) * strokeWidth;   // left
+                AVector lEnd = rMid + AVector(dir2.y, -dir2.x) * strokeWidth; // left
+
+                std::cout << "kite " << a <<  "\n";
+                _debugLines.push_back(ALine(lStart,  rMid));
+                _debugLines.push_back(ALine(lEnd, rMid));
+                _debugLines.push_back(ALine(lStart, lMid));
+                _debugLines.push_back(ALine(lMid, lEnd));
+
+            }
+            else if(rot1 < 0)
+            {
+                // turn right: negative
+                AVector lMid = _leftLines[a];
+                AVector rMid = _rightLines[a];
+                AVector rStart = lMid + AVector(-dir1.y, dir1.x) * strokeWidth;
+                AVector rEnd  = lMid + AVector(-dir2.y, dir2.x) * strokeWidth;
+
+                std::cout << "kite " << a <<  "\n";
+                _debugLines.push_back(ALine(lMid,  rStart));
+                _debugLines.push_back(ALine(lMid,  rEnd));
+                _debugLines.push_back(ALine(rStart,  rMid));
+                _debugLines.push_back(ALine(rMid,  rEnd));
+            }
+        }
+
+        // RECTANGLES
         if(a == 0 && _spineLines.size() > 2)    // START
         {
             ALine curLine(_spineLines[a], _spineLines[a+1]);
@@ -122,6 +184,7 @@ void StrokePainter::CalculateInitialRibbon()
                 rightEnd = _leftLines[a+1] + rightDir * strokeWidth;
             }
 
+            std::cout << "rectangle " << a <<  "\n";
             _debugLines.push_back(ALine(_leftLines[a], leftEnd));
             _debugLines.push_back(ALine(_rightLines[a], rightEnd));
             _debugLines.push_back(ALine(_leftLines[a], _rightLines[a]));
@@ -130,6 +193,7 @@ void StrokePainter::CalculateInitialRibbon()
         }
         else if(a == 0 && _spineLines.size() == 2)  // START
         {
+            std::cout << "rectangle " << a <<  "\n";
             _debugLines.push_back(ALine(_leftLines[a], _leftLines[a+1]));
             _debugLines.push_back(ALine(_rightLines[a], _rightLines[a+1]));
             _debugLines.push_back(ALine(_leftLines[a], _rightLines[a]));
@@ -148,18 +212,17 @@ void StrokePainter::CalculateInitialRibbon()
             AVector rightStart = _rightLines[a];
             if(rot > 0)
             {
-                // turn right: positive
-                // use right
+                // turn right: positive. use right
                 AVector leftDir(dir2.y, -dir2.x);
                 leftStart = _rightLines[a] + leftDir * strokeWidth;
             }
             else if(rot < 0)
             {
-                // turn left: negative
-                // use left
+                // turn left: negative. use left
                 AVector rightDir(-dir2.y, dir2.x);
                 rightStart = _leftLines[a] + rightDir * strokeWidth;
             }
+            std::cout << "rectangle " << a <<  "\n";
             _debugLines.push_back(ALine(leftStart, _leftLines[a+1]));
             _debugLines.push_back(ALine(rightStart, _rightLines[a+1]));
             _debugLines.push_back(ALine(leftStart, rightStart));
@@ -208,6 +271,7 @@ void StrokePainter::CalculateInitialRibbon()
                 rightEnd = _leftLines[a+1] + rightDir * strokeWidth;
             }
 
+            std::cout << "rectangle " << a <<  "\n";
             _debugLines.push_back(ALine(leftStart,  leftEnd));
             _debugLines.push_back(ALine(rightStart, rightEnd));
             _debugLines.push_back(ALine(leftStart,  rightStart));
@@ -215,54 +279,7 @@ void StrokePainter::CalculateInitialRibbon()
         }
     }
 
-    // calculate kites
-    for(uint a = 0; a < _spineLines.size() - 1; a++)
-    {
-        if(a > 0 && _spineLines.size() >= 3)
-        {
-            ALine prevLine(_spineLines[a-1], _spineLines[a]);
-            ALine curLine(_spineLines[a], _spineLines[a+1]);
-
-            AVector dir1 = prevLine.Direction().Norm();
-            AVector dir2 = curLine.Direction().Norm();
-
-            float rot1 = UtilityFunctions::GetRotation(dir1, dir2);
-            if(rot1 > 0)
-            {
-                // turn right: positive
-                AVector lMid = _leftLines[a];
-                AVector rMid = _rightLines[a];
-                AVector lStart = rMid + AVector(dir1.y, -dir1.x) * strokeWidth;   // left
-                AVector lEnd = rMid + AVector(dir2.y, -dir2.x) * strokeWidth; // left
-
-                _debugLines.push_back(ALine(lStart,  rMid));
-                _debugLines.push_back(ALine(lEnd, rMid));
-                _debugLines.push_back(ALine(lStart, lMid));
-                _debugLines.push_back(ALine(lMid, lEnd));
-
-            }
-            else if(rot1 < 0)
-            {
-                // turn right: negative
-                AVector lMid = _leftLines[a];
-                AVector rMid = _rightLines[a];
-                AVector rStart = lMid + AVector(-dir1.y, dir1.x) * strokeWidth;
-                AVector rEnd  = lMid + AVector(-dir2.y, dir2.x) * strokeWidth;
-
-                _debugLines.push_back(ALine(lMid,  rStart));
-                _debugLines.push_back(ALine(lMid,  rEnd));
-                _debugLines.push_back(ALine(rStart,  rMid));
-                _debugLines.push_back(ALine(rMid,  rEnd));
-            }
-        }
-    }
-
-    _vDataHelper->BuildLinesVertexData(_spineLines, &_spineLinesVbo, &_spineLinesVao, QVector3D(0.5, 0.5, 1));
-    _vDataHelper->BuildLinesVertexData(_junctionRibLines, &_junctionRibLinesVbo, &_junctionRibLinesVao, QVector3D(0.5, 0.5, 1));
-    _vDataHelper->BuildLinesVertexData(_leftLines, &_leftLinesVbo, &_leftLinesVao, QVector3D(0.5, 0.5, 1));
-    _vDataHelper->BuildLinesVertexData(_rightLines, &_rightLinesVbo, &_rightLinesVao, QVector3D(0.5, 0.5, 1));
-
-    _vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(1, 0, 0), QVector3D(0, 1, 0)); // modification
+    std::cout << "\n\n";
 }
 
 void StrokePainter::CalculateVertices2()
