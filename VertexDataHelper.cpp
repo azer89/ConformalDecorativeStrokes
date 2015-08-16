@@ -56,7 +56,6 @@ void VertexDataHelper::BuildConstrainedPointsVertexData(std::vector<std::vector<
         for(int b = 0; b < mesh_height; b++)
         {
             PlusSignVertex psVertex = plusSignVertices[a][b];
-
             if(!psVertex.shouldMove)
             {
                 data.append(VertexData(QVector3D(psVertex.position.x, psVertex.position.y,  0), QVector2D(), vecCol));
@@ -99,22 +98,15 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<std::vector<Plu
             float yCoord1 = (float)b / (float)heightMinOne;
             float yCoord2 = (float)(b+1) / (float)heightMinOne;
 
-            //std::cout << a << " " << b << " " << xCoord1 << " " << xCoord2 << " "<< yCoord1 << " " << yCoord2 << "\n";
-
             AVector aVec = plusSignVertices[a][b].position;
             AVector bVec = plusSignVertices[a+1][b].position;
             AVector cVec = plusSignVertices[a+1][b+1].position;
             AVector dVec = plusSignVertices[a][b+1].position;
 
-            QVector2D aTexCoord(xCoord1, yCoord1);
-            QVector2D bTexCoord(xCoord2, yCoord1);
-            QVector2D cTexCoord(xCoord2, yCoord2);
-            QVector2D dTexCoord(xCoord1, yCoord2);
-
-            data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), aTexCoord));
-            data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), bTexCoord));
-            data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), cTexCoord));
-            data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), dTexCoord));
+            data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(xCoord1, yCoord1)));
+            data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(xCoord2, yCoord1)));
+            data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(xCoord2, yCoord2)));
+            data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(xCoord1, yCoord2)));
         }
     }
 
@@ -245,9 +237,7 @@ void VertexDataHelper::BuildPointsVertexData(std::vector<AVector> points, QOpenG
 
     QVector<VertexData> data;
     for(uint a = 0; a < points.size(); a++)
-    {
-        data.append(VertexData(QVector3D(points[a].x, points[a].y,  0), QVector2D(), vecCol));
-    }
+        { data.append(VertexData(QVector3D(points[a].x, points[a].y,  0), QVector2D(), vecCol)); }
 
     BuildVboWithColor(data, ptsVbo);
 

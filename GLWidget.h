@@ -65,7 +65,7 @@ public:
     ~GLWidget();
 
     QSize GetCanvasSize() { return QSize(_img_width, _img_height); }
-    QSize GetMeshSize() { return _sPainter->MeshSize(); }
+    //QSize GetMeshSize() { return _sPainter->MeshSize(); }
     bool IsMouseDown() { return _isMouseDown; }
 
     bool ShouldStop() { return _sPainter->ShouldStop(); }

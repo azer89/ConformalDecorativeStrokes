@@ -16,6 +16,10 @@ public:
     {        
     }
 
+    ~QuadMesh()
+    {
+    }
+
     void AddBorders(std::vector<AVector> lines)
     {
         for(int a = 0; a < lines.size() - 1; a++)
@@ -34,12 +38,6 @@ public:
     int _mesh_width;
     int _mesh_height;
 
-    // Vertices
-    std::vector<std::vector<PlusSignVertex>> _plusSignVertices;
-    QOpenGLBuffer               _plusSignVerticesVbo;
-    QOpenGLVertexArrayObject    _plusSignVerticesVao;
-
-
     ALine _topLine;
     ALine _rightLine;
     ALine _bottomLine;
@@ -49,12 +47,17 @@ public:
     //QOpenGLBuffer             _borderLinesVbo; // do I need this ?
     //QOpenGLVertexArrayObject  _borderLinesVao; // do I need this ?
 
+    // Vertices
+    std::vector<std::vector<PlusSignVertex>> _plusSignVertices;
+    /*QOpenGLBuffer               _plusSignVerticesVbo;
+    QOpenGLVertexArrayObject    _plusSignVerticesVao;*/
+
+    // add a texture ID or something
     // Texture
-    // Every mesh has its own texture
-    QImage _img;
-    QOpenGLTexture* _imgTexture;
-    QOpenGLBuffer               _texturedStrokeVbo;
-    QOpenGLVertexArrayObject    _texturedStrokeVao;
+    //QImage _img;
+    //QOpenGLTexture _imgTexture;
+    //QOpenGLBuffer               _texturedStrokeVbo;
+    //QOpenGLVertexArrayObject    _texturedStrokeVao;
 };
 
 #endif // QUADMESH_H
