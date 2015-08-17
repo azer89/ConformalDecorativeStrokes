@@ -219,7 +219,7 @@ void UtilityFunctions::GetBisectorJoints(ALine curLine,
 
 void UtilityFunctions::DivideLines(std::vector<AVector>& oriCurve, std::vector<AVector>& resampleCurve, float resample_size)
 {
-    for(int a = 0; a < oriCurve.size() - 1; a++)
+    for(uint a = 0; a < oriCurve.size() - 1; a++)
     {
         AVector pt1 = oriCurve[a];
         AVector pt2 = oriCurve[a+1];
@@ -245,7 +245,7 @@ void UtilityFunctions::DivideLines(std::vector<AVector>& oriCurve, std::vector<A
 
 void UtilityFunctions::CombineLines(std::vector<AVector>& oriCurve, std::vector<AVector>& resampleCurve, float resample_size)
 {
-    int iter = 0;
+    uint iter = 0;
     while(iter < oriCurve.size())
     {
         AVector pt1 = oriCurve[iter];

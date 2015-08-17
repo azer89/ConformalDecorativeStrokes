@@ -137,10 +137,14 @@ void StrokePainter::CalculateKitesAndRectangles()
                 AVector lEnd = rMid + AVector(dir2.y, -dir2.x) * strokeWidth; // left
 
                 QuadMesh qMesh;
-                qMesh._leftLine   = ALine(lStart, rMid);
-                qMesh._rightLine  = ALine(lMid,   lEnd);
-                qMesh._topLine    = ALine(lStart, lMid);
-                qMesh._bottomLine = ALine(rMid,   lEnd);
+                qMesh._leftStartPt  = lStart;
+                qMesh._leftEndPt    = lMid;
+                qMesh._rightStartPt = rMid;
+                qMesh._rightEndPt   = lEnd;
+                //qMesh._leftLine   = ALine(lStart, rMid);
+                //qMesh._rightLine  = ALine(lMid,   lEnd);
+                //qMesh._topLine    = ALine(lStart, lMid);
+                //qMesh._bottomLine = ALine(rMid,   lEnd);
                 qMesh._quadMeshType = QuadMeshType::MESH_KITE;
                 _quadMeshes.push_back(qMesh);
                 //std::cout << "kite " << a <<  "\n";
@@ -159,10 +163,14 @@ void StrokePainter::CalculateKitesAndRectangles()
                 AVector rEnd  = lMid + AVector(-dir2.y, dir2.x) * strokeWidth;
 
                 QuadMesh qMesh;
-                qMesh._leftLine   = ALine(rStart, rMid);
-                qMesh._rightLine  = ALine(lMid,   rEnd);
-                qMesh._topLine    = ALine(rStart, lMid);
-                qMesh._bottomLine = ALine(rMid,   rEnd);
+                qMesh._leftStartPt  = rStart;
+                qMesh._leftEndPt    = lMid;
+                qMesh._rightStartPt = rMid;
+                qMesh._rightEndPt   = rEnd;
+                //qMesh._leftLine   = ALine(rStart, rMid);
+                //qMesh._rightLine  = ALine(lMid,   rEnd);
+                //qMesh._topLine    = ALine(rStart, lMid);
+                //qMesh._bottomLine = ALine(rMid,   rEnd);
                 qMesh._quadMeshType = QuadMeshType::MESH_KITE;
                 _quadMeshes.push_back(qMesh);
 
@@ -200,10 +208,14 @@ void StrokePainter::CalculateKitesAndRectangles()
             }
 
             QuadMesh qMesh;
-            qMesh._leftLine   = ALine(_leftLines[a], _rightLines[a]);
-            qMesh._rightLine  = ALine(leftEnd, rightEnd);
-            qMesh._topLine    = ALine(_leftLines[a], leftEnd);
-            qMesh._bottomLine = ALine(_rightLines[a], rightEnd);
+            qMesh._leftStartPt  = _leftLines[a];
+            qMesh._leftEndPt    = leftEnd;
+            qMesh._rightStartPt = _rightLines[a];
+            qMesh._rightEndPt   = rightEnd;
+            //qMesh._leftLine   = ALine(_leftLines[a], _rightLines[a]);
+            //qMesh._rightLine  = ALine(leftEnd, rightEnd);
+            //qMesh._topLine    = ALine(_leftLines[a], leftEnd);
+            //qMesh._bottomLine = ALine(_rightLines[a], rightEnd);
             qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
             _quadMeshes.push_back(qMesh);
             //std::cout << "rectangle " << a <<  "\n";
@@ -216,10 +228,14 @@ void StrokePainter::CalculateKitesAndRectangles()
         else if(a == 0 && _spineLines.size() == 2)  // START
         {
             QuadMesh qMesh;
-            qMesh._leftLine   = ALine(_leftLines[a],   _rightLines[a]);
-            qMesh._rightLine  = ALine(_leftLines[a+1], _rightLines[a+1]);
-            qMesh._topLine    = ALine(_leftLines[a],   _leftLines[a+1]);
-            qMesh._bottomLine = ALine(_rightLines[a],  _rightLines[a+1]);
+            qMesh._leftStartPt  = _leftLines[a];
+            qMesh._leftEndPt    = _leftLines[a+1];
+            qMesh._rightStartPt = _rightLines[a];
+            qMesh._rightEndPt   = _rightLines[a+1];
+            //qMesh._leftLine   = ALine(_leftLines[a],   _rightLines[a]);
+            //qMesh._rightLine  = ALine(_leftLines[a+1], _rightLines[a+1]);
+            //qMesh._topLine    = ALine(_leftLines[a],   _leftLines[a+1]);
+            //qMesh._bottomLine = ALine(_rightLines[a],  _rightLines[a+1]);
             qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
             _quadMeshes.push_back(qMesh);
             //std::cout << "rectangle " << a <<  "\n";
@@ -253,10 +269,14 @@ void StrokePainter::CalculateKitesAndRectangles()
             }
 
             QuadMesh qMesh;
-            qMesh._leftLine   = ALine(leftStart, rightStart);
-            qMesh._rightLine  = ALine(_leftLines[a+1], _rightLines[a+1]);
-            qMesh._topLine    = ALine(leftStart, _leftLines[a+1]);
-            qMesh._bottomLine = ALine(rightStart, _rightLines[a+1]);
+            qMesh._leftStartPt  = leftStart;
+            qMesh._leftEndPt    = _leftLines[a+1];
+            qMesh._rightStartPt = rightStart;
+            qMesh._rightEndPt   = _rightLines[a+1];
+            //qMesh._leftLine   = ALine(leftStart, rightStart);
+            //qMesh._rightLine  = ALine(_leftLines[a+1], _rightLines[a+1]);
+            //qMesh._topLine    = ALine(leftStart, _leftLines[a+1]);
+            //qMesh._bottomLine = ALine(rightStart, _rightLines[a+1]);
             qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
             _quadMeshes.push_back(qMesh);
 
@@ -310,10 +330,14 @@ void StrokePainter::CalculateKitesAndRectangles()
             }
 
             QuadMesh qMesh;
-            qMesh._leftLine   = ALine(leftStart,  rightStart);
-            qMesh._rightLine  = ALine(leftEnd,    rightEnd);
-            qMesh._topLine    = ALine(leftStart,  leftEnd);
-            qMesh._bottomLine = ALine(rightStart, rightEnd);
+            qMesh._leftStartPt  = leftStart;
+            qMesh._leftEndPt    = leftEnd;
+            qMesh._rightStartPt = rightStart;
+            qMesh._rightEndPt   = rightEnd;
+            //qMesh._leftLine   = ALine(leftStart,  rightStart);
+            //qMesh._rightLine  = ALine(leftEnd,    rightEnd);
+            //qMesh._topLine    = ALine(leftStart,  leftEnd);
+            //qMesh._bottomLine = ALine(rightStart, rightEnd);
             qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
             _quadMeshes.push_back(qMesh);
             //std::cout << "rectangle " << a <<  "\n";
@@ -331,6 +355,36 @@ void StrokePainter::CalculateVertices2(QuadMesh qMesh)
 {
     qMesh._plusSignVertices.clear();
 
+    AVector lStartPt = qMesh._leftStartPt;
+    AVector lEndPt   = qMesh._leftEndPt ;
+
+    AVector rStartPt = qMesh._rightStartPt;
+    AVector rEndPt   = qMesh._rightEndPt;
+
+    AVector vVec = rStartPt - lStartPt;
+
+    AVector uHVec = (lEndPt - lStartPt);
+    AVector bHVec = (rEndPt - rStartPt);
+
+    AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();
+    AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();
+
+    _debugLines.push_back(ALine(mStartPt,  mEndPt)); // remove this
+
+    // no corner avoidance
+    int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
+    int intMeshWidth = mStartPt.Distance(mEndPt) / SystemParams::mesh_size;
+
+    if(SystemParams::junction_ribs_constraint)
+    {
+        // with corner avoidance
+        intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
+        intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
+    }
+
+
+
+
 }
 
 
@@ -340,7 +394,7 @@ void StrokePainter::CalculateVertices1()
 {
     //_aQuadMesh._plusSignVertices.clear();
 
-    for(int a = 0; a < _spineLines.size() - 1; a++)
+    for(uint a = 0; a < _spineLines.size() - 1; a++)
     {
         AVector mStartPt = _spineLines[a];
         AVector mEndPt   = _spineLines[a + 1];
@@ -487,7 +541,7 @@ AVector StrokePainter::GetClosestPointFromStrokePoints(AVector pt)
 {
     AVector closestPt = pt;
     float dist = std::numeric_limits<float>::max();
-    for(int a = 0; a < _spineLines.size(); a++)
+    for(uint a = 0; a < _spineLines.size(); a++)
     {
         AVector cPt = _spineLines[a];
         if(pt.Distance(cPt) < dist)
@@ -503,7 +557,7 @@ AVector StrokePainter::GetClosestPointFromStrokeLines(AVector pt)
 {
     AVector closestPt = pt;
     float dist = std::numeric_limits<float>::max();
-    for(int a = 0; a < _spineLines.size() - 1; a++)
+    for(uint a = 0; a < _spineLines.size() - 1; a++)
     {
         AVector pt1 = _spineLines[a];
         AVector pt2 = _spineLines[a+1];
@@ -522,7 +576,7 @@ AVector StrokePainter::GetClosestPointFromBorders(AVector pt)
     AVector closestPt = pt;
     float dist = std::numeric_limits<float>::max();
     // left
-    for(int a = 0; a < _leftLines.size() - 1; a++)
+    for(uint a = 0; a < _leftLines.size() - 1; a++)
     {
         AVector pt1 = _leftLines[a];
         AVector pt2 = _leftLines[a+1];
@@ -535,7 +589,7 @@ AVector StrokePainter::GetClosestPointFromBorders(AVector pt)
     }
 
     // right
-    for(int a = 0; a < _rightLines.size() - 1; a++)
+    for(uint a = 0; a < _rightLines.size() - 1; a++)
     {
         AVector pt1 = _rightLines[a];
         AVector pt2 = _rightLines[a+1];
@@ -813,8 +867,15 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
 
     _oriStrokeLines.push_back(AVector(x, y));
     CalculateInitialRibbon();    // modification
-    CalculateVertices1(); // modification
+    //CalculateVertices1(); // modification
     //CalculateVertices2(); // modification
+
+    _debugLines.clear();
+    for(uint a = 0; a < _quadMeshes.size(); a++)
+    {
+        CalculateVertices2(_quadMeshes[a]);
+    }
+    _vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(1, 0, 0));
 }
 
 void StrokePainter::Draw()
@@ -879,14 +940,14 @@ void StrokePainter::Draw()
     }
     */
 
-    /*if(_debugLinesVao.isCreated())
+    if(_debugLinesVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
-        glLineWidth(2.0f);
+        glLineWidth(4.0f);
         _debugLinesVao.bind();
         glDrawArrays(GL_LINES, 0, _debugLines.size() * 2);
         _debugLinesVao.release();
-    }*/
+    }
 
     /*if(_debugPointsVao.isCreated())
     {

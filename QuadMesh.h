@@ -28,7 +28,7 @@ public:
 
     void AddBorders(std::vector<AVector> lines)
     {
-        for(int a = 0; a < lines.size() - 1; a++)
+        for(uint a = 0; a < lines.size() - 1; a++)
         {
             _borderLines.push_back(ALine(lines[a], lines[a+1]));
         }
@@ -44,10 +44,16 @@ public:
     int _mesh_width;
     int _mesh_height;
 
+    AVector _leftStartPt;
+    AVector _leftEndPt;
+    AVector _rightStartPt;
+    AVector _rightEndPt;
+    /*
     ALine _topLine;
     ALine _rightLine;
     ALine _bottomLine;
     ALine _leftLine;
+    */
 
     QuadMeshType _quadMeshType;
 
