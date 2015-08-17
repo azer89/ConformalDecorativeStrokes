@@ -369,27 +369,45 @@ void StrokePainter::CalculateVertices2(QuadMesh* qMesh)
     AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();
     AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();
 
-    _debugLines.push_back(ALine(mStartPt,  mEndPt)); // remove this
+    //_debugLines.push_back(ALine(mStartPt,  mEndPt)); // remove this
 
     // no corner avoidance
     int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
-    int intMeshWidth = mStartPt.Distance(mEndPt) / SystemParams::mesh_size;
-
-    if(SystemParams::junction_ribs_constraint)
+    //int intMeshWidth = mStartPt.Distance(mEndPt) / SystemParams::mesh_size;
+    int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
+    if(intMeshWidth == 0)
     {
-        // with corner avoidance
-        intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
-        intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
+        // to do: fix this bug
+        intMeshWidth = intMeshHeight;
     }
+
+    //if(SystemParams::junction_ribs_constraint)
+    //{
+    //    // with corner avoidance
+    //    intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
+    //    intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
+    //}
 
     if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
     {
+        std::cout << "KITE\n";
         intMeshWidth = intMeshHeight;
     }
+    else
+    {
+        std::cout << "RECTANGLE\n";
+    }
+
+
+
+    //if(intMeshWidth == 0)
+    //    intMeshWidth = 1;
 
     int xLoop = intMeshWidth;
     int yLoop = intMeshHeight + 1;
     xLoop++;
+
+    std::cout << xLoop << " " << yLoop << "\n";
 
     //bool isTheEnd = false;
     //if(a == _spineLines.size() - 2)
@@ -950,22 +968,20 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
     //CalculateVertices1(); // modification
     //CalculateVertices2(); // modification
 
-    _debugLines.clear();
+    //_debugLines.clear();
     for(uint a = 0; a < _quadMeshes.size(); a++)
     {
         CalculateVertices2(&_quadMeshes[a]);
     }
     _qMeshNumData = 0;
-    _vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(1, 0, 0));
+    //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(1, 0, 0));
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(1, 0, 0));
-
-    std::cout << "_qMeshNumData " << _qMeshNumData << "\n";
+    std::cout << "\n\n";
+    //std::cout << "_qMeshNumData " << _qMeshNumData << "\n";
 }
 
 void StrokePainter::Draw()
 {
-
-
     // modification
     if(/*(_isMouseDown || SystemParams::spines_constraint ) &&*/ _spineLinesVao.isCreated())
     {
@@ -1033,14 +1049,14 @@ void StrokePainter::Draw()
     }
     */
 
-    if(_debugLinesVao.isCreated())
+    /*if(_debugLinesVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glLineWidth(4.0f);
         _debugLinesVao.bind();
         glDrawArrays(GL_LINES, 0, _debugLines.size() * 2);
         _debugLinesVao.release();
-    }
+    }*/
 
     /*if(_debugPointsVao.isCreated())
     {

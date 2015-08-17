@@ -88,9 +88,9 @@ private:
     //QOpenGLVertexArrayObject    _constrainedPointsVao;
 
     // debugging visualization
-    std::vector<ALine>          _debugLines;
-    QOpenGLBuffer               _debugLinesVbo;
-    QOpenGLVertexArrayObject    _debugLinesVao;
+    //std::vector<ALine>          _debugLines;
+    //QOpenGLBuffer               _debugLinesVbo;
+    //QOpenGLVertexArrayObject    _debugLinesVao;
 
     // debugging visualization
     //std::vector<AVector>        _debugPoints;
