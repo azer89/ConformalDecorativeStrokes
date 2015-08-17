@@ -37,7 +37,8 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpenImage"/>
+    <addaction name="actionSetStrokeTexture"/>
+    <addaction name="actionSetCornerTexture"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -54,7 +55,7 @@
    <property name="minimumSize">
     <size>
      <width>225</width>
-     <height>482</height>
+     <height>588</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -83,40 +84,69 @@
      <property name="fieldGrowthPolicy">
       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
      </property>
-     <item row="0" column="0" colspan="2">
-      <widget class="QLabel" name="inputImageLabel">
+     <item row="1" column="0">
+      <widget class="QWidget" name="widget_2" native="true">
        <property name="minimumSize">
         <size>
-         <width>200</width>
-         <height>200</height>
+         <width>0</width>
+         <height>100</height>
         </size>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>200</width>
-         <height>200</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-        </font>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Sunken</enum>
-       </property>
-       <property name="text">
-        <string>Input Image</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="textureALabel">
+          <property name="minimumSize">
+           <size>
+            <width>90</width>
+            <height>90</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>90</width>
+            <height>90</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::Box</enum>
+          </property>
+          <property name="text">
+           <string>Texture A</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="textureBLabel">
+          <property name="minimumSize">
+           <size>
+            <width>90</width>
+            <height>90</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>90</width>
+            <height>89</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::Box</enum>
+          </property>
+          <property name="text">
+           <string>Texture B</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
-     <item row="4" column="0" colspan="2">
+     <item row="3" column="0" colspan="2">
       <widget class="QGroupBox" name="groupBox">
        <property name="font">
         <font>
@@ -127,6 +157,9 @@
         <string>Constraints</string>
        </property>
        <layout class="QFormLayout" name="formLayout_2">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+        </property>
         <item row="0" column="0">
          <widget class="QCheckBox" name="miterCheckBox">
           <property name="font">
@@ -157,6 +190,9 @@
         </item>
         <item row="2" column="0">
          <widget class="QCheckBox" name="spinesCheckBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Spines</string>
           </property>
@@ -165,7 +201,37 @@
        </layout>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="4" column="0">
+      <widget class="QCheckBox" name="meshCheckBox">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Show Mesh</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QCheckBox" name="textureCheckBox">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Show Texture</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
       <widget class="QLabel" name="label">
        <property name="minimumSize">
         <size>
@@ -183,7 +249,7 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="6" column="1">
       <widget class="QDoubleSpinBox" name="quadSizeSpinBox">
        <property name="maximumSize">
         <size>
@@ -210,42 +276,17 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
-      <widget class="QCheckBox" name="textureCheckBox">
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Show Texture</string>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QCheckBox" name="meshCheckBox">
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Show Mesh</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
   </widget>
-  <action name="actionOpenImage">
+  <action name="actionSetStrokeTexture">
    <property name="text">
-    <string>Open Image</string>
+    <string>Set Stroke Texture</string>
+   </property>
+  </action>
+  <action name="actionSetCornerTexture">
+   <property name="text">
+    <string>Set Corner Texture</string>
    </property>
   </action>
  </widget>

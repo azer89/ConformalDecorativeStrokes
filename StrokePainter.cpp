@@ -24,10 +24,14 @@ void StrokePainter::SetVertexDataHelper(QOpenGLShaderProgram* shaderProgram)
     _vDataHelper = new VertexDataHelper(shaderProgram);
 }
 
-void StrokePainter::SetImage(QString img)
+void StrokePainter::SetStrokeTexture(QString img)
 {
     //_aQuadMesh._img.load(img);
     //_aQuadMesh._imgTexture = new QOpenGLTexture(_aQuadMesh._img);
+}
+
+void StrokePainter::SetCornerTexture(QString img)
+{
 }
 
 /*
@@ -141,6 +145,8 @@ void StrokePainter::CalculateKitesAndRectangles()
                 qMesh._leftEndPt    = lMid;
                 qMesh._rightStartPt = rMid;
                 qMesh._rightEndPt   = lEnd;
+                qMesh._sharpPt = lMid;
+                qMesh._isRightKite = true;
                 //qMesh._leftLine   = ALine(lStart, rMid);
                 //qMesh._rightLine  = ALine(lMid,   lEnd);
                 //qMesh._topLine    = ALine(lStart, lMid);
@@ -156,7 +162,7 @@ void StrokePainter::CalculateKitesAndRectangles()
             }
             else if(rot1 < 0)
             {
-                // turn right: negative
+                // turn left: negative
                 AVector lMid = _leftLines[a];
                 AVector rMid = _rightLines[a];
                 AVector rStart = lMid + AVector(-dir1.y, dir1.x) * strokeWidth;
@@ -167,6 +173,8 @@ void StrokePainter::CalculateKitesAndRectangles()
                 qMesh._leftEndPt    = lMid;
                 qMesh._rightStartPt = rMid;
                 qMesh._rightEndPt   = rEnd;
+                qMesh._sharpPt = rMid;
+                qMesh._isRightKite = false;
                 //qMesh._leftLine   = ALine(rStart, rMid);
                 //qMesh._rightLine  = ALine(lMid,   rEnd);
                 //qMesh._topLine    = ALine(rStart, lMid);
@@ -369,52 +377,23 @@ void StrokePainter::CalculateVertices2(QuadMesh* qMesh)
     AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();
     AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();
 
-    //_debugLines.push_back(ALine(mStartPt,  mEndPt)); // remove this
-
-    // no corner avoidance
-    int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
-    //int intMeshWidth = mStartPt.Distance(mEndPt) / SystemParams::mesh_size;
-    int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
-    if(intMeshWidth == 0)
-    {
-        // to do: fix this bug
-        intMeshWidth = intMeshHeight;
-    }
-
-    //if(SystemParams::junction_ribs_constraint)
-    //{
-    //    // with corner avoidance
-    //    intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
-    //    intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
-    //}
-
+    float meshSize = SystemParams::mesh_size;
     if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
     {
-        std::cout << "KITE\n";
-        intMeshWidth = intMeshHeight;
-    }
-    else
-    {
-        std::cout << "RECTANGLE\n";
+        meshSize /= 2.0f;
     }
 
+    int intMeshHeight = SystemParams::stroke_width / meshSize;
+    int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
 
+    // to do: fix this bug
+    if(intMeshWidth == 0) { intMeshWidth = intMeshHeight; }
 
-    //if(intMeshWidth == 0)
-    //    intMeshWidth = 1;
+    if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE) { intMeshWidth = intMeshHeight; }
 
     int xLoop = intMeshWidth;
     int yLoop = intMeshHeight + 1;
     xLoop++;
-
-    std::cout << xLoop << " " << yLoop << "\n";
-
-    //bool isTheEnd = false;
-    //if(a == _spineLines.size() - 2)
-    //{
-    //    isTheEnd = true;
-    //    xLoop++;
-    //}
 
     for(int xIter = 0; xIter < xLoop; xIter++)
     {
@@ -433,53 +412,28 @@ void StrokePainter::CalculateVertices2(QuadMesh* qMesh)
             bool shouldMove = true;
             bool junctionRibsConstrained = false;
             bool spinesConstrained = false;
-            if(SystemParams::miter_joint_constraint && xIter == 0 && yIter == 0)
-                { shouldMove = false; }
-            else if(SystemParams::miter_joint_constraint && xIter == 0 && yIter == yLoop - 1 )
-                { shouldMove = false; }
-            else if(SystemParams::miter_joint_constraint && /*isTheEnd &&*/ xIter == xLoop - 1 && yIter == 0)
-                { shouldMove = false; }
-            else if(SystemParams::miter_joint_constraint && /*isTheEnd &&*/ xIter == xLoop - 1 && yIter == yLoop - 1 )
-                { shouldMove = false; }
 
-            if(SystemParams::junction_ribs_constraint &&  /*a > 0 && */ xIter == 0)
-                { junctionRibsConstrained = true; }
-
-            // odd only
-            if(SystemParams::spines_constraint && yLoop % 2 != 0)
+            if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
             {
-                int yMid = yLoop / 2;
-                if(yIter == yMid)
-                    { spinesConstrained = true; }
+                if(pt.Distance(qMesh->_sharpPt) < std::numeric_limits<float>::epsilon() * 100)
+                {
+                    _debugPoints.push_back(pt);
+                    shouldMove = false;
+                }
+                else if(qMesh->_isRightKite && (xIter == 0 || yIter == yLoop - 1))
+                {
+                    _debugPoints.push_back(pt);
+                    shouldMove = false;
+                }
+                else if(!qMesh->_isRightKite && (xIter == xLoop - 1 || yIter == 0))
+                {
+                    _debugPoints.push_back(pt);
+                    shouldMove = false;
+                }
             }
 
-            /*
-            if(yLoop % 2 == 0) // even
-            {
-                int yMid1 = yLoop / 2;
-                int yMid2 = yMid1 - 1;
-
-                if(xIter == 0 && (yIter == yMid1 || yIter == yMid2) )
-                    { shouldMove = false; }
-                else if(isTheEnd && xIter == xLoop - 1 && (yIter == yMid1 || yIter == yMid2))
-                    { shouldMove = false; }
-                else if(isTheEnd && xIter == xLoop - 1 && (yIter == yMid1 || yIter == yMid2) )
-                    { shouldMove = false; }
-            }
-            else // odd
-            {
-
-                int yMid = yLoop / 2;
-                std::cout << yMid << "\n";
-
-                if(xIter == 0 && (yIter == yMid) )
-                    { shouldMove = false; }
-                else if(isTheEnd && xIter == xLoop - 1 && (yIter == yMid))
-                    { shouldMove = false; }
-                else if(isTheEnd && xIter == xLoop - 1 && (yIter == yMid) )
-                    { shouldMove = false; }
-            }*/
-            columnVertices.push_back(PlusSignVertex(pt, shouldMove, junctionRibsConstrained, spinesConstrained));
+            PlusSignVertex psVert = PlusSignVertex(pt, shouldMove, junctionRibsConstrained, spinesConstrained);
+            columnVertices.push_back(psVert);
         }
         qMesh->_plusSignVertices.push_back(columnVertices);
     }
@@ -669,6 +623,27 @@ AVector StrokePainter::GetClosestPointFromStrokeLines(AVector pt)
     return closestPt;
 }
 
+AVector StrokePainter::GetClosestPointFromBorders(QuadMesh qMesh, AVector pt)
+{
+    AVector closestPt = pt;
+    float dist = std::numeric_limits<float>::max();
+    std::vector<ALine> borderLines;
+    borderLines.push_back(ALine(qMesh._leftStartPt,  qMesh._rightStartPt));
+    borderLines.push_back(ALine(qMesh._leftEndPt,    qMesh._rightEndPt));
+    borderLines.push_back(ALine(qMesh._leftStartPt,  qMesh._leftEndPt));
+    borderLines.push_back(ALine(qMesh._rightStartPt, qMesh._rightEndPt));
+    for(uint a = 0; a < borderLines.size(); a++)
+    {
+        AVector cPt = UtilityFunctions::GetClosestPoint(borderLines[a].GetPointA(), borderLines[a].GetPointB(), pt);
+        if(pt.Distance(cPt) < dist)
+        {
+            dist = pt.Distance(cPt);
+            closestPt = cPt;
+        }
+    }
+    return closestPt;
+}
+
 AVector StrokePainter::GetClosestPointFromBorders(AVector pt)
 {
     AVector closestPt = pt;
@@ -720,6 +695,153 @@ AVector StrokePainter::GetClosestPointFromBorders(AVector pt)
     }
 
     return closestPt;
+}
+
+void StrokePainter::ConformalMappingOneStep3()
+{
+    this->_iterDist = 0;
+    for(uint a = 0; a < _quadMeshes.size(); a++)
+    {
+        if(_quadMeshes[a]._quadMeshType == QuadMeshType::MESH_KITE)
+        {
+            ConformalMappingOneStep3(&_quadMeshes[a]);
+        }
+    }
+    _qMeshNumData = 0;
+    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
+}
+
+void StrokePainter::ConformalMappingOneStep3(QuadMesh* qMesh)
+{
+    std::vector<std::vector<PlusSignVertex>> tempVertices = qMesh->_plusSignVertices;
+    int meshWidth = qMesh->_plusSignVertices.size();
+    int meshHeight = qMesh->_plusSignVertices[0].size();
+
+    for(int a = 0; a < meshWidth; a++)
+    {
+        for(int b = 0; b < meshHeight; b++)
+        {
+            if(!tempVertices[a][b].shouldMove)
+                { continue; }
+
+            AVector curPos = tempVertices[a][b].position;
+            AVector sumPositions(0, 0);
+            float sumArmLengths = 0;
+            float sumArmAngles = 0;
+            int numNeighbor = 0;
+
+            // have left and right
+            if(a > 0 && a < meshWidth - 1)
+            {
+                PlusSignVertex lVertex = tempVertices[a - 1][b];
+                PlusSignVertex rVertex = tempVertices[a + 1][b];
+
+                // left
+                sumPositions += lVertex.position;
+                sumArmLengths += curPos.Distance(lVertex.position);
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(-1, 0), (lVertex.position - curPos).Norm());
+
+
+                // right
+                sumPositions += rVertex.position;
+                sumArmLengths += curPos.Distance(rVertex.position);
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(1, 0), (rVertex.position - curPos).Norm());
+
+                numNeighbor += 2;
+            }
+            // have left only
+            else if(a > 0)
+            {
+                PlusSignVertex lVertex = tempVertices[a - 1][b];
+                AVector fakeNeighbor = lVertex.position + UtilityFunctions::Rotate( AVector(1, 0) * lVertex.armLength, lVertex.angle);
+                sumPositions += fakeNeighbor;
+                sumArmLengths += curPos.Distance(lVertex.position);
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(-1, 0), (lVertex.position - curPos).Norm());
+
+                numNeighbor++;
+            }
+            // have right only
+            else if(a < meshWidth - 1)
+            {
+                PlusSignVertex rVertex = tempVertices[a + 1][b];
+                AVector fakeNeighbor = rVertex.position + UtilityFunctions::Rotate( AVector(-1, 0) * rVertex.armLength, rVertex.angle);
+
+                sumPositions += fakeNeighbor;
+                sumArmLengths += curPos.Distance(rVertex.position);
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(1, 0), (rVertex.position - curPos).Norm());
+
+                numNeighbor++;
+            }
+
+            // have up and down
+            if(b > 0 && b < meshHeight - 1)
+            {
+                PlusSignVertex uVertex = tempVertices[a][b - 1];
+                PlusSignVertex bVertex = tempVertices[a][b + 1];
+
+                // up
+                sumPositions += uVertex.position;
+                sumArmLengths += curPos.Distance(uVertex.position);
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(0, -1), (uVertex.position - curPos).Norm());
+
+                // down
+                sumPositions += bVertex.position;
+                sumArmLengths += curPos.Distance(bVertex.position);
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(0, 1), (bVertex.position - curPos).Norm());
+
+                numNeighbor += 2;
+            }
+            // have up only
+            else if(b > 0)
+            {
+                PlusSignVertex uVertex = tempVertices[a][b - 1];
+                AVector fakeNeighbor = uVertex.position + UtilityFunctions::Rotate( AVector(0, 1) * uVertex.armLength, uVertex.angle);
+                sumPositions += fakeNeighbor;
+                sumArmLengths += curPos.Distance(uVertex.position);
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(0, -1), (uVertex.position - curPos).Norm());
+
+                numNeighbor++;
+            }
+            // have down only
+            else if(b < meshHeight - 1)
+            {
+                PlusSignVertex bVertex = tempVertices[a][b + 1];
+                AVector fakeNeighbor = bVertex.position + UtilityFunctions::Rotate( AVector(0, -1) * bVertex.armLength, bVertex.angle);
+                sumPositions += fakeNeighbor;
+                sumArmLengths += curPos.Distance(bVertex.position);
+                sumArmAngles += UtilityFunctions::GetRotation(AVector(0, 1), (bVertex.position - curPos).Norm());
+
+                numNeighbor++;
+            }
+
+            sumPositions  = sumPositions / (float)numNeighbor;
+            sumArmAngles  = sumArmAngles / (float)numNeighbor;
+            sumArmLengths = sumArmLengths / (float)numNeighbor;
+
+            tempVertices[a][b].armLength = sumArmLengths;
+            tempVertices[a][b].angle = sumArmAngles;
+
+            if(numNeighbor < 4)
+                { tempVertices[a][b].position = GetClosestPointFromBorders(sumPositions); }
+            else if(tempVertices[a][b].midHorizontalConstrained && tempVertices[a][b].midVerticalConstrained)
+                { tempVertices[a][b].position = GetClosestPointFromStrokePoints(sumPositions); }
+            else if(tempVertices[a][b].midHorizontalConstrained)
+                { tempVertices[a][b].position = GetClosestPointFromStrokeLines(sumPositions); }
+            else if(tempVertices[a][b].midVerticalConstrained)
+                { tempVertices[a][b].position = GetClosestPointFromMiddleVerticalLines(sumPositions); }
+            else
+                { tempVertices[a][b].position = sumPositions; }
+        }
+    }
+
+    float sumDist = 0;
+    for(int a = 0; a < meshWidth; a++)
+    {
+        for(int b = 0; b < meshHeight; b++)
+            { sumDist += qMesh->_plusSignVertices[a][b].position.Distance(tempVertices[a][b].position); }
+    }
+    _iterDist += sumDist;
+    qMesh->_plusSignVertices = tempVertices;
 }
 
 void StrokePainter::ConformalMappingOneStep2()
@@ -969,14 +1091,16 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
     //CalculateVertices2(); // modification
 
     //_debugLines.clear();
+    _debugPoints.clear();
     for(uint a = 0; a < _quadMeshes.size(); a++)
     {
         CalculateVertices2(&_quadMeshes[a]);
     }
     _qMeshNumData = 0;
     //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(1, 0, 0));
-    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(1, 0, 0));
-    std::cout << "\n\n";
+    _vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(1, 0, 0));
+    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
+    //std::cout << "\n\n";
     //std::cout << "_qMeshNumData " << _qMeshNumData << "\n";
 }
 
@@ -1058,14 +1182,14 @@ void StrokePainter::Draw()
         _debugLinesVao.release();
     }*/
 
-    /*if(_debugPointsVao.isCreated())
+    if(_debugPointsVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glPointSize(4.0f);
         _debugPointsVao.bind();
         glDrawArrays(GL_POINTS, 0, _debugPoints.size());
         _debugPointsVao.release();
-    }*/
+    }
 
 
     /*

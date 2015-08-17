@@ -56,6 +56,8 @@ public:
     */
 
     QuadMeshType _quadMeshType;
+    AVector _sharpPt; // for kite only
+    bool _isRightKite; // a stroke which turns right
 
     std::vector<ALine>        _borderLines;
     //QOpenGLBuffer             _borderLinesVbo; // do I need this ?

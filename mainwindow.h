@@ -26,7 +26,8 @@ private slots:
     void AnimationStart();
 
     void SetParams();
-    void FileOpen();
+    void SetStrokeTexture();
+    void SetCornerTexture();
 };
 
 #endif // MAINWINDOW_H

@@ -24,15 +24,22 @@ public:
     void mouseMoveEvent(float x, float y);
     void mouseReleaseEvent(float x, float y);
 
+    int QuadMeshSize() { return _quadMeshes.size(); }
     //QSize MeshSize(){ return QSize(_aQuadMesh._mesh_width, _aQuadMesh._mesh_height); }
 
     void Draw();
 
     void ConformalMappingOneStep1();
     void ConformalMappingOneStep2();
+
+    void ConformalMappingOneStep3();
+    void ConformalMappingOneStep3(QuadMesh *qMesh);
+
     bool ShouldStop() { return _iterDist < std::numeric_limits<float>::epsilon(); }
 
-    void SetImage(QString img);
+    void SetStrokeTexture(QString img);
+    void SetCornerTexture(QString img);
+
     void SetVertexDataHelper(QOpenGLShaderProgram* shaderProgram);
 
 public:
@@ -66,9 +73,9 @@ private:
     QOpenGLVertexArrayObject    _spineLinesVao;    
 
     //
-    //std::vector<ALine>          _junctionRibLines;
-    //QOpenGLBuffer               _junctionRibLinesVbo;
-    //QOpenGLVertexArrayObject    _junctionRibLinesVao;
+    /*std::vector<ALine>          _junctionRibLines;
+    QOpenGLBuffer               _junctionRibLinesVbo;
+    QOpenGLVertexArrayObject    _junctionRibLinesVao;*/
 
     // left lines of the strokes
     // I need these lines to calculate closest points on the borders
@@ -83,23 +90,24 @@ private:
     QOpenGLVertexArrayObject    _rightLinesVao;
 
     // points that cannot move at all
-    //int _numConstrainedPoints;
-    //QOpenGLBuffer               _constrainedPointsVbo;
-    //QOpenGLVertexArrayObject    _constrainedPointsVao;
+    /*int _numConstrainedPoints;
+    QOpenGLBuffer               _constrainedPointsVbo;
+    QOpenGLVertexArrayObject    _constrainedPointsVao;*/
 
     // debugging visualization
-    //std::vector<ALine>          _debugLines;
-    //QOpenGLBuffer               _debugLinesVbo;
-    //QOpenGLVertexArrayObject    _debugLinesVao;
+    /*std::vector<ALine>          _debugLines;
+    QOpenGLBuffer               _debugLinesVbo;
+    QOpenGLVertexArrayObject    _debugLinesVao;*/
 
     // debugging visualization
-    //std::vector<AVector>        _debugPoints;
-    //QOpenGLBuffer               _debugPointsVbo;
-    //QOpenGLVertexArrayObject    _debugPointsVao;
+    std::vector<AVector>        _debugPoints;
+    QOpenGLBuffer               _debugPointsVbo;
+    QOpenGLVertexArrayObject    _debugPointsVao;
 
 
 private:
     AVector GetClosestPointFromBorders(AVector pt);
+    AVector GetClosestPointFromBorders(QuadMesh qMesh, AVector pt);
     AVector GetClosestPointFromMiddleVerticalLines(AVector pt);
     AVector GetClosestPointFromStrokeLines(AVector pt);
     AVector GetClosestPointFromStrokePoints(AVector pt);

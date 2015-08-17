@@ -177,7 +177,7 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuf
     if(isInit) { linesVao->release(); }
 }
 
-void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, int &qMeshNumData, QVector3D vecCol)
+void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, int &qMeshNumData, QVector3D vecCol1, QVector3D vecCol2)
 {
     qMeshNumData = 0;
     if(quadMeshes.size() == 0)
@@ -198,6 +198,24 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes, QO
     for(uint a = 0; a < quadMeshes.size(); a++)
     {
         QuadMesh qMesh = quadMeshes[a];
+
+        /*
+        if(qMesh._quadMeshType == QuadMeshType::MESH_KITE)
+        {
+            std::cout << "KITE ";
+        }
+        else
+        {
+            std::cout << "RECTANGLE ";
+        }
+        */
+
+        QVector3D vecCol = vecCol1;
+        if(qMesh._quadMeshType == QuadMeshType::MESH_KITE)
+        {
+            vecCol = vecCol2;
+        }
+
         int mesh_width = qMesh._plusSignVertices.size();
         int mesh_height = qMesh._plusSignVertices[0].size();
         std::vector<std::vector<PlusSignVertex>> plusSignVertices = qMesh._plusSignVertices;
@@ -235,6 +253,7 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes, QO
             }
         }
     }
+    //std::cout << "\n\n";
 
     qMeshNumData = data.size();
     //std::cout << "data.size() " << data.size() << "\n";

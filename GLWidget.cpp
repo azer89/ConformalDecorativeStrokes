@@ -60,7 +60,7 @@ void GLWidget::initializeGL()
     _sPainter = new StrokePainter();
     _sPainter->SetVertexDataHelper(_shaderProgram);
 
-    this->SetImage("/home/azer/workspace/cpp/ConformalDecorativeStrokes/weyland_yutani.png");
+    this->SetStrokeTexture("/home/azer/workspace/cpp/ConformalDecorativeStrokes/weyland_yutani.png");
 }
 
 bool GLWidget::event( QEvent * event )
@@ -76,7 +76,7 @@ void GLWidget::resizeGL(int width, int height)
 
 void GLWidget::ConformalMappingOneStep()
 {
-    _sPainter->ConformalMappingOneStep2();
+    _sPainter->ConformalMappingOneStep3();
 }
 
 void GLWidget::paintGL()
@@ -156,12 +156,17 @@ void GLWidget::mouseReleaseEvent(int x, int y)
 
     _sPainter->mouseReleaseEvent(dx, dy);
 
-    //QSize meshSize = _sPainter->MeshSize();
-    //if(meshSize.width() >= 0 && meshSize.height() > 0)
-    //{
+    int qmSize = _sPainter->QuadMeshSize();
+    if(qmSize > 0)
+    {
+        emit CalculateConformalMap();
+    }
+    /*QSize meshSize = _sPainter->MeshSize();
+    if(meshSize.width() >= 0 && meshSize.height() > 0)
+    {
         //std::cout << "mesh are created\n";
-    //    emit CalculateConformalMap();
-    //}
+        emit CalculateConformalMap();
+    }*/
 
     this->repaint();
 }

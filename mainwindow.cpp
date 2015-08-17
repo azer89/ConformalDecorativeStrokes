@@ -11,21 +11,23 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->widget->GetGLWidget(), SIGNAL(CalculateConformalMap()), this, SLOT(AnimationStart()));
-    connect(ui->miterCheckBox,	 SIGNAL(stateChanged(int)), this, SLOT(SetParams()));
-    connect(ui->junctionRibsCheckBox,	 SIGNAL(stateChanged(int)), this, SLOT(SetParams()));
-    connect(ui->spinesCheckBox,	 SIGNAL(stateChanged(int)), this, SLOT(SetParams()));
-    connect(ui->meshCheckBox,	 SIGNAL(stateChanged(int)), this, SLOT(SetParams()));
-    connect(ui->textureCheckBox,	 SIGNAL(stateChanged(int)), this, SLOT(SetParams()));
-    connect(ui->quadSizeSpinBox, SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
-    connect(ui->actionOpenImage,	 SIGNAL(triggered()), this, SLOT(FileOpen()));
+    connect(ui->widget->GetGLWidget(),   SIGNAL(CalculateConformalMap()), this, SLOT(AnimationStart()));
+    connect(ui->miterCheckBox,           SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+    connect(ui->junctionRibsCheckBox,	 SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+    connect(ui->spinesCheckBox,          SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+    connect(ui->meshCheckBox,            SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+    connect(ui->textureCheckBox,         SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+    connect(ui->quadSizeSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
+    connect(ui->actionSetStrokeTexture,	 SIGNAL(triggered()),             this, SLOT(SetStrokeTexture()));
+    connect(ui->actionSetCornerTexture,	 SIGNAL(triggered()),             this, SLOT(SetCornerTexture()));
 
     animTimer = new QTimer(this);
     connect(animTimer, SIGNAL(timeout()), this, SLOT(AnimationThread()));
 
     QString qFilename("/home/azer/workspace/cpp/ConformalDecorativeStrokes/weyland_yutani.png");
-    QPixmap image(qFilename);
-    ui->inputImageLabel->setPixmap(image);
+    QPixmap imageA(qFilename);
+    imageA = imageA.scaled(ui->textureALabel->size());
+    ui->textureALabel->setPixmap(imageA);
     //ui->widget->GetGLWidget()->SetImage(qFilename);
 }
 
@@ -35,20 +37,33 @@ MainWindow::~MainWindow()
     delete animTimer;
 }
 
-void MainWindow::FileOpen()
+void MainWindow::SetStrokeTexture()
 {
-    QString qFilename = QFileDialog::getOpenFileName(this, "/home/azer/Desktop/");
+    QString qFilename = QFileDialog::getOpenFileName(this, "Set Stroke Texture");
     if(qFilename.isEmpty()) return;
 
     QPixmap image(qFilename);
-    ui->inputImageLabel->setPixmap(image);
-    ui->widget->GetGLWidget()->SetImage(qFilename);
+    image = image.scaled(ui->textureALabel->size());
+    ui->textureALabel->setPixmap(image);
+    ui->widget->GetGLWidget()->SetStrokeTexture(qFilename);
+}
+
+void MainWindow::SetCornerTexture()
+{
+    QString qFilename = QFileDialog::getOpenFileName(this, "Set Corner Texture");
+    if(qFilename.isEmpty()) return;
+
+    QPixmap image(qFilename);
+    image = image.scaled(ui->textureBLabel->size());
+    ui->textureBLabel->setPixmap(image);
+    //ui->widget->GetGLWidget()->SetImage(qFilename);
 }
 
 void MainWindow::AnimationThread()
 {
     if(!ui->widget->GetGLWidget()->IsMouseDown())
     {
+        //std::cout << ".";
         this->ui->widget->GetGLWidget()->ConformalMappingOneStep();
         this->ui->widget->GetGLWidget()->repaint();
 
