@@ -141,6 +141,7 @@ void StrokePainter::CalculateKitesAndRectangles()
                 qMesh._rightLine  = ALine(lMid,   lEnd);
                 qMesh._topLine    = ALine(lStart, lMid);
                 qMesh._bottomLine = ALine(rMid,   lEnd);
+                qMesh._quadMeshType = QuadMeshType::MESH_KITE;
                 _quadMeshes.push_back(qMesh);
                 //std::cout << "kite " << a <<  "\n";
                 //_debugLines.push_back(ALine(lStart,  rMid));
@@ -162,6 +163,7 @@ void StrokePainter::CalculateKitesAndRectangles()
                 qMesh._rightLine  = ALine(lMid,   rEnd);
                 qMesh._topLine    = ALine(rStart, lMid);
                 qMesh._bottomLine = ALine(rMid,   rEnd);
+                qMesh._quadMeshType = QuadMeshType::MESH_KITE;
                 _quadMeshes.push_back(qMesh);
 
                 //std::cout << "kite " << a <<  "\n";
@@ -202,6 +204,7 @@ void StrokePainter::CalculateKitesAndRectangles()
             qMesh._rightLine  = ALine(leftEnd, rightEnd);
             qMesh._topLine    = ALine(_leftLines[a], leftEnd);
             qMesh._bottomLine = ALine(_rightLines[a], rightEnd);
+            qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
             _quadMeshes.push_back(qMesh);
             //std::cout << "rectangle " << a <<  "\n";
             //_debugLines.push_back(ALine(_leftLines[a], leftEnd));
@@ -217,6 +220,7 @@ void StrokePainter::CalculateKitesAndRectangles()
             qMesh._rightLine  = ALine(_leftLines[a+1], _rightLines[a+1]);
             qMesh._topLine    = ALine(_leftLines[a],   _leftLines[a+1]);
             qMesh._bottomLine = ALine(_rightLines[a],  _rightLines[a+1]);
+            qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
             _quadMeshes.push_back(qMesh);
             //std::cout << "rectangle " << a <<  "\n";
             //_debugLines.push_back(ALine(_leftLines[a], _leftLines[a+1]));
@@ -253,6 +257,7 @@ void StrokePainter::CalculateKitesAndRectangles()
             qMesh._rightLine  = ALine(_leftLines[a+1], _rightLines[a+1]);
             qMesh._topLine    = ALine(leftStart, _leftLines[a+1]);
             qMesh._bottomLine = ALine(rightStart, _rightLines[a+1]);
+            qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
             _quadMeshes.push_back(qMesh);
 
             //std::cout << "rectangle " << a <<  "\n";
@@ -309,6 +314,7 @@ void StrokePainter::CalculateKitesAndRectangles()
             qMesh._rightLine  = ALine(leftEnd,    rightEnd);
             qMesh._topLine    = ALine(leftStart,  leftEnd);
             qMesh._bottomLine = ALine(rightStart, rightEnd);
+            qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
             _quadMeshes.push_back(qMesh);
             //std::cout << "rectangle " << a <<  "\n";
             //_debugLines.push_back(ALine(leftStart,  leftEnd));
@@ -321,21 +327,10 @@ void StrokePainter::CalculateKitesAndRectangles()
     //std::cout << "\n\n";
 }
 
-void StrokePainter::CalculateVertices2()
+void StrokePainter::CalculateVertices2(QuadMesh qMesh)
 {
-    //_aQuadMesh._plusSignVertices.clear();
+    qMesh._plusSignVertices.clear();
 
-    for(int a = 0; a < _spineLines.size() - 1; a++)
-    {
-        AVector mStartPt = _spineLines[a];
-        AVector mEndPt   = _spineLines[a + 1];
-
-        //int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
-        //int intMeshWidth =  mStartPt.Distance(mEndPt) / SystemParams::stroke_width * SystemParams::mesh_size;
-    }
-
-    //_mesh_width = _plusSignVertices.size();
-    //_mesh_height = _plusSignVertices[0].size();
 }
 
 

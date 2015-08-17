@@ -108,7 +108,7 @@ private:
     //void CalculateInitialRibbon2();
 
     void CalculateVertices1();
-    void CalculateVertices2();
+    void CalculateVertices2(QuadMesh qMesh);
 };
 
 #endif // STROKEPAINTER_H

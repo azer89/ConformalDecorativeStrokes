@@ -9,6 +9,12 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
 
+enum QuadMeshType
+{
+    MESH_RECTANGLE = 0,
+    MESH_KITE = 1,
+};
+
 struct QuadMesh
 {
 public:
@@ -42,6 +48,8 @@ public:
     ALine _rightLine;
     ALine _bottomLine;
     ALine _leftLine;
+
+    QuadMeshType _quadMeshType;
 
     std::vector<ALine>        _borderLines;
     //QOpenGLBuffer             _borderLinesVbo; // do I need this ?

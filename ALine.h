@@ -76,6 +76,13 @@ public:
         return false;
     }
 
+    AVector GetMiddlePoint()
+    {
+        AVector startPt(XA, YA);
+        AVector endPt(XB, YB);
+        return startPt + (endPt - startPt) * 0.5f;
+    }
+
     // Start point
     AVector GetPointA() { return AVector(XA, YA); }
 

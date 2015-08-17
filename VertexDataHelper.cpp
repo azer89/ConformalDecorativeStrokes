@@ -88,10 +88,10 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<std::vector<Plu
     QVector<VertexData> data;
     for(int a = 0; a < mesh_width - 1; a++)
     {
-        float aNominator = a % heightMinOne;
+        float aNumerator = a % heightMinOne;
 
-        float xCoord1 = (aNominator) / (float)heightMinOne;
-        float xCoord2 = (aNominator + 1.0f) / (float)heightMinOne;
+        float xCoord1 = (aNumerator) / (float)heightMinOne;
+        float xCoord2 = (aNumerator + 1.0f) / (float)heightMinOne;
 
         for(int b = 0; b < mesh_height - 1; b++)
         {
