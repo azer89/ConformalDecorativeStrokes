@@ -351,15 +351,15 @@ void StrokePainter::CalculateKitesAndRectangles()
     //std::cout << "\n\n";
 }
 
-void StrokePainter::CalculateVertices2(QuadMesh qMesh)
+void StrokePainter::CalculateVertices2(QuadMesh* qMesh)
 {
-    qMesh._plusSignVertices.clear();
+    qMesh->_plusSignVertices.clear();
 
-    AVector lStartPt = qMesh._leftStartPt;
-    AVector lEndPt   = qMesh._leftEndPt ;
+    AVector lStartPt = qMesh->_leftStartPt;
+    AVector lEndPt   = qMesh->_leftEndPt ;
 
-    AVector rStartPt = qMesh._rightStartPt;
-    AVector rEndPt   = qMesh._rightEndPt;
+    AVector rStartPt = qMesh->_rightStartPt;
+    AVector rEndPt   = qMesh->_rightEndPt;
 
     AVector vVec = rStartPt - lStartPt;
 
@@ -382,9 +382,89 @@ void StrokePainter::CalculateVertices2(QuadMesh qMesh)
         intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
     }
 
+    if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+    {
+        intMeshWidth = intMeshHeight;
+    }
 
+    int xLoop = intMeshWidth;
+    int yLoop = intMeshHeight + 1;
+    xLoop++;
 
+    //bool isTheEnd = false;
+    //if(a == _spineLines.size() - 2)
+    //{
+    //    isTheEnd = true;
+    //    xLoop++;
+    //}
 
+    for(int xIter = 0; xIter < xLoop; xIter++)
+    {
+        std::vector<PlusSignVertex> columnVertices;
+
+        for(int yIter = 0; yIter < yLoop;  yIter++)
+        {
+            float xFactor = (float)xIter / (float)intMeshWidth;
+            float yFactor = (float)yIter / (float)intMeshHeight;
+
+            AVector hVec = uHVec * (1.0f - yFactor) + bHVec * yFactor;
+
+            AVector pt = lStartPt + vVec * yFactor;
+            pt = pt + hVec * xFactor;
+
+            bool shouldMove = true;
+            bool junctionRibsConstrained = false;
+            bool spinesConstrained = false;
+            if(SystemParams::miter_joint_constraint && xIter == 0 && yIter == 0)
+                { shouldMove = false; }
+            else if(SystemParams::miter_joint_constraint && xIter == 0 && yIter == yLoop - 1 )
+                { shouldMove = false; }
+            else if(SystemParams::miter_joint_constraint && /*isTheEnd &&*/ xIter == xLoop - 1 && yIter == 0)
+                { shouldMove = false; }
+            else if(SystemParams::miter_joint_constraint && /*isTheEnd &&*/ xIter == xLoop - 1 && yIter == yLoop - 1 )
+                { shouldMove = false; }
+
+            if(SystemParams::junction_ribs_constraint &&  /*a > 0 && */ xIter == 0)
+                { junctionRibsConstrained = true; }
+
+            // odd only
+            if(SystemParams::spines_constraint && yLoop % 2 != 0)
+            {
+                int yMid = yLoop / 2;
+                if(yIter == yMid)
+                    { spinesConstrained = true; }
+            }
+
+            /*
+            if(yLoop % 2 == 0) // even
+            {
+                int yMid1 = yLoop / 2;
+                int yMid2 = yMid1 - 1;
+
+                if(xIter == 0 && (yIter == yMid1 || yIter == yMid2) )
+                    { shouldMove = false; }
+                else if(isTheEnd && xIter == xLoop - 1 && (yIter == yMid1 || yIter == yMid2))
+                    { shouldMove = false; }
+                else if(isTheEnd && xIter == xLoop - 1 && (yIter == yMid1 || yIter == yMid2) )
+                    { shouldMove = false; }
+            }
+            else // odd
+            {
+
+                int yMid = yLoop / 2;
+                std::cout << yMid << "\n";
+
+                if(xIter == 0 && (yIter == yMid) )
+                    { shouldMove = false; }
+                else if(isTheEnd && xIter == xLoop - 1 && (yIter == yMid))
+                    { shouldMove = false; }
+                else if(isTheEnd && xIter == xLoop - 1 && (yIter == yMid) )
+                    { shouldMove = false; }
+            }*/
+            columnVertices.push_back(PlusSignVertex(pt, shouldMove, junctionRibsConstrained, spinesConstrained));
+        }
+        qMesh->_plusSignVertices.push_back(columnVertices);
+    }
 }
 
 
@@ -873,9 +953,13 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
     _debugLines.clear();
     for(uint a = 0; a < _quadMeshes.size(); a++)
     {
-        CalculateVertices2(_quadMeshes[a]);
+        CalculateVertices2(&_quadMeshes[a]);
     }
+    _qMeshNumData = 0;
     _vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(1, 0, 0));
+    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(1, 0, 0));
+
+    std::cout << "_qMeshNumData " << _qMeshNumData << "\n";
 }
 
 void StrokePainter::Draw()
@@ -909,6 +993,15 @@ void StrokePainter::Draw()
         glDrawArrays(GL_POINTS, 0, _numConstrainedPoints);
         _constrainedPointsVao.release();
     }*/
+
+    // Quad mesh
+    if(SystemParams::show_mesh && _quadMeshesVao.isCreated())
+    {
+        glLineWidth(1.0f);
+        _quadMeshesVao.bind();
+        glDrawArrays(GL_LINES, 0, _qMeshNumData);
+        _quadMeshesVao.release();
+    }
 
     /*
     // Quad mesh

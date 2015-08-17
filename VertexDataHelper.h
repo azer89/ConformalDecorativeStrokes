@@ -5,6 +5,7 @@
 #include "ALine.h"
 #include "VertexData.h"
 #include "PlusSignVertex.h"
+#include "QuadMesh.h"
 
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
@@ -26,11 +27,12 @@ public:
     void BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol);
     void BuildVboWithColor(QVector<VertexData> data, QOpenGLBuffer* vbo);
 
-    // three functions below needs mesh width and mesh height information
+    // three functions below needs mesh width and mesh height information    
     void BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, int mesh_width, int mesh_height, QVector3D vecCol);
     void BuildTexturedStrokeVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int mesh_width, int mesh_height);
     void BuildConstrainedPointsVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int *numConstrainedPoints, int mesh_width, int mesh_height, QVector3D vecCol);
 
+    void BuildLinesVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, int &qMeshNumData, QVector3D vecCol);
 
 private:
     QOpenGLShaderProgram* _shaderProgram;

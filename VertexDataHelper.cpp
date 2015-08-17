@@ -37,6 +37,7 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<AVector> points, QOpenGL
     if(isInit) { linesVao->release(); }
 }
 
+// is this function wrong on pass by reference
 void VertexDataHelper::BuildConstrainedPointsVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int *numConstrainedPoints, int mesh_width, int mesh_height, QVector3D vecCol)
 {
     if(plusSignVertices.size() == 0) return;
@@ -176,6 +177,73 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuf
     if(isInit) { linesVao->release(); }
 }
 
+void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, int &qMeshNumData, QVector3D vecCol)
+{
+    qMeshNumData = 0;
+    if(quadMeshes.size() == 0)
+    {
+
+        return;
+    }
+
+    bool isInit = false;
+    if(!linesVao->isCreated())
+    {
+        linesVao->create();
+        linesVao->bind();
+        isInit = true;
+    }
+
+    QVector<VertexData> data;
+    for(uint a = 0; a < quadMeshes.size(); a++)
+    {
+        QuadMesh qMesh = quadMeshes[a];
+        int mesh_width = qMesh._plusSignVertices.size();
+        int mesh_height = qMesh._plusSignVertices[0].size();
+        std::vector<std::vector<PlusSignVertex>> plusSignVertices = qMesh._plusSignVertices;
+
+        for(int a = 0; a < mesh_width - 1; a++)
+        {
+            for(int b = 0; b < mesh_height - 1; b++)
+            {
+                AVector aVec = plusSignVertices[a][b].position;
+                AVector bVec = plusSignVertices[a+1][b].position;
+                AVector cVec = plusSignVertices[a+1][b+1].position;
+                AVector dVec = plusSignVertices[a][b+1].position;
+
+                data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(), vecCol));
+                data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(), vecCol));
+                //qMeshNumData++;
+
+                data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(), vecCol));
+                data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(), vecCol));
+                //qMeshNumData++;
+
+                if(a == mesh_width - 2)
+                {
+                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(), vecCol));
+                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(), vecCol));
+                    //qMeshNumData++;
+                }
+
+                if(b == mesh_height - 2)
+                {
+                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(), vecCol));
+                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(), vecCol));
+                    //qMeshNumData++;
+                }
+            }
+        }
+    }
+
+    qMeshNumData = data.size();
+    //std::cout << "data.size() " << data.size() << "\n";
+    //std::cout << "qMeshNumData in function " << qMeshNumData << "\n";
+    BuildVboWithColor(data, linesVbo);
+
+    if(isInit) { linesVao->release(); }
+}
+
 void VertexDataHelper::BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, int mesh_width, int mesh_height, QVector3D vecCol)
 {
     if(plusSignVertices.size() == 0) return;
@@ -263,3 +331,5 @@ void VertexDataHelper::BuildVboWithColor(QVector<VertexData> data, QOpenGLBuffer
     _shaderProgram->enableAttributeArray(_colorLocation);
     _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
 }
+
+

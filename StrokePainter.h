@@ -49,6 +49,9 @@ private:
     //QuadMesh _aQuadMesh;
 
     std::vector<QuadMesh> _quadMeshes;
+    int _qMeshNumData;
+    QOpenGLBuffer               _quadMeshesVbo;
+    QOpenGLVertexArrayObject    _quadMeshesVao;
 
     // texture
     //QImage _masterImg;
@@ -108,7 +111,7 @@ private:
     //void CalculateInitialRibbon2();
 
     void CalculateVertices1();
-    void CalculateVertices2(QuadMesh qMesh);
+    void CalculateVertices2(QuadMesh *qMesh);
 };
 
 #endif // STROKEPAINTER_H
