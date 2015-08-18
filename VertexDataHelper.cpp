@@ -3,10 +3,11 @@
 
 VertexDataHelper::VertexDataHelper(QOpenGLShaderProgram* shaderProgram)
 {
-    this->_shaderProgram = shaderProgram;
-    this->_colorLocation = _shaderProgram->attributeLocation("vertexColor");
-    this->_vertexLocation = _shaderProgram->attributeLocation("vert");
-    this->_use_color_location = _shaderProgram->uniformLocation("use_color");
+    this->_shaderProgram    = shaderProgram;
+    this->_colorLocation    = _shaderProgram->attributeLocation("vertexColor");
+    this->_vertexLocation   = _shaderProgram->attributeLocation("vert");
+    this->_useColorLocation = _shaderProgram->uniformLocation("use_color");
+    this->_texCoordLocation = _shaderProgram->attributeLocation("uv");
 }
 
 VertexDataHelper::~VertexDataHelper()
@@ -118,16 +119,16 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<std::vector<Plu
     //BuildVboWithColor(data, vbo);
     quintptr offset = 0;
     // vertex
-    int vertexLocation = _shaderProgram->attributeLocation("vert");
-    _shaderProgram->enableAttributeArray(vertexLocation);
-    _shaderProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+    //int vertexLocation = _shaderProgram->attributeLocation("vert");
+    _shaderProgram->enableAttributeArray(_vertexLocation);
+    _shaderProgram->setAttributeBuffer(_vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
 
     offset += sizeof(QVector3D);
 
     // uv
-    int texcoordLocation = _shaderProgram->attributeLocation("uv");
-    _shaderProgram->enableAttributeArray(texcoordLocation);
-    _shaderProgram->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
+    //int texcoordLocation = _shaderProgram->attributeLocation("uv");
+    _shaderProgram->enableAttributeArray(_texCoordLocation);
+    _shaderProgram->setAttributeBuffer(_texCoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
 
     if(isInit) { vao->release(); }
 }
@@ -177,14 +178,44 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuf
     if(isInit) { linesVao->release(); }
 }
 
+void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao)
+{
+    bool isInit = false;
+    if(!vao->isCreated())
+    {
+        linesVao->create();
+        linesVao->bind();
+        isInit = true;
+    }
+
+    if(!vbo->isCreated()) { vbo->create(); }
+    vbo->bind();
+    vbo->allocate(data.data(), data.size() * sizeof(VertexData));
+
+    // do what you want
+    for(uint a = 0; a < quadMeshes.size(); a++)
+    {
+        QuadMesh qMesh = quadMeshes[a];
+    }
+
+    quintptr offset = 0;
+    // vertex
+    _shaderProgram->enableAttributeArray(_vertexLocation);
+    _shaderProgram->setAttributeBuffer(_vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+    offset += sizeof(QVector3D);
+
+    // uv
+    _shaderProgram->enableAttributeArray(_texCoordLocation);
+    _shaderProgram->setAttributeBuffer(_texCoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
+
+    if(isInit) { vao->release(); }
+}
+
 void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, int &qMeshNumData, QVector3D vecCol1, QVector3D vecCol2)
 {
     qMeshNumData = 0;
-    if(quadMeshes.size() == 0)
-    {
-
-        return;
-    }
+    if(quadMeshes.size() == 0) { return; }
 
     bool isInit = false;
     if(!linesVao->isCreated())

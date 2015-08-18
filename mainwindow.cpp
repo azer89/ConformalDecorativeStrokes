@@ -37,6 +37,7 @@ MainWindow::~MainWindow()
     delete animTimer;
 }
 
+// Stroke Texture
 void MainWindow::SetStrokeTexture()
 {
     QString qFilename = QFileDialog::getOpenFileName(this, "Set Stroke Texture");
@@ -48,6 +49,7 @@ void MainWindow::SetStrokeTexture()
     ui->widget->GetGLWidget()->SetStrokeTexture(qFilename);
 }
 
+// Corner Texture
 void MainWindow::SetCornerTexture()
 {
     QString qFilename = QFileDialog::getOpenFileName(this, "Set Corner Texture");
@@ -56,14 +58,13 @@ void MainWindow::SetCornerTexture()
     QPixmap image(qFilename);
     image = image.scaled(ui->textureBLabel->size());
     ui->textureBLabel->setPixmap(image);
-    //ui->widget->GetGLWidget()->SetImage(qFilename);
+    ui->widget->GetGLWidget()->SetCornerTexture(qFilename);
 }
 
 void MainWindow::AnimationThread()
 {
     if(!ui->widget->GetGLWidget()->IsMouseDown())
     {
-        //std::cout << ".";
         this->ui->widget->GetGLWidget()->ConformalMappingOneStep();
         this->ui->widget->GetGLWidget()->repaint();
 
@@ -91,8 +92,6 @@ void MainWindow::AnimationStart()
 
 void MainWindow::SetParams()
 {
-    //std::cout << "SetParams\n";
-    //std::cout << ui->miterCheckBox->isChecked() << "\n";
     SystemParams::miter_joint_constraint = ui->miterCheckBox->isChecked();
     SystemParams::junction_ribs_constraint = ui->junctionRibsCheckBox->isChecked();
     SystemParams::spines_constraint = ui->spinesCheckBox->isChecked();

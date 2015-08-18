@@ -18,7 +18,7 @@ public:
     ~VertexDataHelper();
 
     // this function is awkward, should not be put in this class...
-    void NeedToDrawWithColor(GLfloat num) { _shaderProgram->setUniformValue(_use_color_location, num); }
+    void NeedToDrawWithColor(GLfloat num) { _shaderProgram->setUniformValue(_useColorLocation, num); }
 
     // these functions below are pretty staandard
     void BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
@@ -32,13 +32,16 @@ public:
     void BuildTexturedStrokeVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int mesh_width, int mesh_height);
     void BuildConstrainedPointsVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int *numConstrainedPoints, int mesh_width, int mesh_height, QVector3D vecCol);
 
+    // Quad Mesh
     void BuildLinesVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, int &qMeshNumData, QVector3D vecCol1, QVector3D vecCol2);
+    void BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao);
 
 private:
     QOpenGLShaderProgram* _shaderProgram;
-    int         _colorLocation;
-    int         _vertexLocation;
-    int         _use_color_location;
+    int                   _colorLocation;
+    int                   _vertexLocation;
+    int                   _useColorLocation;
+    int                   _texCoordLocation;
 };
 
 #endif // VERTEXDATAHELPER_H

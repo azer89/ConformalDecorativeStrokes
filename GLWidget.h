@@ -19,7 +19,6 @@ class GLWidget : public QGLWidget
     Q_OBJECT
 
 private:
-
     StrokePainter* _sPainter;
 
     bool    _isMouseDown;

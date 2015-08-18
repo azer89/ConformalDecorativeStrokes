@@ -10,7 +10,11 @@
 
 StrokePainter::StrokePainter() :
     _isMouseDown(false),
-    _vDataHelper(0)
+    _vDataHelper(0),
+    _iterDist(std::numeric_limits<float>::max()),
+    _qMeshNumData(0),
+    _masterImages(std::vector<QImage>(2)),              // current only support two textures
+    _masterTextures(std::vector<QOpenGLTexture*>(2))    // current only support two textures
 {
 }
 
@@ -26,12 +30,16 @@ void StrokePainter::SetVertexDataHelper(QOpenGLShaderProgram* shaderProgram)
 
 void StrokePainter::SetStrokeTexture(QString img)
 {
+    _masterImages[0].load(img);
+    _masterTextures[0] = new QOpenGLTexture(_masterImages[0]);
     //_aQuadMesh._img.load(img);
     //_aQuadMesh._imgTexture = new QOpenGLTexture(_aQuadMesh._img);
 }
 
 void StrokePainter::SetCornerTexture(QString img)
 {
+    _masterImages[1].load(img);
+    _masterTextures[1] = new QOpenGLTexture(_masterImages[1]);
 }
 
 /*
@@ -571,11 +579,11 @@ void StrokePainter::CalculateVertices1()
     */
 }
 
-AVector StrokePainter::GetClosestPointFromMiddleVerticalLines(AVector pt)
+/*AVector StrokePainter::GetClosestPointFromMiddleVerticalLines(AVector pt)
 {
     AVector closestPt = pt;
     float dist = std::numeric_limits<float>::max();
-    /*for(int a = 0; a < _junctionRibLines.size(); a++)
+    for(int a = 0; a < _junctionRibLines.size(); a++)
     {
         AVector pt1 = _junctionRibLines[a].GetPointA();
         AVector pt2 = _junctionRibLines[a].GetPointB();
@@ -585,9 +593,9 @@ AVector StrokePainter::GetClosestPointFromMiddleVerticalLines(AVector pt)
             dist = pt.Distance(cPt);
             closestPt = cPt;
         }
-    }*/
+    }
     return closestPt;
-}
+}*/
 
 AVector StrokePainter::GetClosestPointFromStrokePoints(AVector pt)
 {
@@ -827,8 +835,8 @@ void StrokePainter::ConformalMappingOneStep3(QuadMesh* qMesh)
                 { tempVertices[a][b].position = GetClosestPointFromStrokePoints(sumPositions); }
             else if(tempVertices[a][b].midHorizontalConstrained)
                 { tempVertices[a][b].position = GetClosestPointFromStrokeLines(sumPositions); }
-            else if(tempVertices[a][b].midVerticalConstrained)
-                { tempVertices[a][b].position = GetClosestPointFromMiddleVerticalLines(sumPositions); }
+            //else if(tempVertices[a][b].midVerticalConstrained)
+            //    { tempVertices[a][b].position = GetClosestPointFromMiddleVerticalLines(sumPositions); }
             else
                 { tempVertices[a][b].position = sumPositions; }
         }
