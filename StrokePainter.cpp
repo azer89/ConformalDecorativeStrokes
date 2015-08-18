@@ -16,6 +16,8 @@ StrokePainter::StrokePainter() :
     _masterImages(std::vector<QImage>(2)),              // current only support two textures
     _masterTextures(std::vector<QOpenGLTexture*>(2))    // current only support two textures
 {
+    //_masterImages = std::vector<QImage>(2);
+    //_masterTextures = std::vector<QOpenGLTexture*>(2);
 }
 
 StrokePainter::~StrokePainter()
@@ -717,6 +719,7 @@ void StrokePainter::ConformalMappingOneStep3()
     }
     _qMeshNumData = 0;
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_quadMeshesTexVbo, &_quadMeshesTexVao, _qMeshTexNumData);
 }
 
 void StrokePainter::ConformalMappingOneStep3(QuadMesh* qMesh)

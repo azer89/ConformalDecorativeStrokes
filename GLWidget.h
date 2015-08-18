@@ -69,7 +69,10 @@ public:
 
     bool ShouldStop() { return _sPainter->ShouldStop(); }
 
-    void SetStrokeTexture(QString img) { _sPainter->SetStrokeTexture(img); }
+    void SetStrokeTexture(QString img)
+    {
+        _sPainter->SetStrokeTexture(img);
+    }
     void SetCornerTexture(QString img) { _sPainter->SetCornerTexture(img); }
 
     void ConformalMappingOneStep();

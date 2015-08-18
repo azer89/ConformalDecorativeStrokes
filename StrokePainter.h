@@ -56,6 +56,9 @@ private:
     int                         _qMeshNumData;
     QOpenGLBuffer               _quadMeshesVbo;
     QOpenGLVertexArrayObject    _quadMeshesVao;
+    int                         _qMeshTexNumData;
+    QOpenGLBuffer               _quadMeshesTexVbo;
+    QOpenGLVertexArrayObject    _quadMeshesTexVao;
 
     // texture
     std::vector<QImage>         _masterImages;
