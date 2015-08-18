@@ -84,7 +84,7 @@
      <property name="fieldGrowthPolicy">
       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
      </property>
-     <item row="1" column="0">
+     <item row="0" column="0" colspan="2">
       <widget class="QWidget" name="widget_2" native="true">
        <property name="minimumSize">
         <size>
@@ -146,7 +146,7 @@
        </layout>
       </widget>
      </item>
-     <item row="3" column="0" colspan="2">
+     <item row="1" column="0" colspan="2">
       <widget class="QGroupBox" name="groupBox">
        <property name="font">
         <font>
@@ -201,7 +201,7 @@
        </layout>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="2" column="0" colspan="2">
       <widget class="QCheckBox" name="meshCheckBox">
        <property name="font">
         <font>
@@ -216,7 +216,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="3" column="0" colspan="2">
       <widget class="QCheckBox" name="textureCheckBox">
        <property name="font">
         <font>
@@ -231,14 +231,8 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="label">
-       <property name="minimumSize">
-        <size>
-         <width>125</width>
-         <height>0</height>
-        </size>
-       </property>
        <property name="font">
         <font>
          <pointsize>12</pointsize>
@@ -249,8 +243,14 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="4" column="1">
       <widget class="QDoubleSpinBox" name="quadSizeSpinBox">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="maximumSize">
         <size>
          <width>75</width>
@@ -269,10 +269,10 @@
         <double>100.000000000000000</double>
        </property>
        <property name="singleStep">
-        <double>0.500000000000000</double>
+        <double>0.100000000000000</double>
        </property>
        <property name="value">
-        <double>1.000000000000000</double>
+        <double>0.500000000000000</double>
        </property>
       </widget>
      </item>

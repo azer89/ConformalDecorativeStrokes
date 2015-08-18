@@ -34,7 +34,7 @@ public:
 
     // Quad Mesh
     void BuildLinesVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, int& qMeshNumData, QVector3D vecCol1, QVector3D vecCol2);
-    void BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int& qMeshTexNumData);
+    void BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int& qMeshTexNumData, QuadMeshType qmType);
 
 private:
     QOpenGLShaderProgram* _shaderProgram;

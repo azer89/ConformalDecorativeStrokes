@@ -14,7 +14,10 @@ StrokePainter::StrokePainter() :
     _iterDist(std::numeric_limits<float>::max()),
     _qMeshNumData(0),
     _masterImages(std::vector<QImage>(2)),              // current only support two textures
-    _masterTextures(std::vector<QOpenGLTexture*>(2))    // current only support two textures
+    _masterTextures(std::vector<QOpenGLTexture*>(2)),
+    _qmTexNumbers(std::vector<int>(2)),
+    _qmTexVbos(std::vector<QOpenGLBuffer>(2)),
+    _qmTexVaos(std::vector<QOpenGLVertexArrayObject>(2))
 {
     //_masterImages = std::vector<QImage>(2);
     //_masterTextures = std::vector<QOpenGLTexture*>(2);
@@ -425,6 +428,31 @@ void StrokePainter::CalculateVertices2(QuadMesh* qMesh)
 
             if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
             {
+                if(xIter == 0 && yIter == 0)
+                {
+                    _debugPoints.push_back(pt);
+                    shouldMove = false;
+                }
+                else if(xIter == xLoop - 1 && yIter == yLoop - 1)
+                {
+                    _debugPoints.push_back(pt);
+                    shouldMove = false;
+                }
+
+                else if(/*qMesh->_isRightKite &&*/ xIter == 0 && yIter == yLoop - 1)
+                {
+                    _debugPoints.push_back(pt);
+                    shouldMove = false;
+                }
+                else if(/*!qMesh->_isRightKite &&*/ xIter == xLoop - 1 && yIter == 0)
+                {
+                    _debugPoints.push_back(pt);
+                    shouldMove = false;
+                }
+            }
+
+            /*if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+            {
                 if(pt.Distance(qMesh->_sharpPt) < std::numeric_limits<float>::epsilon() * 100)
                 {
                     _debugPoints.push_back(pt);
@@ -440,7 +468,7 @@ void StrokePainter::CalculateVertices2(QuadMesh* qMesh)
                     _debugPoints.push_back(pt);
                     shouldMove = false;
                 }
-            }
+            }*/
 
             PlusSignVertex psVert = PlusSignVertex(pt, shouldMove, junctionRibsConstrained, spinesConstrained);
             columnVertices.push_back(psVert);
@@ -719,7 +747,8 @@ void StrokePainter::ConformalMappingOneStep3()
     }
     _qMeshNumData = 0;
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_quadMeshesTexVbo, &_quadMeshesTexVao, _qMeshTexNumData);
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[0], &_qmTexVaos[0], _qmTexNumbers[0], QuadMeshType::MESH_RECTANGLE);
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[1], &_qmTexVaos[1], _qmTexNumbers[1], QuadMeshType::MESH_KITE);
 }
 
 void StrokePainter::ConformalMappingOneStep3(QuadMesh* qMesh)
@@ -833,6 +862,16 @@ void StrokePainter::ConformalMappingOneStep3(QuadMesh* qMesh)
             tempVertices[a][b].angle = sumArmAngles;
 
             if(numNeighbor < 4)
+            {
+                tempVertices[a][b].position = GetClosestPointFromBorders(*qMesh, sumPositions);
+            }
+            else
+            {
+                tempVertices[a][b].position = sumPositions;
+            }
+
+            /*
+            if(numNeighbor < 4)
                 { tempVertices[a][b].position = GetClosestPointFromBorders(sumPositions); }
             else if(tempVertices[a][b].midHorizontalConstrained && tempVertices[a][b].midVerticalConstrained)
                 { tempVertices[a][b].position = GetClosestPointFromStrokePoints(sumPositions); }
@@ -841,7 +880,7 @@ void StrokePainter::ConformalMappingOneStep3(QuadMesh* qMesh)
             //else if(tempVertices[a][b].midVerticalConstrained)
             //    { tempVertices[a][b].position = GetClosestPointFromMiddleVerticalLines(sumPositions); }
             else
-                { tempVertices[a][b].position = sumPositions; }
+                { tempVertices[a][b].position = sumPositions; }*/
         }
     }
 
@@ -1118,7 +1157,7 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
 void StrokePainter::Draw()
 {
     // modification
-    if(/*(_isMouseDown || SystemParams::spines_constraint ) &&*/ _spineLinesVao.isCreated())
+    if((_isMouseDown || SystemParams::show_mesh ) && _spineLinesVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glLineWidth(2.0f);
@@ -1153,6 +1192,53 @@ void StrokePainter::Draw()
         glDrawArrays(GL_LINES, 0, _qMeshNumData);
         _quadMeshesVao.release();
     }
+
+    if(SystemParams::show_mesh && _debugPointsVao.isCreated())
+    {
+        _vDataHelper->NeedToDrawWithColor(1.0);
+        glPointSize(4.0f);
+        _debugPointsVao.bind();
+        glDrawArrays(GL_POINTS, 0, _debugPoints.size());
+        _debugPointsVao.release();
+    }
+
+    // Texture Rectangle
+    if(SystemParams::show_texture && _qmTexNumbers[0] > 0)
+    {
+        _vDataHelper->NeedToDrawWithColor(0.0);
+
+        if(_masterTextures[0]) { _masterTextures[0]->bind(); }
+        _qmTexVaos[0].bind();
+        glDrawArrays(GL_QUADS, 0, _qmTexNumbers[0]);
+        _qmTexVaos[0].release();
+        if(_masterTextures[0]) { _masterTextures[0]->release(); }
+    }
+
+
+    // Texture Kite
+    if(SystemParams::show_texture && _qmTexNumbers[1] > 0)
+    {
+        _vDataHelper->NeedToDrawWithColor(0.0);
+        if(_masterTextures[1]) { _masterTextures[1]->bind(); }
+        _qmTexVaos[1].bind();
+        glDrawArrays(GL_QUADS, 0, _qmTexNumbers[1]);
+        _qmTexVaos[1].release();
+        if(_masterTextures[1]) { _masterTextures[1]->release(); }
+    }
+
+    // Texture
+    /*if(SystemParams::show_texture && _quadMeshesTexVao.isCreated())
+    {
+        _vDataHelper->NeedToDrawWithColor(0.0);
+
+        if(_masterTextures[0]) { _masterTextures[0]->bind(); }
+
+        _quadMeshesTexVao.bind();
+        glDrawArrays(GL_QUADS, 0, _qMeshTexNumData);
+        _quadMeshesTexVao.release();
+
+        if(_masterTextures[0]) { _masterTextures[0]->release(); }
+    }*/
 
     /*
     // Quad mesh
@@ -1192,15 +1278,6 @@ void StrokePainter::Draw()
         glDrawArrays(GL_LINES, 0, _debugLines.size() * 2);
         _debugLinesVao.release();
     }*/
-
-    if(_debugPointsVao.isCreated())
-    {
-        _vDataHelper->NeedToDrawWithColor(1.0);
-        glPointSize(4.0f);
-        _debugPointsVao.bind();
-        glDrawArrays(GL_POINTS, 0, _debugPoints.size());
-        _debugPointsVao.release();
-    }
 
 
     /*

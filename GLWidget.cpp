@@ -60,10 +60,10 @@ void GLWidget::initializeGL()
     _sPainter = new StrokePainter();
     _sPainter->SetVertexDataHelper(_shaderProgram);
 
-    QString qFilenameA("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/stroke_02_rectangle.png");
+    QString qFilenameA("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/tile_02_a.png");
     this->SetStrokeTexture(qFilenameA);
 
-    QString qFilenameB("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/stroke_02_kite.png");
+    QString qFilenameB("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/tile_02_b.png");
     this->SetCornerTexture(qFilenameB);
 }
 

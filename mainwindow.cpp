@@ -24,12 +24,12 @@ MainWindow::MainWindow(QWidget *parent) :
     animTimer = new QTimer(this);
     connect(animTimer, SIGNAL(timeout()), this, SLOT(AnimationThread()));
 
-    QString qFilenameA("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/stroke_02_rectangle.png");
+    QString qFilenameA("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/tile_02_a.png");
     QPixmap imageA(qFilenameA);
     imageA = imageA.scaled(ui->textureALabel->size());
     ui->textureALabel->setPixmap(imageA);
 
-    QString qFilenameB("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/stroke_02_kite.png");
+    QString qFilenameB("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/tile_02_b.png");
     QPixmap imageB(qFilenameB);
     imageB = imageB.scaled(ui->textureBLabel->size());
     ui->textureBLabel->setPixmap(imageB);
