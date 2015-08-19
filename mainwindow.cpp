@@ -16,8 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //connect(ui->junctionRibsCheckBox,	 SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
     //connect(ui->spinesCheckBox,        SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
     connect(ui->fixedSeparationCheckBox, SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
-    connect(ui->meshCheckBox,            SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
-    connect(ui->textureCheckBox,         SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+    connect(ui->meshCheckBox,            SIGNAL(stateChanged(int)),       this, SLOT(SetDisplay()));
+    connect(ui->textureCheckBox,         SIGNAL(stateChanged(int)),       this, SLOT(SetDisplay()));
     connect(ui->quadSizeSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
     connect(ui->actionSetStrokeTexture,	 SIGNAL(triggered()),             this, SLOT(SetStrokeTexture()));
     connect(ui->actionSetCornerTexture,	 SIGNAL(triggered()),             this, SLOT(SetCornerTexture()));
@@ -95,16 +95,28 @@ void MainWindow::AnimationStart()
 
 }
 
+void MainWindow::SetDisplay()
+{
+    SystemParams::show_mesh = ui->meshCheckBox->isChecked();
+    SystemParams::show_texture = ui->textureCheckBox->isChecked();
+    this->ui->widget->GetGLWidget()->repaint();
+}
+
 void MainWindow::SetParams()
 {
     //SystemParams::miter_joint_constraint = ui->miterCheckBox->isChecked();
     //SystemParams::junction_ribs_constraint = ui->junctionRibsCheckBox->isChecked();
     //SystemParams::spines_constraint = ui->spinesCheckBox->isChecked();
     SystemParams::fixed_separation_constraint = ui->fixedSeparationCheckBox->isChecked();
-
-    SystemParams::show_mesh = ui->meshCheckBox->isChecked();
-    SystemParams::show_texture = ui->textureCheckBox->isChecked();
     SystemParams::mesh_size = ui->quadSizeSpinBox->value();
+
+    this->ui->widget->GetGLWidget()->CalculateVertices();
+
+    if(animTimer->isActive())
+    {
+       animTimer->stop();
+    }
+    animTimer->start();
 
     this->ui->widget->GetGLWidget()->repaint();
 }

@@ -26,6 +26,7 @@ private slots:
     void AnimationStart();
 
     void SetParams();
+    void SetDisplay();
     void SetStrokeTexture();
     void SetCornerTexture();
 };

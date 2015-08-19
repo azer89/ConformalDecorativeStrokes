@@ -75,7 +75,16 @@ public:
     }
     void SetCornerTexture(QString img) { _sPainter->SetCornerTexture(img); }
 
-    void ConformalMappingOneStep();
+    void ConformalMappingOneStep()
+    {
+        _sPainter->ConformalMappingOneStep3();
+    }
+
+    void CalculateVertices()
+    {
+        _sPainter->CalculateVertices2();
+    }
+
 
     // zoom in handle
     void ZoomIn();

@@ -372,6 +372,18 @@ void StrokePainter::CalculateKitesAndRectangles()
     //std::cout << "\n\n";
 }
 
+void StrokePainter::CalculateVertices2()
+{
+    _debugPoints.clear();
+    for(uint a = 0; a < _quadMeshes.size(); a++)
+    {
+        CalculateVertices2(&_quadMeshes[a]);
+    }
+    _qMeshNumData = 0;
+    _vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(1, 0, 0));
+    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
+}
+
 void StrokePainter::CalculateVertices2(QuadMesh* qMesh)
 {
     qMesh->_plusSignVertices.clear();
@@ -1128,21 +1140,8 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
 
     _oriStrokeLines.push_back(AVector(x, y));
     CalculateInitialRibbon();    // modification
-    //CalculateVertices1(); // modification
-    //CalculateVertices2(); // modification
 
-    //_debugLines.clear();
-    _debugPoints.clear();
-    for(uint a = 0; a < _quadMeshes.size(); a++)
-    {
-        CalculateVertices2(&_quadMeshes[a]);
-    }
-    _qMeshNumData = 0;
-    //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(1, 0, 0));
-    _vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(1, 0, 0));
-    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
-    //std::cout << "\n\n";
-    //std::cout << "_qMeshNumData " << _qMeshNumData << "\n";
+    CalculateVertices2();
 }
 
 void StrokePainter::Draw()

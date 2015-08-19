@@ -78,10 +78,6 @@ void GLWidget::resizeGL(int width, int height)
 {
 }
 
-void GLWidget::ConformalMappingOneStep()
-{
-    _sPainter->ConformalMappingOneStep3();
-}
 
 void GLWidget::paintGL()
 {

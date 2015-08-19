@@ -35,6 +35,11 @@ public:
     void ConformalMappingOneStep3();
     void ConformalMappingOneStep3(QuadMesh *qMesh);
 
+    void CalculateVertices1();
+
+    void CalculateVertices2();
+    void CalculateVertices2(QuadMesh *qMesh);
+
     bool ShouldStop() { return _iterDist < std::numeric_limits<float>::epsilon(); }
 
     void SetStrokeTexture(QString img);
@@ -122,8 +127,7 @@ private:
     void CalculateSpines();
     //void CalculateInitialRibbon2();
 
-    void CalculateVertices1();
-    void CalculateVertices2(QuadMesh *qMesh);
+
 };
 
 #endif // STROKEPAINTER_H
