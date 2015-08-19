@@ -12,9 +12,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->widget->GetGLWidget(),   SIGNAL(CalculateConformalMap()), this, SLOT(AnimationStart()));
-    connect(ui->miterCheckBox,           SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
-    connect(ui->junctionRibsCheckBox,	 SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
-    connect(ui->spinesCheckBox,          SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+    //connect(ui->miterCheckBox,         SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+    //connect(ui->junctionRibsCheckBox,	 SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+    //connect(ui->spinesCheckBox,        SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+    connect(ui->fixedSeparationCheckBox, SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
     connect(ui->meshCheckBox,            SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
     connect(ui->textureCheckBox,         SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
     connect(ui->quadSizeSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
@@ -96,9 +97,10 @@ void MainWindow::AnimationStart()
 
 void MainWindow::SetParams()
 {
-    SystemParams::miter_joint_constraint = ui->miterCheckBox->isChecked();
-    SystemParams::junction_ribs_constraint = ui->junctionRibsCheckBox->isChecked();
-    SystemParams::spines_constraint = ui->spinesCheckBox->isChecked();
+    //SystemParams::miter_joint_constraint = ui->miterCheckBox->isChecked();
+    //SystemParams::junction_ribs_constraint = ui->junctionRibsCheckBox->isChecked();
+    //SystemParams::spines_constraint = ui->spinesCheckBox->isChecked();
+    SystemParams::fixed_separation_constraint = ui->fixedSeparationCheckBox->isChecked();
 
     SystemParams::show_mesh = ui->meshCheckBox->isChecked();
     SystemParams::show_texture = ui->textureCheckBox->isChecked();

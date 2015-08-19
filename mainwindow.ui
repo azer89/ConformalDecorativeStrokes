@@ -81,9 +81,6 @@
      </size>
     </property>
     <layout class="QFormLayout" name="formLayout">
-     <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-     </property>
      <item row="0" column="0" colspan="2">
       <widget class="QWidget" name="widget_2" native="true">
        <property name="minimumSize">
@@ -147,61 +144,18 @@
       </widget>
      </item>
      <item row="1" column="0" colspan="2">
-      <widget class="QGroupBox" name="groupBox">
+      <widget class="QCheckBox" name="fixedSeparationCheckBox">
        <property name="font">
         <font>
          <pointsize>12</pointsize>
         </font>
        </property>
-       <property name="title">
-        <string>Constraints</string>
+       <property name="text">
+        <string>Fixed  Separation</string>
        </property>
-       <layout class="QFormLayout" name="formLayout_2">
-        <property name="fieldGrowthPolicy">
-         <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-        </property>
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="miterCheckBox">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Miter Joints</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="junctionRibsCheckBox">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Junction Ribs</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="spinesCheckBox">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Spines</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </widget>
      </item>
-     <item row="2" column="0" colspan="2">
+     <item row="2" column="0">
       <widget class="QCheckBox" name="meshCheckBox">
        <property name="font">
         <font>

@@ -15,9 +15,10 @@ public:
     // simplifying drawn strokes
     static float rdp_epsilon;
 
-    static bool miter_joint_constraint;
-    static bool junction_ribs_constraint;
-    static bool spines_constraint;
+    static bool fixed_separation_constraint;
+    //static bool miter_joint_constraint;
+    //static bool junction_ribs_constraint;
+    //static bool spines_constraint;
 
     static bool show_mesh;
     static bool show_texture;

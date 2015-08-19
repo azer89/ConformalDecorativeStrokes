@@ -426,49 +426,39 @@ void StrokePainter::CalculateVertices2(QuadMesh* qMesh)
             bool junctionRibsConstrained = false;
             bool spinesConstrained = false;
 
-            if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+            if(!SystemParams::fixed_separation_constraint && qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
             {
-                if(xIter == 0 && yIter == 0)
-                {
-                    _debugPoints.push_back(pt);
-                    shouldMove = false;
-                }
-                else if(xIter == xLoop - 1 && yIter == yLoop - 1)
-                {
-                    _debugPoints.push_back(pt);
-                    shouldMove = false;
-                }
-
-                else if(/*qMesh->_isRightKite &&*/ xIter == 0 && yIter == yLoop - 1)
-                {
-                    _debugPoints.push_back(pt);
-                    shouldMove = false;
-                }
-                else if(/*!qMesh->_isRightKite &&*/ xIter == xLoop - 1 && yIter == 0)
+                if( (xIter == 0 && yIter == 0) ||
+                    (xIter == xLoop - 1 && yIter == yLoop - 1) ||
+                    (xIter == 0 && yIter == yLoop - 1) ||
+                    (xIter == xLoop - 1 && yIter == 0))
                 {
                     _debugPoints.push_back(pt);
                     shouldMove = false;
                 }
             }
 
-            /*if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+            if(SystemParams::fixed_separation_constraint)
             {
-                if(pt.Distance(qMesh->_sharpPt) < std::numeric_limits<float>::epsilon() * 100)
+                if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
                 {
-                    _debugPoints.push_back(pt);
-                    shouldMove = false;
+                    if(pt.Distance(qMesh->_sharpPt) < std::numeric_limits<float>::epsilon() * 100)
+                    {
+                        _debugPoints.push_back(pt);
+                        shouldMove = false;
+                    }
+                    else if(qMesh->_isRightKite && (xIter == 0 || yIter == yLoop - 1))
+                    {
+                        _debugPoints.push_back(pt);
+                        shouldMove = false;
+                    }
+                    else if(!qMesh->_isRightKite && (xIter == xLoop - 1 || yIter == 0))
+                    {
+                        _debugPoints.push_back(pt);
+                        shouldMove = false;
+                    }
                 }
-                else if(qMesh->_isRightKite && (xIter == 0 || yIter == yLoop - 1))
-                {
-                    _debugPoints.push_back(pt);
-                    shouldMove = false;
-                }
-                else if(!qMesh->_isRightKite && (xIter == xLoop - 1 || yIter == 0))
-                {
-                    _debugPoints.push_back(pt);
-                    shouldMove = false;
-                }
-            }*/
+            }
 
             PlusSignVertex psVert = PlusSignVertex(pt, shouldMove, junctionRibsConstrained, spinesConstrained);
             columnVertices.push_back(psVert);
@@ -493,7 +483,7 @@ void StrokePainter::CalculateVertices1()
         int intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
         int intMeshWidth = mStartPt.Distance(mEndPt) / SystemParams::mesh_size;
 
-        if(SystemParams::junction_ribs_constraint)
+        //if(SystemParams::junction_ribs_constraint)
         {
             // with corner avoidance
             intMeshHeight = SystemParams::stroke_width / SystemParams::mesh_size;
@@ -538,7 +528,7 @@ void StrokePainter::CalculateVertices1()
                 bool shouldMove = true;
                 bool junctionRibsConstrained = false;
                 bool spinesConstrained = false;
-                if(SystemParams::miter_joint_constraint && xIter == 0 && yIter == 0)
+                /*if(SystemParams::miter_joint_constraint && xIter == 0 && yIter == 0)
                     { shouldMove = false; }
                 else if(SystemParams::miter_joint_constraint && xIter == 0 && yIter == yLoop - 1 )
                     { shouldMove = false; }
@@ -546,17 +536,18 @@ void StrokePainter::CalculateVertices1()
                     { shouldMove = false; }
                 else if(SystemParams::miter_joint_constraint && isTheEnd && xIter == xLoop - 1 && yIter == yLoop - 1 )
                     { shouldMove = false; }
+                */
 
-                if(SystemParams::junction_ribs_constraint &&  a > 0 && xIter == 0)
-                    { junctionRibsConstrained = true; }
+                //if(SystemParams::junction_ribs_constraint &&  a > 0 && xIter == 0)
+                //    { junctionRibsConstrained = true; }
 
                 // odd only
-                if(SystemParams::spines_constraint && yLoop % 2 != 0)
+                /*if(SystemParams::spines_constraint && yLoop % 2 != 0)
                 {
                     int yMid = yLoop / 2;
                     if(yIter == yMid)
                         { spinesConstrained = true; }
-                }
+                }*/
 
                 /*
                 if(yLoop % 2 == 0) // even
