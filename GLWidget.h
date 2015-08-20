@@ -68,6 +68,7 @@ public:
     bool IsMouseDown() { return _isMouseDown; }
 
     bool ShouldStop() { return _sPainter->ShouldStop(); }
+    float IterationDelta() { return _sPainter->IterationDelta(); }
 
     void SetStrokeTexture(QString img)
     {

@@ -12,25 +12,26 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->widget->GetGLWidget(),   SIGNAL(CalculateConformalMap()), this, SLOT(AnimationStart()));
-    //connect(ui->miterCheckBox,         SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
-    //connect(ui->junctionRibsCheckBox,	 SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
-    //connect(ui->spinesCheckBox,        SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+
     connect(ui->fixedSeparationCheckBox, SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+    connect(ui->conformalMappingCheckBox,SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+    connect(ui->quadSizeSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
+
     connect(ui->meshCheckBox,            SIGNAL(stateChanged(int)),       this, SLOT(SetDisplay()));
     connect(ui->textureCheckBox,         SIGNAL(stateChanged(int)),       this, SLOT(SetDisplay()));
-    connect(ui->quadSizeSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
+
     connect(ui->actionSetStrokeTexture,	 SIGNAL(triggered()),             this, SLOT(SetStrokeTexture()));
     connect(ui->actionSetCornerTexture,	 SIGNAL(triggered()),             this, SLOT(SetCornerTexture()));
 
     animTimer = new QTimer(this);
     connect(animTimer, SIGNAL(timeout()), this, SLOT(AnimationThread()));
 
-    QString qFilenameA("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/tile_02_a.png");
+    QString qFilenameA("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/tile_03_a.png");
     QPixmap imageA(qFilenameA);
     imageA = imageA.scaled(ui->textureALabel->size());
     ui->textureALabel->setPixmap(imageA);
 
-    QString qFilenameB("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/tile_02_b.png");
+    QString qFilenameB("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/tile_03_b.png");
     QPixmap imageB(qFilenameB);
     imageB = imageB.scaled(ui->textureBLabel->size());
     ui->textureBLabel->setPixmap(imageB);
@@ -68,6 +69,10 @@ void MainWindow::SetCornerTexture()
 
 void MainWindow::AnimationThread()
 {
+    float duration = ( std::clock() - startTime ) / (double) CLOCKS_PER_SEC;
+    ui->runningTimeLabel->setText("Time: " + QString::number(duration));
+    ui->deltaLabel->setText("Delta: " + QString::number(ui->widget->GetGLWidget()->IterationDelta()));
+
     if(!ui->widget->GetGLWidget()->IsMouseDown())
     {
         this->ui->widget->GetGLWidget()->ConformalMappingOneStep();
@@ -75,7 +80,9 @@ void MainWindow::AnimationThread()
 
         if(this->ui->widget->GetGLWidget()->ShouldStop())
         {
-            std::cout << "iteration complete\n";
+            //std::cout << "iteration complete\n";
+            ui->runningTimeLabel->setText("Complete in: " + QString::number(duration));
+            ui->deltaLabel->setText("Delta: " + QString::number(ui->widget->GetGLWidget()->IterationDelta()));
             animTimer->stop();
         }
     }
@@ -83,15 +90,16 @@ void MainWindow::AnimationThread()
 
 void MainWindow::AnimationStart()
 {
-    /*
-     * Comment these if you don't want conformal mapping
-     */
-
     if(animTimer->isActive())
     {
        animTimer->stop();
     }
-    animTimer->start();
+
+    if(SystemParams::enable_conformal_mapping)
+    {
+        startTime = std::clock();
+        animTimer->start();
+    }
 
 }
 
@@ -104,11 +112,13 @@ void MainWindow::SetDisplay()
 
 void MainWindow::SetParams()
 {
-    //SystemParams::miter_joint_constraint = ui->miterCheckBox->isChecked();
-    //SystemParams::junction_ribs_constraint = ui->junctionRibsCheckBox->isChecked();
-    //SystemParams::spines_constraint = ui->spinesCheckBox->isChecked();
     SystemParams::fixed_separation_constraint = ui->fixedSeparationCheckBox->isChecked();
+    SystemParams::enable_conformal_mapping = ui->conformalMappingCheckBox->isChecked();
     SystemParams::mesh_size = ui->quadSizeSpinBox->value();
+
+    ui->runningTimeLabel->setText("Time: 0");
+    ui->deltaLabel->setText("Delta: 0");
+
 
     this->ui->widget->GetGLWidget()->CalculateVertices();
 
@@ -116,7 +126,12 @@ void MainWindow::SetParams()
     {
        animTimer->stop();
     }
-    animTimer->start();
+
+    if(SystemParams::enable_conformal_mapping)
+    {
+        startTime = std::clock();
+        animTimer->start();
+    }
 
     this->ui->widget->GetGLWidget()->repaint();
 }

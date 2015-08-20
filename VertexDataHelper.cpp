@@ -214,29 +214,6 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                 float yCoord1 = (float)b / (float)heightMinOne;
                 float yCoord2 = (float)(b+1) / (float)heightMinOne;
 
-                if(qMesh._quadMeshType == QuadMeshType::MESH_KITE && !qMesh._isRightKite)
-                {
-                    //AVector vec1 = UtilityFunctions::Rotate(AVector(xCoord1, yCoord1), AVector(0.5, 0.5), M_PI_2);
-                    //AVector vec2 = UtilityFunctions::Rotate(AVector(xCoord2, yCoord2), AVector(0.5, 0.5), M_PI_2);
-                    //xCoord1 = vec1.x;
-                    //xCoord2 = vec2.x;
-                    //yCoord1 = vec1.y;
-                    //yCoord2 = vec2.y;
-
-                    /*xCoord1 = -xCoord1;
-                    xCoord2 = -xCoord2;
-                    yCoord1 = -yCoord1;
-                    yCoord2 = -yCoord2;*/
-
-                    /*xCoord1 = 1.0f - xCoord1;
-                    xCoord2 = 1.0f - xCoord2;
-                    yCoord1 = 1.0f - yCoord1;
-                    yCoord2 = 1.0f - yCoord2;*/
-
-                    //std::swap(xCoord1, xCoord2);
-                    //std::swap(yCoord1, yCoord2);
-                }
-
                 AVector aVec = plusSignVertices[a][b].position;
                 AVector bVec = plusSignVertices[a+1][b].position;
                 AVector cVec = plusSignVertices[a+1][b+1].position;

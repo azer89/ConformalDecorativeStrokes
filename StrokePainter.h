@@ -25,6 +25,7 @@ public:
     void mouseReleaseEvent(float x, float y);
 
     int QuadMeshSize() { return _quadMeshes.size(); }
+    float IterationDelta() { return _iterDist; }
     //QSize MeshSize(){ return QSize(_aQuadMesh._mesh_width, _aQuadMesh._mesh_height); }
 
     void Draw();

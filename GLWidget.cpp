@@ -17,8 +17,8 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent) :
     _sPainter(0),
     _isMouseDown(false),
     _zoomFactor(10.0),
-    _img_width(50),
-    _img_height(50),
+    _img_width(500),
+    _img_height(500),
     _shaderProgram(0)
 {
 }
@@ -60,10 +60,10 @@ void GLWidget::initializeGL()
     _sPainter = new StrokePainter();
     _sPainter->SetVertexDataHelper(_shaderProgram);
 
-    QString qFilenameA("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/tile_02_a.png");
+    QString qFilenameA("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/tile_03_a.png");
     this->SetStrokeTexture(qFilenameA);
 
-    QString qFilenameB("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/tile_02_b.png");
+    QString qFilenameB("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/tile_03_b.png");
     this->SetCornerTexture(qFilenameB);
 }
 

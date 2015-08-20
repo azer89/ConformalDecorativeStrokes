@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QTimer>
 
+#include <ctime>
+
 namespace Ui {
 class MainWindow;
 }
@@ -20,6 +22,8 @@ private:
     Ui::MainWindow *ui;
 
     QTimer* animTimer;
+
+    std::clock_t startTime;
 
 private slots:
     void AnimationThread();

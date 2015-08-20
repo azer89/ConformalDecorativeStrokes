@@ -403,10 +403,10 @@ void StrokePainter::CalculateVertices2(QuadMesh* qMesh)
     AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();
 
     float meshSize = SystemParams::mesh_size;
-    if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
-    {
-        meshSize /= 2.0f;
-    }
+    //if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+    //{
+    //    meshSize /= 2.0f;
+    //}
 
     int intMeshHeight = SystemParams::stroke_width / meshSize;
     int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
