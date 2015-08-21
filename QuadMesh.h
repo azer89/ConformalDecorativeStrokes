@@ -26,18 +26,18 @@ public:
     {
     }
 
-    void AddBorders(std::vector<AVector> lines)
-    {
-        for(uint a = 0; a < lines.size() - 1; a++)
-        {
-            _borderLines.push_back(ALine(lines[a], lines[a+1]));
-        }
-    }
+    //void AddBorders(std::vector<AVector> lines)
+    //{
+    //    for(uint a = 0; a < lines.size() - 1; a++)
+    //    {
+    //        _borderLines.push_back(ALine(lines[a], lines[a+1]));
+    //    }
+    //}
 
-    void AddBorder(ALine aline)
-    {
-        _borderLines.push_back(aline);
-    }
+    //void AddBorder(ALine aline)
+    //{
+    //    _borderLines.push_back(aline);
+    //}
 
 
 public:
@@ -48,32 +48,15 @@ public:
     AVector _leftEndPt;
     AVector _rightStartPt;
     AVector _rightEndPt;
-    /*
-    ALine _topLine;
-    ALine _rightLine;
-    ALine _bottomLine;
-    ALine _leftLine;
-    */
 
     QuadMeshType _quadMeshType;
     AVector _sharpPt; // for kite only
     bool _isRightKite; // a stroke which turns right
 
-    std::vector<ALine>        _borderLines;
-    //QOpenGLBuffer             _borderLinesVbo; // do I need this ?
-    //QOpenGLVertexArrayObject  _borderLinesVao; // do I need this ?
+    //std::vector<ALine>        _borderLines;
 
     // Vertices
     std::vector<std::vector<PlusSignVertex>> _plusSignVertices;
-    /*QOpenGLBuffer               _plusSignVerticesVbo;
-    QOpenGLVertexArrayObject    _plusSignVerticesVao;*/
-
-    // add a texture ID or something
-    // Texture
-    //QImage _img;
-    //QOpenGLTexture _imgTexture;
-    //QOpenGLBuffer               _texturedStrokeVbo;
-    //QOpenGLVertexArrayObject    _texturedStrokeVao;
 };
 
 #endif // QUADMESH_H

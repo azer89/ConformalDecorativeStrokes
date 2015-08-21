@@ -78,12 +78,12 @@ public:
 
     void ConformalMappingOneStep()
     {
-        _sPainter->ConformalMappingOneStep3();
+        _sPainter->ConformalMappingOneStepSimple();
     }
 
     void CalculateVertices()
     {
-        _sPainter->CalculateVertices2();
+        _sPainter->CalculateVertices();
     }
 
 

@@ -14,15 +14,11 @@ public:
     // y
     float y;
 
-    // custom
-    //int index;
-
     // Default constructor
     AVector()
     {
         this->x = -1;
         this->y = -1;
-        //this->index = -1;
     }
 
     // Constructor
@@ -30,16 +26,7 @@ public:
     {
         this->x = x;
         this->y = y;
-        //this->index = -1;
     }
-
-    // Constructor
-    /*AVector(AVector otherVector)
-    {
-        this->x = otherVector.x;
-        this->y = otherVector.y;
-        //this->index = -1;
-    }*/
 
     // Scale a point
     AVector Resize(float val)

@@ -26,20 +26,17 @@ public:
 
     int QuadMeshSize() { return _quadMeshes.size(); }
     float IterationDelta() { return _iterDist; }
-    //QSize MeshSize(){ return QSize(_aQuadMesh._mesh_width, _aQuadMesh._mesh_height); }
 
     void Draw();
 
-    void ConformalMappingOneStep1();
-    void ConformalMappingOneStep2();
+    void ConformalMappingOneStepSimple();
+    void ConformalMappingOneStepSimple(QuadMesh *qMesh);
 
-    void ConformalMappingOneStep3();
-    void ConformalMappingOneStep3(QuadMesh *qMesh);
+    void ConformalMappingOneStep();
+    void ConformalMappingOneStep(QuadMesh *qMesh);
 
-    void CalculateVertices1();
-
-    void CalculateVertices2();
-    void CalculateVertices2(QuadMesh *qMesh);
+    void CalculateVertices();
+    void CalculateVertices(QuadMesh *qMesh);
 
     bool ShouldStop() { return _iterDist < std::numeric_limits<float>::epsilon(); }
 
