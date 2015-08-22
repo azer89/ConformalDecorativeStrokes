@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     UtilityFunctions.cpp \
     SystemParams.cpp \
     CurveRDP.cpp \
-    VertexDataHelper.cpp
+    VertexDataHelper.cpp \
+    ConformalMapping.cpp
 
 HEADERS  += mainwindow.h \
     AVector.h \
@@ -34,7 +35,8 @@ HEADERS  += mainwindow.h \
     CurveRDP.h \
     PlusSignVertex.h \
     VertexDataHelper.h \
-    QuadMesh.h
+    QuadMesh.h \
+    ConformalMapping.h
 
 FORMS    += mainwindow.ui
 

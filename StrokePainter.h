@@ -5,8 +5,10 @@
 #include "AVector.h"
 #include "VertexData.h"
 #include "PlusSignVertex.h"
-#include "VertexDataHelper.h"
 #include "QuadMesh.h"
+
+#include "VertexDataHelper.h"
+#include "ConformalMapping.h"
 
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
@@ -25,20 +27,17 @@ public:
     void mouseReleaseEvent(float x, float y);
 
     int QuadMeshSize() { return _quadMeshes.size(); }
-    float IterationDelta() { return _iterDist; }
+    float IterationDelta() { return _cMapping->GetIterDist(); }
 
     void Draw();
 
     void ConformalMappingOneStepSimple();
-    void ConformalMappingOneStepSimple(QuadMesh *qMesh);
-
     void ConformalMappingOneStep();
-    void ConformalMappingOneStep(QuadMesh *qMesh);
 
     void CalculateVertices();
     void CalculateVertices(QuadMesh *qMesh);
 
-    bool ShouldStop() { return _iterDist < std::numeric_limits<float>::epsilon(); }
+    bool ShouldStop() { return _cMapping->GetIterDist() < std::numeric_limits<float>::epsilon(); }
 
     void SetStrokeTexture(QString img);
     void SetCornerTexture(QString img);
@@ -52,17 +51,12 @@ private:
     bool _isMouseDown;
 
     VertexDataHelper* _vDataHelper;
-
-    float _iterDist;
+    ConformalMapping* _cMapping;
 
     std::vector<QuadMesh>       _quadMeshes;
     int                         _qMeshNumData;
     QOpenGLBuffer               _quadMeshesVbo;
     QOpenGLVertexArrayObject    _quadMeshesVao;
-
-    //int                         _qMeshTexNumData;
-    //QOpenGLBuffer               _quadMeshesTexVbo;
-    //QOpenGLVertexArrayObject    _quadMeshesTexVao;
 
     // texture
     std::vector<QImage>          _masterImages;
@@ -70,13 +64,11 @@ private:
     std::vector<int>             _qmTexNumbers;
     std::vector<QOpenGLBuffer>             _qmTexVbos;
     std::vector<QOpenGLVertexArrayObject>  _qmTexVaos;
-    //QImage _masterImg;
-    //QOpenGLTexture* _masterImgTexture;
 
     // strokes
     std::vector<AVector>        _oriStrokeLines;    // original
 
-    // spines
+    // middle spines
     std::vector<AVector>        _spineLines;       // resampled and simplified from strokeLines
     QOpenGLBuffer               _spineLinesVbo;
     QOpenGLVertexArrayObject    _spineLinesVao;    
@@ -91,39 +83,21 @@ private:
     QOpenGLBuffer               _rightLinesVbo;
     QOpenGLVertexArrayObject    _rightLinesVao;
 
-    // debugging
-    std::vector<AVector>        _debugPoints;
-    QOpenGLBuffer               _debugPointsVbo;
-    QOpenGLVertexArrayObject    _debugPointsVao;
-
-    // debugging
-    /*std::vector<ALine>          _debugLines;
-    QOpenGLBuffer               _debugLinesVbo;
-    QOpenGLVertexArrayObject    _debugLinesVao;*/
-
-    //
-    /*std::vector<ALine>          _junctionRibLines;
-    QOpenGLBuffer               _junctionRibLinesVbo;
-    QOpenGLVertexArrayObject    _junctionRibLinesVao;*/
-
-    // points that cannot move at all
-    /*int _numConstrainedPoints;
+    // constrained points
+    std::vector<AVector>        _constrainedPoints;
     QOpenGLBuffer               _constrainedPointsVbo;
-    QOpenGLVertexArrayObject    _constrainedPointsVao;*/
+    QOpenGLVertexArrayObject    _constrinedPointsVao;
 
 
 private:
-    AVector GetClosestPointFromBorders(AVector pt);
-    AVector GetClosestPointFromBorders(QuadMesh qMesh, AVector pt);
-    //AVector GetClosestPointFromMiddleVerticalLines(AVector pt);
-    AVector GetClosestPointFromStrokeLines(AVector pt);
-    AVector GetClosestPointFromStrokePoints(AVector pt);
-
     void CalculateInitialRibbon();
     void CalculateLeftRightLines();
     void CalculateKitesAndRectangles();
     void CalculateSpines();
-    //void CalculateInitialRibbon2();
+
+    AVector GetClosestPointFromLeftRightLines(AVector pt);
+    AVector GetClosestPointFromSpineLines(AVector pt);
+    AVector GetClosestPointFromSpinePoints(AVector pt);
 
 
 };

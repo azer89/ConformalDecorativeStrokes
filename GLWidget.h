@@ -78,7 +78,7 @@ public:
 
     void ConformalMappingOneStep()
     {
-        _sPainter->ConformalMappingOneStepSimple();
+        _sPainter->ConformalMappingOneStep();
     }
 
     void CalculateVertices()

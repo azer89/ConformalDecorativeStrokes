@@ -11,7 +11,7 @@
 StrokePainter::StrokePainter() :
     _isMouseDown(false),
     _vDataHelper(0),
-    _iterDist(std::numeric_limits<float>::max()),
+    _cMapping(new ConformalMapping()),
     _qMeshNumData(0),
     _masterImages(std::vector<QImage>(2)),              // current only support two textures
     _masterTextures(std::vector<QOpenGLTexture*>(2)),
@@ -19,8 +19,6 @@ StrokePainter::StrokePainter() :
     _qmTexVbos(std::vector<QOpenGLBuffer>(2)),
     _qmTexVaos(std::vector<QOpenGLVertexArrayObject>(2))
 {
-    //_masterImages = std::vector<QImage>(2);
-    //_masterTextures = std::vector<QOpenGLTexture*>(2);
 }
 
 StrokePainter::~StrokePainter()
@@ -37,8 +35,6 @@ void StrokePainter::SetStrokeTexture(QString img)
 {
     _masterImages[0].load(img);
     _masterTextures[0] = new QOpenGLTexture(_masterImages[0]);
-    //_aQuadMesh._img.load(img);
-    //_aQuadMesh._imgTexture = new QOpenGLTexture(_aQuadMesh._img);
 }
 
 void StrokePainter::SetCornerTexture(QString img)
@@ -46,21 +42,6 @@ void StrokePainter::SetCornerTexture(QString img)
     _masterImages[1].load(img);
     _masterTextures[1] = new QOpenGLTexture(_masterImages[1]);
 }
-
-/*
-void StrokePainter::CalculateInitialRibbon2()
-{
-    _strokeLines.clear();
-    _debugLines.clear();
-
-    std::vector<AVector> tempLine;
-    CurveRDP::SimplifyRDP(_oriStrokeLines, tempLine, SystemParams::rdp_epsilon);
-    _strokeLines = std::vector<AVector>(tempLine);
-
-    BuildLinesVertexData(_strokeLines, &_strokeLinesVbo, &_strokeLinesVao, QVector3D(0.5, 0.5, 1));
-    BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(1, 0, 0));
-}
-*/
 
 void StrokePainter::CalculateLeftRightLines()
 {
@@ -113,9 +94,6 @@ void StrokePainter::CalculateInitialRibbon()
     _vDataHelper->BuildLinesVertexData(_spineLines, &_spineLinesVbo, &_spineLinesVao, QVector3D(0.5, 0.5, 1));
     _vDataHelper->BuildLinesVertexData(_leftLines, &_leftLinesVbo, &_leftLinesVao, QVector3D(0.5, 0.5, 1));
     _vDataHelper->BuildLinesVertexData(_rightLines, &_rightLinesVbo, &_rightLinesVao, QVector3D(0.5, 0.5, 1));
-
-    //_vDataHelper->BuildLinesVertexData(_junctionRibLines, &_junctionRibLinesVbo, &_junctionRibLinesVao, QVector3D(0.5, 0.5, 1));
-    //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(1, 0, 0), QVector3D(0, 1, 0)); // modification
 }
 
 void StrokePainter::CalculateSpines()
@@ -160,18 +138,8 @@ void StrokePainter::CalculateKitesAndRectangles()
                 qMesh._rightEndPt   = lEnd;
                 qMesh._sharpPt = lMid;
                 qMesh._isRightKite = true;
-                //qMesh._leftLine   = ALine(lStart, rMid);
-                //qMesh._rightLine  = ALine(lMid,   lEnd);
-                //qMesh._topLine    = ALine(lStart, lMid);
-                //qMesh._bottomLine = ALine(rMid,   lEnd);
                 qMesh._quadMeshType = QuadMeshType::MESH_KITE;
                 _quadMeshes.push_back(qMesh);
-                //std::cout << "kite " << a <<  "\n";
-                //_debugLines.push_back(ALine(lStart,  rMid));
-                //_debugLines.push_back(ALine(lEnd, rMid));
-                //_debugLines.push_back(ALine(lStart, lMid));
-                //_debugLines.push_back(ALine(lMid, lEnd));
-
             }
             else if(rot1 < 0)
             {
@@ -188,18 +156,8 @@ void StrokePainter::CalculateKitesAndRectangles()
                 qMesh._rightEndPt   = rEnd;
                 qMesh._sharpPt = rMid;
                 qMesh._isRightKite = false;
-                //qMesh._leftLine   = ALine(rStart, rMid);
-                //qMesh._rightLine  = ALine(lMid,   rEnd);
-                //qMesh._topLine    = ALine(rStart, lMid);
-                //qMesh._bottomLine = ALine(rMid,   rEnd);
                 qMesh._quadMeshType = QuadMeshType::MESH_KITE;
                 _quadMeshes.push_back(qMesh);
-
-                //std::cout << "kite " << a <<  "\n";
-                //_debugLines.push_back(ALine(lMid,  rStart));
-                //_debugLines.push_back(ALine(lMid,  rEnd));
-                //_debugLines.push_back(ALine(rStart,  rMid));
-                //_debugLines.push_back(ALine(rMid,  rEnd));
             }
         }
 
@@ -233,18 +191,8 @@ void StrokePainter::CalculateKitesAndRectangles()
             qMesh._leftEndPt    = leftEnd;
             qMesh._rightStartPt = _rightLines[a];
             qMesh._rightEndPt   = rightEnd;
-            //qMesh._leftLine   = ALine(_leftLines[a], _rightLines[a]);
-            //qMesh._rightLine  = ALine(leftEnd, rightEnd);
-            //qMesh._topLine    = ALine(_leftLines[a], leftEnd);
-            //qMesh._bottomLine = ALine(_rightLines[a], rightEnd);
             qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
             _quadMeshes.push_back(qMesh);
-            //std::cout << "rectangle " << a <<  "\n";
-            //_debugLines.push_back(ALine(_leftLines[a], leftEnd));
-            //_debugLines.push_back(ALine(_rightLines[a], rightEnd));
-            //_debugLines.push_back(ALine(_leftLines[a], _rightLines[a]));
-            //_debugLines.push_back(ALine(leftEnd, rightEnd));
-
         }
         else if(a == 0 && _spineLines.size() == 2)  // START
         {
@@ -253,17 +201,8 @@ void StrokePainter::CalculateKitesAndRectangles()
             qMesh._leftEndPt    = _leftLines[a+1];
             qMesh._rightStartPt = _rightLines[a];
             qMesh._rightEndPt   = _rightLines[a+1];
-            //qMesh._leftLine   = ALine(_leftLines[a],   _rightLines[a]);
-            //qMesh._rightLine  = ALine(_leftLines[a+1], _rightLines[a+1]);
-            //qMesh._topLine    = ALine(_leftLines[a],   _leftLines[a+1]);
-            //qMesh._bottomLine = ALine(_rightLines[a],  _rightLines[a+1]);
             qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
             _quadMeshes.push_back(qMesh);
-            //std::cout << "rectangle " << a <<  "\n";
-            //_debugLines.push_back(ALine(_leftLines[a], _leftLines[a+1]));
-            //_debugLines.push_back(ALine(_rightLines[a], _rightLines[a+1]));
-            //_debugLines.push_back(ALine(_leftLines[a], _rightLines[a]));
-            //_debugLines.push_back(ALine(_leftLines[a+1], _rightLines[a+1]));
         }
 
         else if(a == _spineLines.size() - 2 && _spineLines.size() > 2) // END
@@ -294,18 +233,8 @@ void StrokePainter::CalculateKitesAndRectangles()
             qMesh._leftEndPt    = _leftLines[a+1];
             qMesh._rightStartPt = rightStart;
             qMesh._rightEndPt   = _rightLines[a+1];
-            //qMesh._leftLine   = ALine(leftStart, rightStart);
-            //qMesh._rightLine  = ALine(_leftLines[a+1], _rightLines[a+1]);
-            //qMesh._topLine    = ALine(leftStart, _leftLines[a+1]);
-            //qMesh._bottomLine = ALine(rightStart, _rightLines[a+1]);
             qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
             _quadMeshes.push_back(qMesh);
-
-            //std::cout << "rectangle " << a <<  "\n";
-            //_debugLines.push_back(ALine(leftStart, _leftLines[a+1]));
-            //_debugLines.push_back(ALine(rightStart, _rightLines[a+1]));
-            //_debugLines.push_back(ALine(leftStart, rightStart));
-            //_debugLines.push_back(ALine(_leftLines[a+1], _rightLines[a+1]));
         }
 
         else if(a > 0)  // MIDDLE
@@ -355,32 +284,21 @@ void StrokePainter::CalculateKitesAndRectangles()
             qMesh._leftEndPt    = leftEnd;
             qMesh._rightStartPt = rightStart;
             qMesh._rightEndPt   = rightEnd;
-            //qMesh._leftLine   = ALine(leftStart,  rightStart);
-            //qMesh._rightLine  = ALine(leftEnd,    rightEnd);
-            //qMesh._topLine    = ALine(leftStart,  leftEnd);
-            //qMesh._bottomLine = ALine(rightStart, rightEnd);
             qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
             _quadMeshes.push_back(qMesh);
-            //std::cout << "rectangle " << a <<  "\n";
-            //_debugLines.push_back(ALine(leftStart,  leftEnd));
-            //_debugLines.push_back(ALine(rightStart, rightEnd));
-            //_debugLines.push_back(ALine(leftStart,  rightStart));
-            //_debugLines.push_back(ALine(leftEnd,    rightEnd));
         }
     }
-
-    //std::cout << "\n\n";
 }
 
 void StrokePainter::CalculateVertices()
 {
-    _debugPoints.clear();
+    _constrainedPoints.clear();
     for(uint a = 0; a < _quadMeshes.size(); a++)
     {
         CalculateVertices(&_quadMeshes[a]);
     }
     _qMeshNumData = 0;
-    _vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(1, 0, 0));
+    _vDataHelper->BuildPointsVertexData(_constrainedPoints, &_constrainedPointsVbo, &_constrinedPointsVao, QVector3D(1, 0, 0));
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
 }
 
@@ -445,7 +363,7 @@ void StrokePainter::CalculateVertices(QuadMesh* qMesh)
                     (xIter == 0 && yIter == yLoop - 1) ||
                     (xIter == xLoop - 1 && yIter == 0))
                 {
-                    _debugPoints.push_back(pt);
+                    _constrainedPoints.push_back(pt);
                     shouldMove = false;
                 }
             }
@@ -456,17 +374,17 @@ void StrokePainter::CalculateVertices(QuadMesh* qMesh)
                 {
                     if(pt.Distance(qMesh->_sharpPt) < std::numeric_limits<float>::epsilon() * 100)
                     {
-                        _debugPoints.push_back(pt);
+                        _constrainedPoints.push_back(pt);
                         shouldMove = false;
                     }
                     else if(qMesh->_isRightKite && (xIter == 0 || yIter == yLoop - 1))
                     {
-                        _debugPoints.push_back(pt);
+                        _constrainedPoints.push_back(pt);
                         shouldMove = false;
                     }
                     else if(!qMesh->_isRightKite && (xIter == xLoop - 1 || yIter == 0))
                     {
-                        _debugPoints.push_back(pt);
+                        _constrainedPoints.push_back(pt);
                         shouldMove = false;
                     }
                 }
@@ -480,26 +398,7 @@ void StrokePainter::CalculateVertices(QuadMesh* qMesh)
 }
 
 
-
-/*AVector StrokePainter::GetClosestPointFromMiddleVerticalLines(AVector pt)
-{
-    AVector closestPt = pt;
-    float dist = std::numeric_limits<float>::max();
-    for(int a = 0; a < _junctionRibLines.size(); a++)
-    {
-        AVector pt1 = _junctionRibLines[a].GetPointA();
-        AVector pt2 = _junctionRibLines[a].GetPointB();
-        AVector cPt = UtilityFunctions::GetClosestPoint(pt1, pt2, pt);
-        if(pt.Distance(cPt) < dist)
-        {
-            dist = pt.Distance(cPt);
-            closestPt = cPt;
-        }
-    }
-    return closestPt;
-}*/
-
-AVector StrokePainter::GetClosestPointFromStrokePoints(AVector pt)
+AVector StrokePainter::GetClosestPointFromSpinePoints(AVector pt)
 {
     AVector closestPt = pt;
     float dist = std::numeric_limits<float>::max();
@@ -515,7 +414,7 @@ AVector StrokePainter::GetClosestPointFromStrokePoints(AVector pt)
     return closestPt;
 }
 
-AVector StrokePainter::GetClosestPointFromStrokeLines(AVector pt)
+AVector StrokePainter::GetClosestPointFromSpineLines(AVector pt)
 {
     AVector closestPt = pt;
     float dist = std::numeric_limits<float>::max();
@@ -533,90 +432,10 @@ AVector StrokePainter::GetClosestPointFromStrokeLines(AVector pt)
     return closestPt;
 }
 
-AVector StrokePainter::GetClosestPointFromBorders(QuadMesh qMesh, AVector pt)
-{
-    AVector closestPt = pt;
-    float dist = std::numeric_limits<float>::max();
-    std::vector<ALine> borderLines;
-    borderLines.push_back(ALine(qMesh._leftStartPt,  qMesh._rightStartPt));
-    borderLines.push_back(ALine(qMesh._leftEndPt,    qMesh._rightEndPt));
-    borderLines.push_back(ALine(qMesh._leftStartPt,  qMesh._leftEndPt));
-    borderLines.push_back(ALine(qMesh._rightStartPt, qMesh._rightEndPt));
-    for(uint a = 0; a < borderLines.size(); a++)
-    {
-        AVector cPt = UtilityFunctions::GetClosestPoint(borderLines[a].GetPointA(), borderLines[a].GetPointB(), pt);
-        if(pt.Distance(cPt) < dist)
-        {
-            dist = pt.Distance(cPt);
-            closestPt = cPt;
-        }
-    }
-    return closestPt;
-}
-
-AVector StrokePainter::GetClosestPointFromBorders(AVector pt)
-{
-    AVector closestPt = pt;
-    float dist = std::numeric_limits<float>::max();
-    // left
-    for(uint a = 0; a < _leftLines.size() - 1; a++)
-    {
-        AVector pt1 = _leftLines[a];
-        AVector pt2 = _leftLines[a+1];
-        AVector cPt = UtilityFunctions::GetClosestPoint(pt1, pt2, pt);
-        if(pt.Distance(cPt) < dist)
-        {
-            dist = pt.Distance(cPt);
-            closestPt = cPt;
-        }
-    }
-
-    // right
-    for(uint a = 0; a < _rightLines.size() - 1; a++)
-    {
-        AVector pt1 = _rightLines[a];
-        AVector pt2 = _rightLines[a+1];
-        AVector cPt = UtilityFunctions::GetClosestPoint(pt1, pt2, pt);
-        if(pt.Distance(cPt) < dist)
-        {
-            dist = pt.Distance(cPt);
-            closestPt = cPt;
-        }
-    }
-
-    // start
-    AVector s1 = _leftLines[0];
-    AVector s2 = _rightLines[0];
-    AVector scPt = UtilityFunctions::GetClosestPoint(s1, s2, pt);
-    if(pt.Distance(scPt) < dist)
-    {
-        dist = pt.Distance(scPt);
-        closestPt = scPt;
-    }
-
-    // end
-    AVector e1 = _leftLines[_leftLines.size() - 1];
-    AVector e2 = _rightLines[_rightLines.size() - 1];
-    AVector ecPt = UtilityFunctions::GetClosestPoint(e1, e2, pt);
-    if(pt.Distance(ecPt) < dist)
-    {
-        dist = pt.Distance(ecPt);
-        closestPt = ecPt;
-    }
-
-    return closestPt;
-}
-
 void StrokePainter::ConformalMappingOneStepSimple()
 {
-    this->_iterDist = 0;
-    for(uint a = 0; a < _quadMeshes.size(); a++)
-    {
-        if(_quadMeshes[a]._quadMeshType == QuadMeshType::MESH_KITE)
-        {
-            ConformalMappingOneStepSimple(&_quadMeshes[a]);
-        }
-    }
+    _cMapping->ConformalMappingOneStepSimple(_quadMeshes);
+
     _qMeshNumData = 0;
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[0], &_qmTexVaos[0], _qmTexNumbers[0], QuadMeshType::MESH_RECTANGLE);
@@ -625,233 +444,12 @@ void StrokePainter::ConformalMappingOneStepSimple()
 
 void StrokePainter::ConformalMappingOneStep()
 {
-    this->_iterDist = 0;
-    for(uint a = 0; a < _quadMeshes.size(); a++)
-    {
-        if(_quadMeshes[a]._quadMeshType == QuadMeshType::MESH_KITE)
-        {
-            ConformalMappingOneStep(&_quadMeshes[a]);
-        }
-    }
+    _cMapping->ConformalMappingOneStep(_quadMeshes);
+
     _qMeshNumData = 0;
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[0], &_qmTexVaos[0], _qmTexNumbers[0], QuadMeshType::MESH_RECTANGLE);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[1], &_qmTexVaos[1], _qmTexNumbers[1], QuadMeshType::MESH_KITE);
-}
-
-void StrokePainter::ConformalMappingOneStep(QuadMesh* qMesh)
-{
-    std::vector<std::vector<PlusSignVertex>> tempVertices = qMesh->_plusSignVertices;
-    int meshWidth = qMesh->_plusSignVertices.size();
-    int meshHeight = qMesh->_plusSignVertices[0].size();
-
-    for(int a = 0; a < meshWidth; a++)
-    {
-        for(int b = 0; b < meshHeight; b++)
-        {
-            if(!tempVertices[a][b].shouldMove)
-                { continue; }
-
-            AVector curPos = tempVertices[a][b].position;
-            AVector sumPositions(0, 0);
-            float sumArmLengths = 0;
-            float sumArmAngles = 0;
-            int numNeighbor = 0;
-
-            // have left and right
-            if(a > 0 && a < meshWidth - 1)
-            {
-                PlusSignVertex lVertex = tempVertices[a - 1][b];
-                PlusSignVertex rVertex = tempVertices[a + 1][b];
-
-                // left
-                sumPositions += lVertex.position;
-                sumArmLengths += curPos.Distance(lVertex.position);
-                sumArmAngles += UtilityFunctions::GetRotation(AVector(-1, 0), (lVertex.position - curPos).Norm());
-
-
-                // right
-                sumPositions += rVertex.position;
-                sumArmLengths += curPos.Distance(rVertex.position);
-                sumArmAngles += UtilityFunctions::GetRotation(AVector(1, 0), (rVertex.position - curPos).Norm());
-
-                numNeighbor += 2;
-            }
-            // have left only
-            else if(a > 0)
-            {
-                PlusSignVertex lVertex = tempVertices[a - 1][b];
-                AVector fakeNeighbor = lVertex.position + UtilityFunctions::Rotate( AVector(1, 0) * lVertex.armLength, lVertex.angle);
-                sumPositions += fakeNeighbor;
-                sumArmLengths += curPos.Distance(lVertex.position);
-                sumArmAngles += UtilityFunctions::GetRotation(AVector(-1, 0), (lVertex.position - curPos).Norm());
-
-                numNeighbor++;
-            }
-            // have right only
-            else if(a < meshWidth - 1)
-            {
-                PlusSignVertex rVertex = tempVertices[a + 1][b];
-                AVector fakeNeighbor = rVertex.position + UtilityFunctions::Rotate( AVector(-1, 0) * rVertex.armLength, rVertex.angle);
-
-                sumPositions += fakeNeighbor;
-                sumArmLengths += curPos.Distance(rVertex.position);
-                sumArmAngles += UtilityFunctions::GetRotation(AVector(1, 0), (rVertex.position - curPos).Norm());
-
-                numNeighbor++;
-            }
-
-            // have up and down
-            if(b > 0 && b < meshHeight - 1)
-            {
-                PlusSignVertex uVertex = tempVertices[a][b - 1];
-                PlusSignVertex bVertex = tempVertices[a][b + 1];
-
-                // up
-                sumPositions += uVertex.position;
-                sumArmLengths += curPos.Distance(uVertex.position);
-                sumArmAngles += UtilityFunctions::GetRotation(AVector(0, -1), (uVertex.position - curPos).Norm());
-
-                // down
-                sumPositions += bVertex.position;
-                sumArmLengths += curPos.Distance(bVertex.position);
-                sumArmAngles += UtilityFunctions::GetRotation(AVector(0, 1), (bVertex.position - curPos).Norm());
-
-                numNeighbor += 2;
-            }
-            // have up only
-            else if(b > 0)
-            {
-                PlusSignVertex uVertex = tempVertices[a][b - 1];
-                AVector fakeNeighbor = uVertex.position + UtilityFunctions::Rotate( AVector(0, 1) * uVertex.armLength, uVertex.angle);
-                sumPositions += fakeNeighbor;
-                sumArmLengths += curPos.Distance(uVertex.position);
-                sumArmAngles += UtilityFunctions::GetRotation(AVector(0, -1), (uVertex.position - curPos).Norm());
-
-                numNeighbor++;
-            }
-            // have down only
-            else if(b < meshHeight - 1)
-            {
-                PlusSignVertex bVertex = tempVertices[a][b + 1];
-                AVector fakeNeighbor = bVertex.position + UtilityFunctions::Rotate( AVector(0, -1) * bVertex.armLength, bVertex.angle);
-                sumPositions += fakeNeighbor;
-                sumArmLengths += curPos.Distance(bVertex.position);
-                sumArmAngles += UtilityFunctions::GetRotation(AVector(0, 1), (bVertex.position - curPos).Norm());
-
-                numNeighbor++;
-            }
-
-            sumPositions  = sumPositions / (float)numNeighbor;
-            sumArmAngles  = sumArmAngles / (float)numNeighbor;
-            sumArmLengths = sumArmLengths / (float)numNeighbor;
-
-            tempVertices[a][b].armLength = sumArmLengths;
-            tempVertices[a][b].angle = sumArmAngles;
-
-            if(numNeighbor < 4)
-            {
-                tempVertices[a][b].position = GetClosestPointFromBorders(*qMesh, sumPositions);
-            }
-            else
-            {
-                tempVertices[a][b].position = sumPositions;
-            }
-
-            /*
-            if(numNeighbor < 4)
-                { tempVertices[a][b].position = GetClosestPointFromBorders(sumPositions); }
-            else if(tempVertices[a][b].midHorizontalConstrained && tempVertices[a][b].midVerticalConstrained)
-                { tempVertices[a][b].position = GetClosestPointFromStrokePoints(sumPositions); }
-            else if(tempVertices[a][b].midHorizontalConstrained)
-                { tempVertices[a][b].position = GetClosestPointFromStrokeLines(sumPositions); }
-            //else if(tempVertices[a][b].midVerticalConstrained)
-            //    { tempVertices[a][b].position = GetClosestPointFromMiddleVerticalLines(sumPositions); }
-            else
-                { tempVertices[a][b].position = sumPositions; }*/
-        }
-    }
-
-    float sumDist = 0;
-    for(int a = 0; a < meshWidth; a++)
-    {
-        for(int b = 0; b < meshHeight; b++)
-            { sumDist += qMesh->_plusSignVertices[a][b].position.Distance(tempVertices[a][b].position); }
-    }
-    _iterDist += sumDist;
-    qMesh->_plusSignVertices = tempVertices;
-}
-
-
-
-// a very simple version
-void StrokePainter::ConformalMappingOneStepSimple(QuadMesh *qMesh)
-{
-    std::vector<std::vector<PlusSignVertex>> tempVertices = qMesh->_plusSignVertices;
-    int meshWidth = qMesh->_plusSignVertices.size();
-    int meshHeight = qMesh->_plusSignVertices[0].size();
-
-    for(int a = 0; a < meshWidth; a++)
-    {
-        for(int b = 0; b < meshHeight; b++)
-        {
-            if(!tempVertices[a][b].shouldMove)
-                { continue; }
-
-            AVector sumPositions(0, 0);
-            int numNeighbor = 0;
-
-            // left
-            if(a > 0)
-            {
-                sumPositions += tempVertices[a - 1][b].position;
-                numNeighbor++;
-            }
-
-            // right
-            if(a < meshWidth - 1)
-            {
-                sumPositions = sumPositions + tempVertices[a + 1][b].position;
-                numNeighbor++;
-            }
-
-            // up
-            if(b > 0)
-            {
-                sumPositions += tempVertices[a][b - 1].position;
-                numNeighbor++;
-            }
-
-            // bottom
-            if(b < meshHeight - 1)
-            {
-                sumPositions += tempVertices[a][b + 1].position;
-                numNeighbor++;
-            }
-
-            sumPositions  = sumPositions / (float)numNeighbor;
-
-            if(numNeighbor < 4)
-            {
-                tempVertices[a][b].position = GetClosestPointFromBorders(*qMesh, sumPositions);
-            }
-            else
-            {
-                tempVertices[a][b].position = sumPositions;
-            }
-        }
-    }
-
-    float sumDist = 0;
-    for(int a = 0; a < meshWidth; a++)
-    {
-        for(int b = 0; b < meshHeight; b++)
-        {
-            sumDist += qMesh->_plusSignVertices[a][b].position.Distance(tempVertices[a][b].position);
-        }
-    }
-    _iterDist = sumDist;
-    qMesh->_plusSignVertices = tempVertices;
 }
 
 // mouse press
@@ -859,18 +457,11 @@ void StrokePainter::mousePressEvent(float x, float y)
 {
     _isMouseDown = true;
 
-    //_vertices.clear();
-    //_aQuadMesh._plusSignVertices.clear();
-
-    //_debugLines.clear();
-    //_junctionRibLines.clear();
     _leftLines.clear();
     _rightLines.clear();
-
-    //_numConstrainedPoints = 0;
-
     _spineLines.clear();
     _oriStrokeLines.clear();
+
     _oriStrokeLines.push_back(AVector(x, y));
 }
 
@@ -888,24 +479,23 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
     _isMouseDown = false;
 
     _oriStrokeLines.push_back(AVector(x, y));
-    CalculateInitialRibbon();    // modification
-
+    CalculateInitialRibbon();
     CalculateVertices();
 }
 
 void StrokePainter::Draw()
 {
-    if(SystemParams::show_mesh && _debugPointsVao.isCreated())
+    if(SystemParams::show_mesh && _constrinedPointsVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glPointSize(4.0f);
-        _debugPointsVao.bind();
-        glDrawArrays(GL_POINTS, 0, _debugPoints.size());
-        _debugPointsVao.release();
+        _constrinedPointsVao.bind();
+        glDrawArrays(GL_POINTS, 0, _constrainedPoints.size());
+        _constrinedPointsVao.release();
     }
 
     // modification
-    if((_isMouseDown /*|| SystemParams::show_mesh*/ ) && _spineLinesVao.isCreated())
+    if((_isMouseDown || SystemParams::show_mesh ) && _spineLinesVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glLineWidth(2.0f);
@@ -913,24 +503,6 @@ void StrokePainter::Draw()
         glDrawArrays(GL_LINES, 0, _spineLines.size() * 2);
         _spineLinesVao.release();
     }
-
-    /*if(SystemParams::junction_ribs_constraint && _junctionRibLinesVao.isCreated())
-    {
-        _vDataHelper->NeedToDrawWithColor(1.0);
-        glLineWidth(2.0f);
-        _junctionRibLinesVao.bind();
-        glDrawArrays(GL_LINES, 0, _junctionRibLines.size() * 2);
-        _junctionRibLinesVao.release();
-    }*/
-
-    /*if(SystemParams::show_mesh && SystemParams::miter_joint_constraint && _constrainedPointsVao.isCreated())
-    {
-        _vDataHelper->NeedToDrawWithColor(1.0);
-        glPointSize(10.0f);
-        _constrainedPointsVao.bind();
-        glDrawArrays(GL_POINTS, 0, _numConstrainedPoints);
-        _constrainedPointsVao.release();
-    }*/
 
     // Quad mesh
     if(SystemParams::show_mesh && _quadMeshesVao.isCreated())
@@ -940,8 +512,6 @@ void StrokePainter::Draw()
         glDrawArrays(GL_LINES, 0, _qMeshNumData);
         _quadMeshesVao.release();
     }
-
-
 
     // Texture Rectangle
     if(SystemParams::show_texture && _qmTexNumbers[0] > 0)
@@ -966,131 +536,6 @@ void StrokePainter::Draw()
         _qmTexVaos[1].release();
         if(_masterTextures[1]) { _masterTextures[1]->release(); }
     }
-
-    // Texture
-    /*if(SystemParams::show_texture && _quadMeshesTexVao.isCreated())
-    {
-        _vDataHelper->NeedToDrawWithColor(0.0);
-
-        if(_masterTextures[0]) { _masterTextures[0]->bind(); }
-
-        _quadMeshesTexVao.bind();
-        glDrawArrays(GL_QUADS, 0, _qMeshTexNumData);
-        _quadMeshesTexVao.release();
-
-        if(_masterTextures[0]) { _masterTextures[0]->release(); }
-    }*/
-
-    /*
-    // Quad mesh
-    if(SystemParams::show_mesh && _aQuadMesh._plusSignVerticesVao.isCreated() && _aQuadMesh._plusSignVertices.size() > 0)
-    {
-        _vDataHelper->NeedToDrawWithColor(1.0);
-        int wMin1 = _aQuadMesh._mesh_width - 1;
-        int hMin1 = _aQuadMesh._mesh_height - 1;
-        int meshSize = ((wMin1 * _aQuadMesh._mesh_width) + (hMin1 * _aQuadMesh._mesh_height)) * 2;
-        glLineWidth(1.0f);
-        _aQuadMesh._plusSignVerticesVao.bind();
-        glDrawArrays(GL_LINES, 0, meshSize);
-        _aQuadMesh._plusSignVerticesVao.release();
-    }
-    */
-
-    /*
-    // Texture
-    if(SystemParams::show_texture && _aQuadMesh._texturedStrokeVao.isCreated() && _aQuadMesh._plusSignVertices.size() > 0)
-    {
-        _vDataHelper->NeedToDrawWithColor(0.0);
-        int meshSize = (_aQuadMesh._mesh_width - 1) * (_aQuadMesh._mesh_height - 1) * 4;
-        glLineWidth(1.0f);
-        if(_aQuadMesh._imgTexture) { _aQuadMesh._imgTexture->bind(); }
-        _aQuadMesh._texturedStrokeVao.bind();
-        glDrawArrays(GL_QUADS, 0, meshSize);
-        _aQuadMesh._texturedStrokeVao.release();
-        if(_aQuadMesh._imgTexture) { _aQuadMesh._imgTexture->release(); }
-    }
-    */
-
-    /*if(_debugLinesVao.isCreated())
-    {
-        _vDataHelper->NeedToDrawWithColor(1.0);
-        glLineWidth(4.0f);
-        _debugLinesVao.bind();
-        glDrawArrays(GL_LINES, 0, _debugLines.size() * 2);
-        _debugLinesVao.release();
-    }*/
-
-
-    /*
-    if(_strokeLinesVao.isCreated() && _plusSignVertices.size() == 0)
-    {
-        _vDataHelper->NeedToDrawWithColor(1.0);
-        glLineWidth(2.0f);
-        _strokeLinesVao.bind();
-        glDrawArrays(GL_LINES, 0, (_strokeLines.size() - 1) * 2);
-        _strokeLinesVao.release();
-    }*/
-
-    /*
-    if(_pointsVao.isCreated())
-    {
-        _vDataHelper->NeedToDrawWithColor(1.0);
-        glPointSize(10.0f);
-        _pointsVao.bind();
-        glDrawArrays(GL_POINTS, 0, _points.size());
-        _pointsVao.release();
-    }*/
-
-    /*if(_verticesVao.isCreated())
-    {
-        _vDataHelper->NeedToDrawWithColor(1.0);
-        glPointSize(10.0f);
-        _verticesVao.bind();
-        glDrawArrays(GL_POINTS, 0, _vertices.size());
-        _verticesVao.release();
-    }*/
-
-    /*
-    if(_leftLinesVao.isCreated())
-    {
-        _vDataHelper->NeedToDrawWithColor(1.0);
-
-        glLineWidth(2.0f);
-        _leftLinesVao.bind();
-        glDrawArrays(GL_LINES, 0, (_leftLines.size() - 1) * 2);
-        _leftLinesVao.release();
-    }
-    */
-    /*
-    if(_rightLinesVao.isCreated())
-    {
-        _vDataHelper->NeedToDrawWithColor(1.0);
-        glLineWidth(2.0f);
-        _rightLinesVao.bind();
-        glDrawArrays(GL_LINES, 0, (_rightLines.size() - 1) * 2);
-        _rightLinesVao.release();
-    }
-    */
-
-    /*
-    if(_ribLinesVao.isCreated())
-    {
-        _vDataHelper->NeedToDrawWithColor(1.0);
-        glLineWidth(2.0f);
-        _ribLinesVao.bind();
-        glDrawArrays(GL_LINES, 0, _ribLines.size() * 2);
-        _ribLinesVao.release();
-    }
-
-    if(_gridLinesVao.isCreated())
-    {
-        _vDataHelper->NeedToDrawWithColor(1.0);
-        glLineWidth(2.0f);
-        _gridLinesVao.bind();
-        glDrawArrays(GL_LINES, 0, _gridLines.size() * 2);
-        _gridLinesVao.release();
-    }
-    */
 }
 
 
