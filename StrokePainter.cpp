@@ -17,7 +17,9 @@ StrokePainter::StrokePainter() :
     _masterTextures(std::vector<QOpenGLTexture*>(2)),
     _qmTexNumbers(std::vector<int>(2)),
     _qmTexVbos(std::vector<QOpenGLBuffer>(2)),
-    _qmTexVaos(std::vector<QOpenGLVertexArrayObject>(2))
+    _qmTexVaos(std::vector<QOpenGLVertexArrayObject>(2)),
+    _selectedIndex(-1),
+    _maxDist(2.0f)
 {
 }
 
@@ -397,6 +399,23 @@ void StrokePainter::CalculateVertices(QuadMesh* qMesh)
     }
 }
 
+int StrokePainter::GetClosestIndexFromSpinePoints(AVector pt, float maxDist)
+{
+    int closestIndex = -1;
+    float dist = std::numeric_limits<float>::max();
+    for(uint a = 0; a < _spineLines.size(); a++)
+    {
+        AVector cPt = _spineLines[a];
+        float d = pt.Distance(cPt);
+        if(d < dist && d < maxDist)
+        {
+            dist = pt.Distance(cPt);
+            closestIndex = a;
+        }
+    }
+    return closestIndex;
+}
+
 
 AVector StrokePainter::GetClosestPointFromSpinePoints(AVector pt)
 {
@@ -457,20 +476,58 @@ void StrokePainter::mousePressEvent(float x, float y)
 {
     _isMouseDown = true;
 
+    /*
     _leftLines.clear();
     _rightLines.clear();
     _spineLines.clear();
     _oriStrokeLines.clear();
+    */
 
-    _oriStrokeLines.push_back(AVector(x, y));
+
+    _selectedIndex = GetClosestIndexFromSpinePoints(AVector(x, y), _maxDist);
+    //std::cout << _selectedIndex << "\n";
+
+    if(_selectedIndex != -1)
+    {
+        _vDataHelper->BuildPointsVertexData(_spineLines, &_selectedPointVbo, &_selectedPointVao, _selectedIndex, QVector3D(1, 0, 0), QVector3D(0.5, 0.5, 1));
+    }
+    else
+    {
+        _oriStrokeLines.clear();
+        _oriStrokeLines.push_back(AVector(x, y));
+        _selectedPointVao.destroy();
+    }
 }
 
 // mouse move
 void StrokePainter::mouseMoveEvent(float x, float y)
 {
-    _oriStrokeLines.push_back(AVector(x, y));
-    _spineLines = std::vector<AVector>(_oriStrokeLines);
-    _vDataHelper->BuildLinesVertexData(_spineLines, &_spineLinesVbo, &_spineLinesVao, QVector3D(0, 0, 0));
+    //_oriStrokeLines.push_back(AVector(x, y));
+    float curveLength = UtilityFunctions::CurveLength(_oriStrokeLines);
+
+
+    if(_selectedIndex != -1)
+    {
+        _spineLines[_selectedIndex] = AVector(x, y);
+
+        //CalculateInitialRibbon();
+        CalculateVertices();
+    }
+    else
+    {
+        _oriStrokeLines.push_back(AVector(x, y));
+    }
+
+
+    if(curveLength > 5) // ugly code!
+    {
+        _vDataHelper->BuildLinesVertexData(_oriStrokeLines, &_oriStrokeLinesVbo, &_oriStrokeLinesVao, QVector3D(0, 0, 0));
+
+
+    }
+
+    //_spineLines = std::vector<AVector>(_oriStrokeLines);
+    //_vDataHelper->BuildLinesVertexData(_spineLines, &_spineLinesVbo, &_spineLinesVao, QVector3D(0, 0, 0));
 }
 
 // mouse release
@@ -479,12 +536,40 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
     _isMouseDown = false;
 
     _oriStrokeLines.push_back(AVector(x, y));
-    CalculateInitialRibbon();
-    CalculateVertices();
+
+    float curveLength = UtilityFunctions::CurveLength(_oriStrokeLines);
+   // std::cout << " curve length " << curveLength << "\n";
+
+    //if(curveLength > 50) // ugly code!
+    if(_selectedIndex == -1)
+    {
+        _selectedPointVao.destroy();
+
+        _leftLines.clear();
+        _rightLines.clear();
+        _spineLines.clear();
+        //_oriStrokeLines.clear();
+
+        CalculateInitialRibbon();
+        CalculateVertices();
+    }
+
+
+    //CalculateInitialRibbon();
+    //CalculateVertices();
 }
 
 void StrokePainter::Draw()
 {
+    if(SystemParams::show_mesh && _selectedPointVao.isCreated())
+    {
+        _vDataHelper->NeedToDrawWithColor(1.0);
+        glPointSize(10.0f);
+        _selectedPointVao.bind();
+        glDrawArrays(GL_POINTS, 0, _spineLines.size());
+        _selectedPointVao.release();
+    }
+
     if(SystemParams::show_mesh && _constrinedPointsVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
@@ -494,8 +579,16 @@ void StrokePainter::Draw()
         _constrinedPointsVao.release();
     }
 
-    // modification
-    if((_isMouseDown || SystemParams::show_mesh ) && _spineLinesVao.isCreated())
+    if(_isMouseDown && _oriStrokeLinesVao.isCreated())
+    {
+        _vDataHelper->NeedToDrawWithColor(1.0);
+        glLineWidth(2.0f);
+        _oriStrokeLinesVao.bind();
+        glDrawArrays(GL_LINES, 0, _oriStrokeLines.size() * 2);
+        _oriStrokeLinesVao.release();
+    }
+
+    if(SystemParams::show_mesh && _spineLinesVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glLineWidth(2.0f);

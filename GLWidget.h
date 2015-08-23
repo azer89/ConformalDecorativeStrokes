@@ -64,27 +64,17 @@ public:
     ~GLWidget();
 
     QSize GetCanvasSize() { return QSize(_img_width, _img_height); }
-    //QSize GetMeshSize() { return _sPainter->MeshSize(); }
+
     bool IsMouseDown() { return _isMouseDown; }
 
     bool ShouldStop() { return _sPainter->ShouldStop(); }
     float IterationDelta() { return _sPainter->IterationDelta(); }
 
-    void SetStrokeTexture(QString img)
-    {
-        _sPainter->SetStrokeTexture(img);
-    }
+    void SetStrokeTexture(QString img) { _sPainter->SetStrokeTexture(img); }
     void SetCornerTexture(QString img) { _sPainter->SetCornerTexture(img); }
 
-    void ConformalMappingOneStep()
-    {
-        _sPainter->ConformalMappingOneStep();
-    }
-
-    void CalculateVertices()
-    {
-        _sPainter->CalculateVertices();
-    }
+    void ConformalMappingOneStep() { _sPainter->ConformalMappingOneStep(); }
+    void CalculateVertices() { _sPainter->CalculateVertices(); }
 
 
     // zoom in handle

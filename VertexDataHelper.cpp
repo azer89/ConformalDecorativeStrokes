@@ -364,6 +364,33 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<std::vector<PlusSignVert
 }
 
 
+void VertexDataHelper::BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, int selectedIndex, QVector3D selectedCol, QVector3D unselectedCol)
+{
+    bool isInit = false;
+    if(!ptsVao->isCreated())
+    {
+        ptsVao->create();
+        ptsVao->bind();
+        isInit = true;
+    }
+
+    QVector<VertexData> data;
+    for(uint a = 0; a < points.size(); a++)
+    {
+        QVector3D vecCol = unselectedCol;
+        if(a == selectedIndex)
+        {
+            vecCol = selectedCol;
+        }
+        data.append(VertexData(QVector3D(points[a].x, points[a].y,  0), QVector2D(), vecCol));
+    }
+
+    BuildVboWithColor(data, ptsVbo);
+
+    if(isInit) { ptsVao->release(); }
+}
+
+
 
 void VertexDataHelper::BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol)
 {

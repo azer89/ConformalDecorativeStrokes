@@ -26,9 +26,6 @@ public:
     void mouseMoveEvent(float x, float y);
     void mouseReleaseEvent(float x, float y);
 
-    int QuadMeshSize() { return _quadMeshes.size(); }
-    float IterationDelta() { return _cMapping->GetIterDist(); }
-
     void Draw();
 
     void ConformalMappingOneStepSimple();
@@ -37,14 +34,14 @@ public:
     void CalculateVertices();
     void CalculateVertices(QuadMesh *qMesh);
 
+    int QuadMeshSize() { return _quadMeshes.size(); }
+    float IterationDelta() { return _cMapping->GetIterDist(); }
     bool ShouldStop() { return _cMapping->GetIterDist() < std::numeric_limits<float>::epsilon(); }
 
     void SetStrokeTexture(QString img);
     void SetCornerTexture(QString img);
 
     void SetVertexDataHelper(QOpenGLShaderProgram* shaderProgram);
-
-public:
 
 private:
 
@@ -53,6 +50,7 @@ private:
     VertexDataHelper* _vDataHelper;
     ConformalMapping* _cMapping;
 
+    // Meshes
     std::vector<QuadMesh>       _quadMeshes;
     int                         _qMeshNumData;
     QOpenGLBuffer               _quadMeshesVbo;
@@ -65,8 +63,16 @@ private:
     std::vector<QOpenGLBuffer>             _qmTexVbos;
     std::vector<QOpenGLVertexArrayObject>  _qmTexVaos;
 
+    // interactive editing
+    int _selectedIndex;
+    float _maxDist;
+    QOpenGLBuffer               _selectedPointVbo;
+    QOpenGLVertexArrayObject    _selectedPointVao;
+
     // strokes
-    std::vector<AVector>        _oriStrokeLines;    // original
+    std::vector<AVector>        _oriStrokeLines;
+    QOpenGLBuffer               _oriStrokeLinesVbo;
+    QOpenGLVertexArrayObject    _oriStrokeLinesVao;
 
     // middle spines
     std::vector<AVector>        _spineLines;       // resampled and simplified from strokeLines
@@ -98,6 +104,7 @@ private:
     AVector GetClosestPointFromLeftRightLines(AVector pt);
     AVector GetClosestPointFromSpineLines(AVector pt);
     AVector GetClosestPointFromSpinePoints(AVector pt);
+    int GetClosestIndexFromSpinePoints(AVector pt, float maxDist);
 
 
 };

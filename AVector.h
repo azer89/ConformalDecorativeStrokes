@@ -37,8 +37,14 @@ public:
         return newP;
     }
 
+    void SetInvalid()
+    {
+        this->x = -1;
+        this->y = -1;
+    }
+
     // if a point is (-1, -1)
-    bool Invalid()
+    bool IsInvalid()
     {
         if(((int)x) == -1 && ((int)y) == -1)
             { return true; }
