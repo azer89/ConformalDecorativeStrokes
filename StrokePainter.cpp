@@ -89,7 +89,7 @@ void StrokePainter::CalculateLeftRightLines()
 
 void StrokePainter::CalculateInitialRibbon()
 {
-    //CalculateSpines();
+    //CalculateSpines(); // I removed this, but I'm not sure whether I should bring it back...
     CalculateLeftRightLines();
     CalculateKitesAndRectangles();
 
@@ -108,7 +108,6 @@ void StrokePainter::CalculateSpines()
 
 void StrokePainter::CalculateKitesAndRectangles()
 {
-    //_debugLines.clear();
     _quadMeshes.clear();
 
     float strokeWidth = SystemParams::stroke_width;
@@ -127,11 +126,11 @@ void StrokePainter::CalculateKitesAndRectangles()
             float rot1 = UtilityFunctions::GetRotation(dir1, dir2);
             if(rot1 > 0)
             {
-                // turn right: positive
+                // turn right: positive rotation
                 AVector lMid = _leftLines[a];
                 AVector rMid = _rightLines[a];
-                AVector lStart = rMid + AVector(dir1.y, -dir1.x) * strokeWidth;   // left
-                AVector lEnd = rMid + AVector(dir2.y, -dir2.x) * strokeWidth; // left
+                AVector lStart = rMid + AVector(dir1.y, -dir1.x) * strokeWidth;
+                AVector lEnd = rMid + AVector(dir2.y, -dir2.x) * strokeWidth;
 
                 QuadMesh qMesh;
                 qMesh._leftStartPt  = lStart;
@@ -145,7 +144,7 @@ void StrokePainter::CalculateKitesAndRectangles()
             }
             else if(rot1 < 0)
             {
-                // turn left: negative
+                // turn left: negative rotation
                 AVector lMid = _leftLines[a];
                 AVector rMid = _rightLines[a];
                 AVector rStart = lMid + AVector(-dir1.y, dir1.x) * strokeWidth;
@@ -177,13 +176,13 @@ void StrokePainter::CalculateKitesAndRectangles()
             AVector rightEnd = _rightLines[a+1];
             if(rot > 0)
             {
-                // turn right: positive. use right
+                // turn right: positive rotation
                 AVector leftDir(dir1.y, -dir1.x);
                 leftEnd = _rightLines[a+1] + leftDir * strokeWidth;
             }
             else if(rot < 0)
             {
-                // turn left: negative. use left
+                // turn left: negative rotation
                 AVector rightDir(-dir1.y, dir1.x);
                 rightEnd = _leftLines[a+1] + rightDir * strokeWidth;
             }
@@ -219,13 +218,13 @@ void StrokePainter::CalculateKitesAndRectangles()
             AVector rightStart = _rightLines[a];
             if(rot > 0)
             {
-                // turn right: positive. use right
+                // turn right: positive rotation
                 AVector leftDir(dir2.y, -dir2.x);
                 leftStart = _rightLines[a] + leftDir * strokeWidth;
             }
             else if(rot < 0)
             {
-                // turn left: negative. use left
+                // turn left: negative rotation
                 AVector rightDir(-dir2.y, dir2.x);
                 rightStart = _leftLines[a] + rightDir * strokeWidth;
             }
@@ -476,25 +475,20 @@ void StrokePainter::mousePressEvent(float x, float y)
 {
     _isMouseDown = true;
 
-    /*
-    _leftLines.clear();
-    _rightLines.clear();
-    _spineLines.clear();
-    _oriStrokeLines.clear();
-    */
-
     _oriStrokeLines.clear();
     _selectedPointVao.destroy();
 
+    // Get the closest point within a distance _maxDist
     _selectedIndex = GetClosestIndexFromSpinePoints(AVector(x, y), _maxDist);
-    //std::cout << _selectedIndex << "\n";
 
     if(_selectedIndex != -1)
     {
-        _vDataHelper->BuildPointsVertexData(_spineLines, &_selectedPointVbo, &_selectedPointVao, _selectedIndex, QVector3D(1, 0, 0), QVector3D(0.5, 0.5, 1));
+        // Selection mode: If we get a point
+        _vDataHelper->BuildPointsVertexData(_spineLines, &_selectedPointVbo, &_selectedPointVao, _selectedIndex, QVector3D(0, 0, 0), QVector3D(0.5, 0.5, 1));
     }
     else
-    {
+    {        
+        // Draw mode: we don't
         _oriStrokeLines.push_back(AVector(x, y));
     }
 }
@@ -502,31 +496,27 @@ void StrokePainter::mousePressEvent(float x, float y)
 // mouse move
 void StrokePainter::mouseMoveEvent(float x, float y)
 {
-    //_oriStrokeLines.push_back(AVector(x, y));
     float curveLength = UtilityFunctions::CurveLength(_oriStrokeLines);
 
     if(_selectedIndex != -1)
     {
+        // Selection mode, move the point
         _spineLines[_selectedIndex] = AVector(x, y);
 
+        // Recalculate grids and iterate a step
         CalculateInitialRibbon();
         CalculateVertices();
         ConformalMappingOneStep();
 
-        _vDataHelper->BuildPointsVertexData(_spineLines, &_selectedPointVbo, &_selectedPointVao, _selectedIndex, QVector3D(1, 0, 0), QVector3D(0.5, 0.5, 1));
+        _vDataHelper->BuildPointsVertexData(_spineLines, &_selectedPointVbo, &_selectedPointVao, _selectedIndex, QVector3D(0, 0, 0), QVector3D(0.5, 0.5, 1));
+
     }
     else
     {
+        // Draw mode
         _oriStrokeLines.push_back(AVector(x, y));
-    }
-
-    if(curveLength > 5) // ugly code!
-    {
         _vDataHelper->BuildLinesVertexData(_oriStrokeLines, &_oriStrokeLinesVbo, &_oriStrokeLinesVao, QVector3D(0, 0, 0));
     }
-
-    //_spineLines = std::vector<AVector>(_oriStrokeLines);
-    //_vDataHelper->BuildLinesVertexData(_spineLines, &_spineLinesVbo, &_spineLinesVao, QVector3D(0, 0, 0));
 }
 
 // mouse release
@@ -536,21 +526,23 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
 
     _oriStrokeLines.push_back(AVector(x, y));
 
-    if(_selectedIndex == -1)
+    float curveLength = UtilityFunctions::CurveLength(_oriStrokeLines);
+
+    // Ugly conditional !
+    if(_selectedIndex == -1 && curveLength > 50)
     {
+        // Create a new stroke
+
         _selectedPointVao.destroy();
 
         _leftLines.clear();
         _rightLines.clear();
         _spineLines.clear();
-        //_oriStrokeLines.clear();
 
-        CalculateSpines();
+        CalculateSpines(); // I moved CalculateSpines() from CalculateInitialRibbon()
         CalculateInitialRibbon();
         CalculateVertices();
     }
-    //CalculateInitialRibbon();
-    //CalculateVertices();
 }
 
 void StrokePainter::Draw()

@@ -94,7 +94,6 @@ private:
     QOpenGLBuffer               _constrainedPointsVbo;
     QOpenGLVertexArrayObject    _constrinedPointsVao;
 
-
 private:
     void CalculateInitialRibbon();
     void CalculateLeftRightLines();
@@ -105,8 +104,6 @@ private:
     AVector GetClosestPointFromSpineLines(AVector pt);
     AVector GetClosestPointFromSpinePoints(AVector pt);
     int GetClosestIndexFromSpinePoints(AVector pt, float maxDist);
-
-
 };
 
 #endif // STROKEPAINTER_H

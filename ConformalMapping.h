@@ -27,9 +27,12 @@ public:
 
     float GetIterDist() { return _iterDist; }
 
+
 private:
     void ConformalMappingOneStepSimple(QuadMesh *qMesh);
     void ConformalMappingOneStep(QuadMesh *qMesh);
+
+    void MappingInterpolation(QuadMesh oriQMesh, QuadMesh *qMesh);
 
     AVector GetClosestPointFromBorders(QuadMesh qMesh, AVector pt);
 

@@ -239,7 +239,7 @@ void ConformalMapping::MappingInterpolation(QuadMesh oriQMesh, QuadMesh *qMesh)
 {
     std::vector<std::vector<PlusSignVertex>> tempVertices;
 
-    // implement right kite first
+    // implement right kite first, then left kite
 }
 
 AVector ConformalMapping::GetClosestPointFromBorders(QuadMesh qMesh, AVector pt)
