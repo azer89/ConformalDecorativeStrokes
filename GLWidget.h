@@ -47,20 +47,19 @@ signals:
     void CalculateConformalMap();
 
 protected:
-    // qt event
+
     bool event( QEvent * event );
-    // init opengl
+
     void initializeGL();
-    // draw
+
     void paintGL();
 
     void resizeGL(int width, int height);
 
 public:
 
-    // constructor
     GLWidget( QGLFormat format, QWidget *parent = 0);
-    // destructor
+
     ~GLWidget();
 
     QSize GetCanvasSize() { return QSize(_img_width, _img_height); }
@@ -77,29 +76,61 @@ public:
     void CalculateVertices() { _sPainter->CalculateVertices(); }
 
 
-    // zoom in handle
+    /**
+     * Zoom in handler
+     */
     void ZoomIn();
-    // zoom out handle
+
+    /**
+     * zoom out handler
+     */
     void ZoomOut();
-    // set zoom value
+
+    /**
+     * Set zoom value
+     */
     void SetZoom(int val){this->_zoomFactor = val;}
-    // get zoom value
+
+    /**
+     * get zoom value
+     */
     float GetZoomFactor() { return this->_zoomFactor; }
 
-    // set horizontal scroll position
+    /**
+     * Set horizontal scroll position
+     */
     void HorizontalScroll(int val);
-    // set vertical scroll position
+
+
+    /**
+     * Set vertical scroll position
+     */
     void VerticalScroll(int val);
-    // get scroll position (horizontal and vertical)
+
+    /**
+     * Get scroll position (horizontal and vertical)
+     */
     QPoint GetScrollOffset() {return this->_scrollOffset;}
 
-    // mouse press
+    /**
+     * Mouse press
+     */
     void mousePressEvent(int x, int y);
-    // mouse move
+
+    /**
+     * Mouse move
+     */
     void mouseMoveEvent(int x, int y);
-    // mouse release
+
+    /**
+     * Mouse release
+     */
     void mouseReleaseEvent(int x, int y);
-    // mouse double click
+
+    /**
+     * Mouse double click.
+     * Since Qt does not support double clicks, I use QTimer to simulate a double click.
+     */
     void mouseDoubleClick(int x, int y);
 };
 

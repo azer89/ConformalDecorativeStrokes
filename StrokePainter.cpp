@@ -520,12 +520,9 @@ void StrokePainter::mouseMoveEvent(float x, float y)
         _oriStrokeLines.push_back(AVector(x, y));
     }
 
-
     if(curveLength > 5) // ugly code!
     {
         _vDataHelper->BuildLinesVertexData(_oriStrokeLines, &_oriStrokeLinesVbo, &_oriStrokeLinesVao, QVector3D(0, 0, 0));
-
-
     }
 
     //_spineLines = std::vector<AVector>(_oriStrokeLines);
@@ -539,10 +536,6 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
 
     _oriStrokeLines.push_back(AVector(x, y));
 
-    float curveLength = UtilityFunctions::CurveLength(_oriStrokeLines);
-   // std::cout << " curve length " << curveLength << "\n";
-
-    //if(curveLength > 50) // ugly code!
     if(_selectedIndex == -1)
     {
         _selectedPointVao.destroy();
@@ -556,8 +549,6 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
         CalculateInitialRibbon();
         CalculateVertices();
     }
-
-
     //CalculateInitialRibbon();
     //CalculateVertices();
 }

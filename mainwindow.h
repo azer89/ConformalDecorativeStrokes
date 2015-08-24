@@ -26,6 +26,10 @@ private:
     std::clock_t startTime;
 
 private slots:
+    /**
+     * Pay attention to this function since this is where I implement
+     * an iteration approach of COnformal Mapping
+     */
     void AnimationThread();
     void AnimationStart();
 

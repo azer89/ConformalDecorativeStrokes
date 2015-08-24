@@ -80,7 +80,6 @@ void MainWindow::AnimationThread()
 
         if(this->ui->widget->GetGLWidget()->ShouldStop())
         {
-            //std::cout << "iteration complete\n";
             ui->runningTimeLabel->setText("Complete in: " + QString::number(duration));
             ui->deltaLabel->setText("Delta: " + QString::number(ui->widget->GetGLWidget()->IterationDelta()));
             animTimer->stop();
