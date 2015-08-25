@@ -32,6 +32,7 @@ public:
     static AVector Rotate(AVector pt, float rad);
     static AVector Rotate(AVector pt, AVector centerPt, float rad);
 
+    AVector GetCoordinateFromQuadrilateral(AVector ul, AVector ur, AVector bl, AVector br, float xRatio, float yRatio);
 };
 
 #endif // UTILITYFUNCTIONS_H

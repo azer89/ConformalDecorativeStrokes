@@ -304,3 +304,10 @@ AVector UtilityFunctions::Rotate(AVector pt, AVector centerPt, float rad)
     AVector newVec = Rotate(pt - centerPt, rad);
     return newVec + centerPt;
 }
+
+AVector UtilityFunctions::GetCoordinateFromQuadrilateral(AVector ul, AVector ur, AVector bl, AVector br, float xRatio, float yRatio)
+{
+    AVector pt;
+
+    return pt;
+}

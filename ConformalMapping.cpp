@@ -26,8 +26,8 @@ void ConformalMapping::ConformalMappingOneStepSimple(std::vector<QuadMesh>& quad
 void ConformalMapping::ConformalMappingOneStepSimple(QuadMesh *qMesh)
 {
     std::vector<std::vector<PlusSignVertex>> tempVertices = qMesh->_plusSignVertices;
-    int meshWidth = qMesh->_plusSignVertices.size();
-    int meshHeight = qMesh->_plusSignVertices[0].size();
+    int meshWidth = qMesh->GetWidth();
+    int meshHeight = qMesh->GetHeight();
 
     for(int a = 0; a < meshWidth; a++)
     {
@@ -71,7 +71,7 @@ void ConformalMapping::ConformalMappingOneStepSimple(QuadMesh *qMesh)
 
             if(numNeighbor < 4)
             {
-                tempVertices[a][b].position = GetClosestPointFromBorders(*qMesh, sumPositions);
+                tempVertices[a][b].position = qMesh->GetClosestPointFromBorders(sumPositions);
             }
             else
             {
@@ -99,7 +99,12 @@ void ConformalMapping::ConformalMappingOneStep(std::vector<QuadMesh>& quadMeshes
     {
         if(quadMeshes[a]._quadMeshType == QuadMeshType::MESH_KITE)
         {
+            QuadMesh oriQMesh = quadMeshes[a];
+            //oriQMesh = QuadMesh();
+
             ConformalMappingOneStep(&quadMeshes[a]);
+
+            //MappingInterpolation(oriQMesh, &quadMeshes[a]);
         }
     }
 }
@@ -107,8 +112,8 @@ void ConformalMapping::ConformalMappingOneStep(std::vector<QuadMesh>& quadMeshes
 void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
 {
     std::vector<std::vector<PlusSignVertex>> tempVertices = qMesh->_plusSignVertices;
-    int meshWidth = qMesh->_plusSignVertices.size();
-    int meshHeight = qMesh->_plusSignVertices[0].size();
+    int meshWidth = qMesh->GetWidth();
+    int meshHeight = qMesh->GetHeight();
 
     for(int a = 0; a < meshWidth; a++)
     {
@@ -216,7 +221,7 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
 
             if(numNeighbor < 4)
             {
-                tempVertices[a][b].position = GetClosestPointFromBorders(*qMesh, sumPositions);
+                tempVertices[a][b].position = qMesh->GetClosestPointFromBorders(sumPositions);
             }
             else
             {
@@ -237,29 +242,77 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
 
 void ConformalMapping::MappingInterpolation(QuadMesh oriQMesh, QuadMesh *qMesh)
 {
-    std::vector<std::vector<PlusSignVertex>> tempVertices;
+    // implement right kite first, then left kite
 
-    // implement right kite first
-}
+    std::vector<std::vector<PlusSignVertex>> tempVertices = oriQMesh._plusSignVertices;
 
-AVector ConformalMapping::GetClosestPointFromBorders(QuadMesh qMesh, AVector pt)
-{
-    AVector closestPt = pt;
-    float dist = std::numeric_limits<float>::max();
-    std::vector<ALine> borderLines;
-    borderLines.push_back(ALine(qMesh._leftStartPt,  qMesh._rightStartPt));
-    borderLines.push_back(ALine(qMesh._leftEndPt,    qMesh._rightEndPt));
-    borderLines.push_back(ALine(qMesh._leftStartPt,  qMesh._leftEndPt));
-    borderLines.push_back(ALine(qMesh._rightStartPt, qMesh._rightEndPt));
-    for(uint a = 0; a < borderLines.size(); a++)
+    int meshWidth = qMesh-> GetWidth();
+    int meshHeight = qMesh-> GetHeight();
+
+    // right kite fixed boundaries (left and bottom)
+    std::vector<AVector> leftBoundary1 = oriQMesh.GetABoundary(0, true);   // original
+    std::vector<AVector> leftBoundary2 = qMesh->GetABoundary(0, true);     // conformal
+
+    std::vector<AVector> bottomBoundary1 = oriQMesh.GetABoundary(meshHeight - 1, false);   // original
+    std::vector<AVector> bottomBoundary2 = qMesh->GetABoundary(meshHeight - 1, false);     // conformal
+
+    std::vector<std::pair<int, int>> xPairIndices;
+    std::vector<std::pair<int, int>> yPairIndices;
+    std::vector<float> xRatios;
+    std::vector<float> yRatios;
+
+    GetClosestIndicesAndRatios(leftBoundary1,   leftBoundary2,   xPairIndices, xRatios);
+    GetClosestIndicesAndRatios(bottomBoundary1, bottomBoundary2, yPairIndices, yRatios);
+
+    for(int a = 0; a < meshWidth; a++)
     {
-        AVector cPt = UtilityFunctions::GetClosestPoint(borderLines[a].GetPointA(), borderLines[a].GetPointB(), pt);
-        if(pt.Distance(cPt) < dist)
+        for(int b = 0; b < meshHeight; b++)
         {
-            dist = pt.Distance(cPt);
-            closestPt = cPt;
+            int xIndex1 = xPairIndices[a].first;
+            int xIndex2 = xPairIndices[a].second;
+            float xRatio = xRatios[a];
+
+            int yIndex1 = yPairIndices[b].first;
+            int yIndex2 = yPairIndices[b].second;
+            float yRatio = yRatios[a];
+
+            AVector ulVec = qMesh->_plusSignVertices[xIndex1][yIndex1].position;
+            AVector urVec = qMesh->_plusSignVertices[xIndex1][yIndex2].position;
+            AVector blVec = qMesh->_plusSignVertices[xIndex2][yIndex1].position;
+            AVector brVec = qMesh->_plusSignVertices[xIndex2][yIndex2].position;
         }
     }
-    return closestPt;
 }
 
+void ConformalMapping::GetClosestIndicesAndRatios(std::vector<AVector> boundary1,
+                                         std::vector<AVector> boundary2,
+                                         std::vector<std::pair<int, int>>& pairIndices,
+                                         std::vector<float>& ratios)
+{
+    for(int i = 0; i < boundary1.size(); i++)
+    {
+        AVector pt0 = boundary1[i];
+        float dist = std::numeric_limits<float>::max();
+        int index1 = -1;
+        int index2 = -1;
+        for(int j = 0; j < boundary2.size() - 1; j++)
+        {
+            AVector pt1 = boundary2[j];
+            AVector pt2 = boundary2[j + 1];
+            float d = std::min(pt1.Distance(pt0), pt2.Distance(pt0));
+
+            if(d < dist)
+            {
+                dist = d;
+                index1 = j;
+                index2 = j + 1;
+            }
+        }
+        pairIndices.push_back(std::pair<int, int>(index1, index2));
+
+        float dist1 = boundary2[index1].Distance(pt0);
+        float dist2 = boundary2[index2].Distance(pt0);
+
+        ratios.push_back(dist1 / (dist1 + dist2));
+    }
+}

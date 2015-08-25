@@ -34,7 +34,11 @@ private:
 
     void MappingInterpolation(QuadMesh oriQMesh, QuadMesh *qMesh);
 
-    AVector GetClosestPointFromBorders(QuadMesh qMesh, AVector pt);
+    void GetClosestIndicesAndRatios(std::vector<AVector> boundary1,
+                           std::vector<AVector> boundary2,
+                           std::vector<std::pair<int, int>>& pairIndices,
+                           std::vector<float>& ratios);
+
 
 private:
     /**
