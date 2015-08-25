@@ -92,7 +92,12 @@ private:
     // constrained points
     std::vector<AVector>        _constrainedPoints;
     QOpenGLBuffer               _constrainedPointsVbo;
-    QOpenGLVertexArrayObject    _constrinedPointsVao;
+    QOpenGLVertexArrayObject    _constrainedPointsVao;
+
+    // debug points
+    std::vector<AVector>        _debugPoints;
+    QOpenGLBuffer               _debugPointsVbo;
+    QOpenGLVertexArrayObject    _debugPointsVao;
 
 private:
     void CalculateInitialRibbon();

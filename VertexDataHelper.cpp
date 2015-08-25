@@ -197,7 +197,7 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
 
         if(qMesh._quadMeshType != qmType){ continue; }
 
-        std::vector<std::vector<PlusSignVertex>> plusSignVertices = qMesh._plusSignVertices;
+        std::vector<std::vector<PlusSignVertex>> plusSignVertices = qMesh._psVertices;
         int mesh_width = plusSignVertices.size();
         int mesh_height = plusSignVertices[0].size();
         int heightMinOne = mesh_height - 1;
@@ -278,9 +278,9 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes, QO
         if(qMesh._quadMeshType == QuadMeshType::MESH_KITE)
             { vecCol = vecCol2; }
 
-        int mesh_width = qMesh._plusSignVertices.size();
-        int mesh_height = qMesh._plusSignVertices[0].size();
-        std::vector<std::vector<PlusSignVertex>> plusSignVertices = qMesh._plusSignVertices;
+        int mesh_width = qMesh._psVertices.size();
+        int mesh_height = qMesh._psVertices[0].size();
+        std::vector<std::vector<PlusSignVertex>> plusSignVertices = qMesh._psVertices;
 
         for(int a = 0; a < mesh_width - 1; a++)
         {

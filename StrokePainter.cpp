@@ -299,13 +299,13 @@ void StrokePainter::CalculateVertices()
         CalculateVertices(&_quadMeshes[a]);
     }
     _qMeshNumData = 0;
-    _vDataHelper->BuildPointsVertexData(_constrainedPoints, &_constrainedPointsVbo, &_constrinedPointsVao, QVector3D(1, 0, 0));
+    _vDataHelper->BuildPointsVertexData(_constrainedPoints, &_constrainedPointsVbo, &_constrainedPointsVao, QVector3D(1, 0, 0));
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
 }
 
 void StrokePainter::CalculateVertices(QuadMesh* qMesh)
 {
-    qMesh->_plusSignVertices.clear();
+    qMesh->_psVertices.clear();
 
     AVector lStartPt = qMesh->_leftStartPt;
     AVector lEndPt   = qMesh->_leftEndPt ;
@@ -322,10 +322,6 @@ void StrokePainter::CalculateVertices(QuadMesh* qMesh)
     AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();
 
     float meshSize = SystemParams::mesh_size;
-    //if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
-    //{
-    //    meshSize /= 2.0f;
-    //}
 
     int intMeshHeight = SystemParams::stroke_width / meshSize;
     int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
@@ -394,7 +390,8 @@ void StrokePainter::CalculateVertices(QuadMesh* qMesh)
             PlusSignVertex psVert = PlusSignVertex(pt, shouldMove, junctionRibsConstrained, spinesConstrained);
             columnVertices.push_back(psVert);
         }
-        qMesh->_plusSignVertices.push_back(columnVertices);
+        qMesh->_psVertices.push_back(columnVertices);
+        qMesh->_opsVertices.push_back(columnVertices);
     }
 }
 
@@ -463,6 +460,10 @@ void StrokePainter::ConformalMappingOneStepSimple()
 void StrokePainter::ConformalMappingOneStep()
 {
     _cMapping->ConformalMappingOneStep(_quadMeshes);
+
+    // debug (delete after use)
+    //_debugPoints = _cMapping->_debugVertices;
+    //_vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.25, 0));
 
     _qMeshNumData = 0;
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
@@ -556,13 +557,22 @@ void StrokePainter::Draw()
         _selectedPointVao.release();
     }
 
-    if(SystemParams::show_mesh && _constrinedPointsVao.isCreated())
+    if(SystemParams::show_mesh && _constrainedPointsVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glPointSize(4.0f);
-        _constrinedPointsVao.bind();
+        _constrainedPointsVao.bind();
         glDrawArrays(GL_POINTS, 0, _constrainedPoints.size());
-        _constrinedPointsVao.release();
+        _constrainedPointsVao.release();
+    }
+
+    if(SystemParams::show_mesh && _debugPointsVao.isCreated())
+    {
+        _vDataHelper->NeedToDrawWithColor(1.0);
+        glPointSize(8.0f);
+        _debugPointsVao.bind();
+        glDrawArrays(GL_POINTS, 0, _debugPoints.size());
+        _debugPointsVao.release();
     }
 
     if(_isMouseDown && _oriStrokeLinesVao.isCreated())

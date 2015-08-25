@@ -27,6 +27,9 @@ public:
 
     float GetIterDist() { return _iterDist; }
 
+public:
+    // debugging (delete after use)
+    std::vector<AVector>  _debugVertices;
 
 private:
     void ConformalMappingOneStepSimple(QuadMesh *qMesh);

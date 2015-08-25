@@ -307,6 +307,10 @@ AVector UtilityFunctions::Rotate(AVector pt, AVector centerPt, float rad)
 
 AVector UtilityFunctions::GetCoordinateFromQuadrilateral(AVector ul, AVector ur, AVector bl, AVector br, float xRatio, float yRatio)
 {
+    AVector xVec1;
+    AVector xVec2;
+
+
     AVector pt;
 
     return pt;

@@ -28,23 +28,27 @@ public:
     {
     }
 
-    int GetWidth() { return this->_plusSignVertices.size(); }
-    int GetHeight() { return this->_plusSignVertices[0].size(); }
+    int GetWidth() { return this->_psVertices.size(); }
+    int GetHeight() { return this->_psVertices[0].size(); }
 
-    std::vector<AVector> GetABoundary(int index, bool isXAxis)
+    std::vector<AVector> GetABoundary(int index, bool isXUnchanged, bool isOri)
     {
+        // this code looks inefficient
+        std::vector<std::vector<PlusSignVertex>> psVertices = _psVertices;
+        if(isOri) { psVertices =  _opsVertices; }
+
         std::vector<AVector> vertices;
-        if(isXAxis) // unchanged x index
+        if(isXUnchanged) // column
         {
             int meshHeight = GetHeight();
             for(int yIter = 0; yIter < meshHeight; yIter++)
-                { vertices.push_back(_plusSignVertices[index][yIter].position); }
+                { vertices.push_back(psVertices[index][yIter].position); }
         }
-        else // unchanged y index
+        else // row
         {
             int meshWidth = GetWidth();
             for(int xIter = 0; xIter < meshWidth; xIter++)
-                { vertices.push_back(_plusSignVertices[xIter][index].position); }
+                { vertices.push_back(psVertices[xIter][index].position); }
         }
         return vertices;
     }
@@ -81,7 +85,8 @@ public:
     AVector _sharpPt; // for kite only
     bool _isRightKite; // a stroke which turns right
     // Vertices
-    std::vector<std::vector<PlusSignVertex>> _plusSignVertices;
+    std::vector<std::vector<PlusSignVertex>> _psVertices;
+    std::vector<std::vector<PlusSignVertex>> _opsVertices;
 };
 
 #endif // QUADMESH_H

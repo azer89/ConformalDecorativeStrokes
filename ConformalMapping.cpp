@@ -25,7 +25,7 @@ void ConformalMapping::ConformalMappingOneStepSimple(std::vector<QuadMesh>& quad
 
 void ConformalMapping::ConformalMappingOneStepSimple(QuadMesh *qMesh)
 {
-    std::vector<std::vector<PlusSignVertex>> tempVertices = qMesh->_plusSignVertices;
+    std::vector<std::vector<PlusSignVertex>> tempVertices = qMesh->_psVertices;
     int meshWidth = qMesh->GetWidth();
     int meshHeight = qMesh->GetHeight();
 
@@ -85,11 +85,11 @@ void ConformalMapping::ConformalMappingOneStepSimple(QuadMesh *qMesh)
     {
         for(int b = 0; b < meshHeight; b++)
         {
-            sumDist += qMesh->_plusSignVertices[a][b].position.Distance(tempVertices[a][b].position);
+            sumDist += qMesh->_psVertices[a][b].position.Distance(tempVertices[a][b].position);
         }
     }
     _iterDist = sumDist;
-    qMesh->_plusSignVertices = tempVertices;
+    qMesh->_psVertices = tempVertices;
 }
 
 void ConformalMapping::ConformalMappingOneStep(std::vector<QuadMesh>& quadMeshes)
@@ -100,18 +100,17 @@ void ConformalMapping::ConformalMappingOneStep(std::vector<QuadMesh>& quadMeshes
         if(quadMeshes[a]._quadMeshType == QuadMeshType::MESH_KITE)
         {
             QuadMesh oriQMesh = quadMeshes[a];
-            //oriQMesh = QuadMesh();
 
             ConformalMappingOneStep(&quadMeshes[a]);
 
-            //MappingInterpolation(oriQMesh, &quadMeshes[a]);
+            MappingInterpolation(oriQMesh, &quadMeshes[a]);
         }
     }
 }
 
 void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
 {
-    std::vector<std::vector<PlusSignVertex>> tempVertices = qMesh->_plusSignVertices;
+    std::vector<std::vector<PlusSignVertex>> tempVertices = qMesh->_psVertices;
     int meshWidth = qMesh->GetWidth();
     int meshHeight = qMesh->GetHeight();
 
@@ -234,60 +233,75 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
     for(int a = 0; a < meshWidth; a++)
     {
         for(int b = 0; b < meshHeight; b++)
-            { sumDist += qMesh->_plusSignVertices[a][b].position.Distance(tempVertices[a][b].position); }
+            { sumDist += qMesh->_psVertices[a][b].position.Distance(tempVertices[a][b].position); }
     }
     _iterDist += sumDist;
-    qMesh->_plusSignVertices = tempVertices;
+    qMesh->_psVertices = tempVertices;
 }
 
 void ConformalMapping::MappingInterpolation(QuadMesh oriQMesh, QuadMesh *qMesh)
 {
     // implement right kite first, then left kite
 
-    std::vector<std::vector<PlusSignVertex>> tempVertices = oriQMesh._plusSignVertices;
+    std::vector<std::vector<PlusSignVertex>> tempVertices = oriQMesh._psVertices;
 
     int meshWidth = qMesh-> GetWidth();
     int meshHeight = qMesh-> GetHeight();
 
     // right kite fixed boundaries (left and bottom)
-    std::vector<AVector> leftBoundary1 = oriQMesh.GetABoundary(0, true);   // original
-    std::vector<AVector> leftBoundary2 = qMesh->GetABoundary(0, true);     // conformal
+    std::vector<AVector> leftBoundary1 = qMesh->GetABoundary(0, true, true);   // original
+    std::vector<AVector> leftBoundary2 = qMesh->GetABoundary(0, true, false);     // conformal
 
-    std::vector<AVector> bottomBoundary1 = oriQMesh.GetABoundary(meshHeight - 1, false);   // original
-    std::vector<AVector> bottomBoundary2 = qMesh->GetABoundary(meshHeight - 1, false);     // conformal
+    std::vector<AVector> bottomBoundary1 = qMesh->GetABoundary(meshHeight - 1, false, true);   // original
+    std::vector<AVector> bottomBoundary2 = qMesh->GetABoundary(meshHeight - 1, false, false);     // conformal
 
-    std::vector<std::pair<int, int>> xPairIndices;
-    std::vector<std::pair<int, int>> yPairIndices;
-    std::vector<float> xRatios;
-    std::vector<float> yRatios;
+    // debugging
+    _debugVertices = bottomBoundary2;
 
-    GetClosestIndicesAndRatios(leftBoundary1,   leftBoundary2,   xPairIndices, xRatios);
-    GetClosestIndicesAndRatios(bottomBoundary1, bottomBoundary2, yPairIndices, yRatios);
+    std::vector<std::pair<int, int>> leftPairIndices;
+    std::vector<std::pair<int, int>> bottomPairIndices;
+    std::vector<float> leftRatios;
+    std::vector<float> bottomRatios;
+
+    GetClosestIndicesAndRatios(leftBoundary1,   leftBoundary2,   leftPairIndices, leftRatios);
+    GetClosestIndicesAndRatios(bottomBoundary1, bottomBoundary2, bottomPairIndices, bottomRatios);
 
     for(int a = 0; a < meshWidth; a++)
     {
         for(int b = 0; b < meshHeight; b++)
         {
-            int xIndex1 = xPairIndices[a].first;
-            int xIndex2 = xPairIndices[a].second;
-            float xRatio = xRatios[a];
+            // if should not move
 
-            int yIndex1 = yPairIndices[b].first;
-            int yIndex2 = yPairIndices[b].second;
-            float yRatio = yRatios[a];
+            // if on inner borders (just snap)
+            //     a == 0 (right)
+            //     b == height - 1
+
+            // if on outer borders
+            //     b == 0 (top)
+            //     a == width - 1 (right)
+
+            /*
+            int xIndex1 = leftPairIndices[a].first;
+            int xIndex2 = leftPairIndices[a].second;
+            float xRatio = leftRatios[a];
+
+            int yIndex1 = bottomPairIndices[b].first;
+            int yIndex2 = bottomPairIndices[b].second;
+            float yRatio = bottomRatios[a];
 
             AVector ulVec = qMesh->_plusSignVertices[xIndex1][yIndex1].position;
             AVector urVec = qMesh->_plusSignVertices[xIndex1][yIndex2].position;
             AVector blVec = qMesh->_plusSignVertices[xIndex2][yIndex1].position;
             AVector brVec = qMesh->_plusSignVertices[xIndex2][yIndex2].position;
+            */
         }
     }
 }
 
 void ConformalMapping::GetClosestIndicesAndRatios(std::vector<AVector> boundary1,
-                                         std::vector<AVector> boundary2,
-                                         std::vector<std::pair<int, int>>& pairIndices,
-                                         std::vector<float>& ratios)
+                                                  std::vector<AVector> boundary2,
+                                                  std::vector<std::pair<int, int>>& pairIndices,
+                                                  std::vector<float>& ratios)
 {
     for(int i = 0; i < boundary1.size(); i++)
     {
