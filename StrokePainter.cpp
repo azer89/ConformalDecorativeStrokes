@@ -467,7 +467,6 @@ void StrokePainter::ConformalMappingOneStep()
     //_vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.25, 0));
 
     //_debugLines = _cMapping->_debugLines;
-    //std::cout << _debugLines.size() << "\n";
     //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0.25, 0));
 
     _qMeshNumData = 0;
@@ -483,12 +482,11 @@ void StrokePainter::MappingInterpolation()
     _cMapping->MappingInterpolation(_quadMeshes);
 
     // debug (delete after use)
-    _debugPoints = _cMapping->_debugPoints;
-    _vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.25, 0));
+    //_debugPoints = _cMapping->_debugPoints;
+    //_vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.25, 0));
 
-    _debugLines = _cMapping->_debugLines;
-    //std::cout << _debugLines.size() << "\n";
-    _vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0.25, 0));
+    //_debugLines = _cMapping->_debugLines;
+    //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0.25, 0));
 
     _qMeshNumData = 0;
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
