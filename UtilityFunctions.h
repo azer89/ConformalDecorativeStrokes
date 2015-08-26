@@ -27,12 +27,13 @@ public:
     static AVector GetClosestPoint(AVector v, AVector w, AVector p);
     static float GetRotation(AVector pt1, AVector pt2);
     static bool CheckHorizontalVerticalCase(ALine ray1, ALine ray2);
+    static bool DoesAPointLieOnALine(AVector pt, ALine ln);
 
     // rotate a point around center (0, 0)
     static AVector Rotate(AVector pt, float rad);
     static AVector Rotate(AVector pt, AVector centerPt, float rad);
 
-    AVector GetCoordinateFromQuadrilateral(AVector ul, AVector ur, AVector bl, AVector br, float xRatio, float yRatio);
+    static AVector GetCoordinateFromQuadrilateral(AVector ul, AVector ur, AVector bl, AVector br, float verticalRatio, float horizontalRatio);
 };
 
 #endif // UTILITYFUNCTIONS_H

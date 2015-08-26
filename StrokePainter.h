@@ -30,6 +30,7 @@ public:
 
     void ConformalMappingOneStepSimple();
     void ConformalMappingOneStep();
+    void MappingInterpolation();
 
     void CalculateVertices();
     void CalculateVertices(QuadMesh *qMesh);
@@ -98,6 +99,11 @@ private:
     std::vector<AVector>        _debugPoints;
     QOpenGLBuffer               _debugPointsVbo;
     QOpenGLVertexArrayObject    _debugPointsVao;
+
+    // debug lines
+    std::vector<ALine>          _debugLines;
+    QOpenGLBuffer               _debugLinesVbo;
+    QOpenGLVertexArrayObject    _debugLinesVao;
 
 private:
     void CalculateInitialRibbon();

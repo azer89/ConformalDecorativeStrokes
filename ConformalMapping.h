@@ -25,17 +25,20 @@ public:
      */
     void ConformalMappingOneStep(std::vector<QuadMesh>& quadMeshes);
 
+    void MappingInterpolation(std::vector<QuadMesh>& quadMeshes);
+
     float GetIterDist() { return _iterDist; }
 
 public:
     // debugging (delete after use)
-    std::vector<AVector>  _debugVertices;
+    std::vector<AVector>  _debugPoints;
+    std::vector<ALine>    _debugLines;
 
 private:
     void ConformalMappingOneStepSimple(QuadMesh *qMesh);
     void ConformalMappingOneStep(QuadMesh *qMesh);
 
-    void MappingInterpolation(QuadMesh oriQMesh, QuadMesh *qMesh);
+    void MappingInterpolation(QuadMesh *qMesh);
 
     void GetClosestIndicesAndRatios(std::vector<AVector> boundary1,
                            std::vector<AVector> boundary2,

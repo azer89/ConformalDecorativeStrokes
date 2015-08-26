@@ -306,6 +306,7 @@ void StrokePainter::CalculateVertices()
 void StrokePainter::CalculateVertices(QuadMesh* qMesh)
 {
     qMesh->_psVertices.clear();
+    qMesh->_opsVertices.clear();
 
     AVector lStartPt = qMesh->_leftStartPt;
     AVector lEndPt   = qMesh->_leftEndPt ;
@@ -462,8 +463,32 @@ void StrokePainter::ConformalMappingOneStep()
     _cMapping->ConformalMappingOneStep(_quadMeshes);
 
     // debug (delete after use)
-    //_debugPoints = _cMapping->_debugVertices;
+    //_debugPoints = _cMapping->_debugPoints;
     //_vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.25, 0));
+
+    //_debugLines = _cMapping->_debugLines;
+    //std::cout << _debugLines.size() << "\n";
+    //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0.25, 0));
+
+    _qMeshNumData = 0;
+    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[0], &_qmTexVaos[0], _qmTexNumbers[0], QuadMeshType::MESH_RECTANGLE);
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[1], &_qmTexVaos[1], _qmTexNumbers[1], QuadMeshType::MESH_KITE);
+}
+
+void StrokePainter::MappingInterpolation()
+{
+    //std::cout << "mapping interpolation\n";
+
+    _cMapping->MappingInterpolation(_quadMeshes);
+
+    // debug (delete after use)
+    _debugPoints = _cMapping->_debugPoints;
+    _vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.25, 0));
+
+    _debugLines = _cMapping->_debugLines;
+    //std::cout << _debugLines.size() << "\n";
+    _vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0.25, 0));
 
     _qMeshNumData = 0;
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
@@ -557,7 +582,7 @@ void StrokePainter::Draw()
         _selectedPointVao.release();
     }
 
-    if(SystemParams::show_mesh && _constrainedPointsVao.isCreated())
+    /*if(SystemParams::show_mesh && _constrainedPointsVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glPointSize(4.0f);
@@ -565,14 +590,24 @@ void StrokePainter::Draw()
         glDrawArrays(GL_POINTS, 0, _constrainedPoints.size());
         _constrainedPointsVao.release();
     }
+    */
+
 
     if(SystemParams::show_mesh && _debugPointsVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
-        glPointSize(8.0f);
+        glPointSize(4.0f);
         _debugPointsVao.bind();
         glDrawArrays(GL_POINTS, 0, _debugPoints.size());
         _debugPointsVao.release();
+    }
+    if(SystemParams::show_mesh && _debugLinesVao.isCreated())
+    {
+        _vDataHelper->NeedToDrawWithColor(1.0);
+        glLineWidth(2.0f);
+        _debugLinesVao.bind();
+        glDrawArrays(GL_LINES, 0, _debugLines.size() * 2);
+        _debugLinesVao.release();
     }
 
     if(_isMouseDown && _oriStrokeLinesVao.isCreated())

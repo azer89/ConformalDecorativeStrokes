@@ -99,11 +99,20 @@ void ConformalMapping::ConformalMappingOneStep(std::vector<QuadMesh>& quadMeshes
     {
         if(quadMeshes[a]._quadMeshType == QuadMeshType::MESH_KITE)
         {
-            QuadMesh oriQMesh = quadMeshes[a];
-
             ConformalMappingOneStep(&quadMeshes[a]);
+        }
+    }
+}
 
-            MappingInterpolation(oriQMesh, &quadMeshes[a]);
+void ConformalMapping::MappingInterpolation(std::vector<QuadMesh>& quadMeshes)
+{
+    std::cout << "ConformalMapping::MappingInterpolation" << "\n";
+
+    for(uint a = 0; a < quadMeshes.size(); a++)
+    {
+        if(quadMeshes[a]._quadMeshType == QuadMeshType::MESH_KITE)
+        {
+            MappingInterpolation(&quadMeshes[a]);
         }
     }
 }
@@ -239,11 +248,15 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
     qMesh->_psVertices = tempVertices;
 }
 
-void ConformalMapping::MappingInterpolation(QuadMesh oriQMesh, QuadMesh *qMesh)
+void ConformalMapping::MappingInterpolation(QuadMesh *qMesh)
 {
-    // implement right kite first, then left kite
+    std::vector<std::vector<PlusSignVertex>> tempVertices = qMesh->_psVertices;
 
-    std::vector<std::vector<PlusSignVertex>> tempVertices = oriQMesh._psVertices;
+    // delete this
+    _debugPoints.clear();
+    _debugLines.clear();
+
+    // implement right kite first, then left kite
 
     int meshWidth = qMesh-> GetWidth();
     int meshHeight = qMesh-> GetHeight();
@@ -256,7 +269,7 @@ void ConformalMapping::MappingInterpolation(QuadMesh oriQMesh, QuadMesh *qMesh)
     std::vector<AVector> bottomBoundary2 = qMesh->GetABoundary(meshHeight - 1, false, false);     // conformal
 
     // debugging
-    _debugVertices = bottomBoundary2;
+    //_debugPoints = bottomBoundary2;
 
     std::vector<std::pair<int, int>> leftPairIndices;
     std::vector<std::pair<int, int>> bottomPairIndices;
@@ -266,36 +279,99 @@ void ConformalMapping::MappingInterpolation(QuadMesh oriQMesh, QuadMesh *qMesh)
     GetClosestIndicesAndRatios(leftBoundary1,   leftBoundary2,   leftPairIndices, leftRatios);
     GetClosestIndicesAndRatios(bottomBoundary1, bottomBoundary2, bottomPairIndices, bottomRatios);
 
+    // debugging
+    /*_debugLines.clear();
+    for(uint a = 0; a < bottomBoundary1.size(); a++)
+    {
+        AVector pt0 = bottomBoundary1[a];
+        int idx1 = bottomPairIndices[a].first;
+        int idx2 = bottomPairIndices[a].second;
+        AVector pt1 = qMesh->_psVertices[idx1][meshHeight - 2].position;
+        AVector pt2 = qMesh->_psVertices[idx2][meshHeight - 2].position;
+        _debugLines.push_back(ALine(pt0, pt1));
+        _debugLines.push_back(ALine(pt0, pt2));
+    }
+
+    //_debugLines.clear();
+    for(uint a = 0; a < leftBoundary1.size(); a++)
+    {
+        AVector pt0 = leftBoundary1[a];
+        int idx1 = leftPairIndices[a].first;
+        int idx2 = leftPairIndices[a].second;
+        AVector pt1 = qMesh->_psVertices[1][idx1].position;
+        AVector pt2 = qMesh->_psVertices[1][idx2].position;
+        _debugLines.push_back(ALine(pt0, pt1));
+        _debugLines.push_back(ALine(pt0, pt2));
+    }*/
+    //std::cout << leftBoundary1.size() << " " << _debugPoints.size() << " " << _debugLines.size() << "\n";
+
     for(int a = 0; a < meshWidth; a++)
     {
         for(int b = 0; b < meshHeight; b++)
         {
-            // if should not move
+            if(!qMesh->_psVertices[a][b].shouldMove)
+            {
+                _debugPoints.push_back(qMesh->_psVertices[a][b].position); // delete this
+            }
+            else if(a == 0 || b == meshHeight - 1)
+            {
+                tempVertices[a][b].position = qMesh->_opsVertices[a][b].position;
+                _debugPoints.push_back(qMesh->_opsVertices[a][b].position);
+            }
+            else if(a == meshWidth - 1)
+            {
+                int l1 = leftPairIndices[b].first;
+                int l2 = leftPairIndices[b].second;
 
-            // if on inner borders (just snap)
-            //     a == 0 (right)
-            //     b == height - 1
+                AVector ur = qMesh->_psVertices[a][l1].position;
+                AVector br = qMesh->_psVertices[a][l2].position;
 
-            // if on outer borders
-            //     b == 0 (top)
-            //     a == width - 1 (right)
+                AVector newPos = ur + (br - ur) * leftRatios[b];
+                tempVertices[a][b].position = newPos;
+                _debugPoints.push_back(newPos);
+            }
+            else if(b == 0)
+            {
+                int b1 = bottomPairIndices[a].first;
+                int b2 = bottomPairIndices[a].second;
 
-            /*
-            int xIndex1 = leftPairIndices[a].first;
-            int xIndex2 = leftPairIndices[a].second;
-            float xRatio = leftRatios[a];
+                AVector ul = qMesh->_psVertices[b1][b].position;
+                AVector ur = qMesh->_psVertices[b2][b].position;
 
-            int yIndex1 = bottomPairIndices[b].first;
-            int yIndex2 = bottomPairIndices[b].second;
-            float yRatio = bottomRatios[a];
+                AVector newPos = ul + (ur - ul) * bottomRatios[a];
+                tempVertices[a][b].position = newPos;
+                _debugPoints.push_back(newPos);
+            }
+            else
+            {
+                int l1 = leftPairIndices[b].first;
+                int l2 = leftPairIndices[b].second;
 
-            AVector ulVec = qMesh->_plusSignVertices[xIndex1][yIndex1].position;
-            AVector urVec = qMesh->_plusSignVertices[xIndex1][yIndex2].position;
-            AVector blVec = qMesh->_plusSignVertices[xIndex2][yIndex1].position;
-            AVector brVec = qMesh->_plusSignVertices[xIndex2][yIndex2].position;
-            */
+                int b1 = bottomPairIndices[a].first;
+                int b2 = bottomPairIndices[a].second;
+
+                if(l1 == -1 || l2 == -1 || b1 == -1 || b2 == -1)
+                {
+                    std::cout << "shit\n";
+                    continue;
+                }
+
+                AVector ul = qMesh->_psVertices[b1][l1].position;
+                AVector ur = qMesh->_psVertices[b2][l1].position;
+                AVector bl = qMesh->_psVertices[b1][l2].position;
+                AVector br = qMesh->_psVertices[b2][l2].position;
+
+                //std::cout << leftRatios[b] << "-" << bottomRatios[a] << " ";
+
+                AVector newPos = UtilityFunctions::GetCoordinateFromQuadrilateral(ul, ur, bl, br, leftRatios[b], bottomRatios[a]);
+
+                _debugPoints.push_back(newPos);
+                tempVertices[a][b].position = newPos;
+            }
         }
+        //std::cout << "\n\n";
     }
+    qMesh->_psVertices = tempVertices;
 }
 
 void ConformalMapping::GetClosestIndicesAndRatios(std::vector<AVector> boundary1,
@@ -313,6 +389,11 @@ void ConformalMapping::GetClosestIndicesAndRatios(std::vector<AVector> boundary1
         {
             AVector pt1 = boundary2[j];
             AVector pt2 = boundary2[j + 1];
+            if(!UtilityFunctions::DoesAPointLieOnALine(pt0, ALine(pt1, pt2)))
+            {
+                continue;
+            }
+
             float d = std::min(pt1.Distance(pt0), pt2.Distance(pt0));
 
             if(d < dist)

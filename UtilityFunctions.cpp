@@ -305,13 +305,36 @@ AVector UtilityFunctions::Rotate(AVector pt, AVector centerPt, float rad)
     return newVec + centerPt;
 }
 
-AVector UtilityFunctions::GetCoordinateFromQuadrilateral(AVector ul, AVector ur, AVector bl, AVector br, float xRatio, float yRatio)
+bool UtilityFunctions::DoesAPointLieOnALine(AVector pt, ALine ln)
 {
-    AVector xVec1;
-    AVector xVec2;
+    float lineLength = ln.Magnitude();
+    float dist1 = ln.GetPointA().Distance(pt);
+    float dist2 = ln.GetPointB().Distance(pt);
 
+    float diff = std::abs(lineLength - dist1 - dist2);
 
-    AVector pt;
+    if(diff < std::numeric_limits<float>::epsilon() * 1000 )
+    {
+        return true;
+    }
 
-    return pt;
+    return false;
+}
+
+AVector UtilityFunctions::GetCoordinateFromQuadrilateral(AVector ul, AVector ur, AVector bl, AVector br, float verticalRatio, float horizontalRatio)
+{
+    AVector lDir = ul.DirectionTo(bl);
+    AVector rDir = ur.DirectionTo(br);
+    AVector uDir = ul.DirectionTo(ur);
+    AVector bDir = bl.DirectionTo(br);
+
+    AVector vPt1 = ul + lDir * verticalRatio;
+    AVector vPt2 = ur + rDir * verticalRatio;
+    ALine vRay(vPt1, vPt1.DirectionTo(vPt2).Norm());
+
+    AVector hPt1 = ul + uDir * horizontalRatio;
+    AVector hPt2 = bl + bDir * horizontalRatio;
+    ALine hRay(hPt1, hPt1.DirectionTo(hPt2).Norm());
+
+    return GetFiniteIntersection(vRay, hRay);
 }

@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     SystemParams.cpp \
     CurveRDP.cpp \
     VertexDataHelper.cpp \
-    ConformalMapping.cpp
+    ConformalMapping.cpp \
+    QuadMesh.cpp
 
 HEADERS  += mainwindow.h \
     AVector.h \

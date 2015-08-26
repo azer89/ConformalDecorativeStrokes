@@ -78,8 +78,11 @@ void MainWindow::AnimationThread()
         this->ui->widget->GetGLWidget()->ConformalMappingOneStep();
         this->ui->widget->GetGLWidget()->repaint();
 
-        if(this->ui->widget->GetGLWidget()->ShouldStop())
+        if(this->ui->widget->GetGLWidget()->ShouldStop()  || duration > 300.0f)
         {
+            this->ui->widget->GetGLWidget()->MappingInterpolation();
+            this->ui->widget->GetGLWidget()->repaint();
+
             ui->runningTimeLabel->setText("Complete in: " + QString::number(duration));
             ui->deltaLabel->setText("Delta: " + QString::number(ui->widget->GetGLWidget()->IterationDelta()));
             animTimer->stop();
@@ -117,7 +120,6 @@ void MainWindow::SetParams()
 
     ui->runningTimeLabel->setText("Time: 0");
     ui->deltaLabel->setText("Delta: 0");
-
 
     this->ui->widget->GetGLWidget()->CalculateVertices();
 
