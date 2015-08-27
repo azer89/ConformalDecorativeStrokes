@@ -307,6 +307,7 @@ AVector UtilityFunctions::Rotate(AVector pt, AVector centerPt, float rad)
 
 bool UtilityFunctions::DoesAPointLieOnALine(AVector pt, ALine ln)
 {
+
     float lineLength = ln.Magnitude();
     float dist1 = ln.GetPointA().Distance(pt);
     float dist2 = ln.GetPointB().Distance(pt);
@@ -321,7 +322,7 @@ bool UtilityFunctions::DoesAPointLieOnALine(AVector pt, ALine ln)
     return false;
 }
 
-AVector UtilityFunctions::GetCoordinateFromQuadrilateral(AVector ul, AVector ur, AVector bl, AVector br, float verticalRatio, float horizontalRatio)
+AVector UtilityFunctions::GetQUadrilateralPosition(AVector ul, AVector ur, AVector bl, AVector br, float verticalRatio, float horizontalRatio)
 {
     AVector lDir = ul.DirectionTo(bl);
     AVector rDir = ur.DirectionTo(br);

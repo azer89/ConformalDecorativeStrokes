@@ -26,12 +26,14 @@ MainWindow::MainWindow(QWidget *parent) :
     animTimer = new QTimer(this);
     connect(animTimer, SIGNAL(timeout()), this, SLOT(AnimationThread()));
 
-    QString qFilenameA("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/tile_03_a.png");
+
+    // you need to edit GLWidget too
+    QString qFilenameA("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/g_01.png");
     QPixmap imageA(qFilenameA);
     imageA = imageA.scaled(ui->textureALabel->size());
     ui->textureALabel->setPixmap(imageA);
 
-    QString qFilenameB("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/tile_03_b.png");
+    QString qFilenameB("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/g_01.png");
     QPixmap imageB(qFilenameB);
     imageB = imageB.scaled(ui->textureBLabel->size());
     ui->textureBLabel->setPixmap(imageB);

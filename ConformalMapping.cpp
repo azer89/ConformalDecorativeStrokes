@@ -106,8 +106,6 @@ void ConformalMapping::ConformalMappingOneStep(std::vector<QuadMesh>& quadMeshes
 
 void ConformalMapping::MappingInterpolation(std::vector<QuadMesh>& quadMeshes)
 {
-    std::cout << "ConformalMapping::MappingInterpolation" << "\n";
-
     for(uint a = 0; a < quadMeshes.size(); a++)
     {
         if(quadMeshes[a]._quadMeshType == QuadMeshType::MESH_KITE)
@@ -350,26 +348,23 @@ void ConformalMapping::MappingInterpolation(QuadMesh *qMesh)
                 int b1 = bottomPairIndices[a].first;
                 int b2 = bottomPairIndices[a].second;
 
-                if(l1 == -1 || l2 == -1 || b1 == -1 || b2 == -1)
-                {
-                    std::cout << "shit\n";
-                    continue;
-                }
+                //if(l1 == -1 || l2 == -1 || b1 == -1 || b2 == -1)
+                //{
+                //    std::cout << "shit\n";
+                //    continue;
+                //}
 
                 AVector ul = qMesh->_psVertices[b1][l1].position;
                 AVector ur = qMesh->_psVertices[b2][l1].position;
                 AVector bl = qMesh->_psVertices[b1][l2].position;
                 AVector br = qMesh->_psVertices[b2][l2].position;
 
-                //std::cout << leftRatios[b] << "-" << bottomRatios[a] << " ";
-
-                AVector newPos = UtilityFunctions::GetCoordinateFromQuadrilateral(ul, ur, bl, br, leftRatios[b], bottomRatios[a]);
+                AVector newPos = UtilityFunctions::GetQuadrilateralPosition(ul, ur, bl, br, leftRatios[b], bottomRatios[a]);
 
                 _debugPoints.push_back(newPos);
                 tempVertices[a][b].position = newPos;
             }
         }
-        //std::cout << "\n\n";
     }
     qMesh->_psVertices = tempVertices;
 }

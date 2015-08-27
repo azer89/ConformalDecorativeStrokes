@@ -555,8 +555,6 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
     // Ugly conditional !
     if(_selectedIndex == -1 && curveLength > 50)
     {
-        // Create a new stroke
-
         _selectedPointVao.destroy();
 
         _leftLines.clear();
@@ -589,7 +587,6 @@ void StrokePainter::Draw()
         _constrainedPointsVao.release();
     }
     */
-
 
     if(SystemParams::show_mesh && _debugPointsVao.isCreated())
     {
