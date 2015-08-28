@@ -322,7 +322,7 @@ bool UtilityFunctions::DoesAPointLieOnALine(AVector pt, ALine ln)
     return false;
 }
 
-AVector UtilityFunctions::GetQUadrilateralPosition(AVector ul, AVector ur, AVector bl, AVector br, float verticalRatio, float horizontalRatio)
+AVector UtilityFunctions::GetQuadrilateralPosition(AVector ul, AVector ur, AVector bl, AVector br, float verticalRatio, float horizontalRatio)
 {
     AVector lDir = ul.DirectionTo(bl);
     AVector rDir = ur.DirectionTo(br);

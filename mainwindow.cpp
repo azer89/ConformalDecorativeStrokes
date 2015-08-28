@@ -22,21 +22,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionSetStrokeTexture,	 SIGNAL(triggered()),             this, SLOT(SetStrokeTexture()));
     connect(ui->actionSetCornerTexture,	 SIGNAL(triggered()),             this, SLOT(SetCornerTexture()));
+    connect(ui->textureAButton,          SIGNAL(clicked()),               this, SLOT(SetStrokeTexture()));
+    connect(ui->textureBButton,          SIGNAL(clicked()),               this, SLOT(SetCornerTexture()));
 
     animTimer = new QTimer(this);
     connect(animTimer, SIGNAL(timeout()), this, SLOT(AnimationThread()));
 
+    ui->textureAButton->setIcon(QIcon(SystemParams::stroke_texture_file.c_str()));
+    ui->textureAButton->setIconSize(ui->textureAButton->size());
+    ui->textureAButton->setText("");
 
-    // you need to edit GLWidget too
-    QString qFilenameA("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/g_01.png");
-    QPixmap imageA(qFilenameA);
-    imageA = imageA.scaled(ui->textureALabel->size());
-    ui->textureALabel->setPixmap(imageA);
-
-    QString qFilenameB("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/g_01.png");
-    QPixmap imageB(qFilenameB);
-    imageB = imageB.scaled(ui->textureBLabel->size());
-    ui->textureBLabel->setPixmap(imageB);
+    ui->textureBButton->setIcon(QIcon(SystemParams::corner_texture_file.c_str()));
+    ui->textureBButton->setIconSize(ui->textureBButton->size());
+    ui->textureBButton->setText("");
 }
 
 MainWindow::~MainWindow()
@@ -48,24 +46,29 @@ MainWindow::~MainWindow()
 // Stroke Texture
 void MainWindow::SetStrokeTexture()
 {
-    QString qFilename = QFileDialog::getOpenFileName(this, "Set Stroke Texture");
+    QString qFilename = QFileDialog::getOpenFileName(this,
+                                                     "Set Stroke Texture",
+                                                     "/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes");
     if(qFilename.isEmpty()) return;
 
-    QPixmap image(qFilename);
-    image = image.scaled(ui->textureALabel->size());
-    ui->textureALabel->setPixmap(image);
+    ui->textureAButton->setIcon(QIcon(qFilename));
+    ui->textureAButton->setIconSize(ui->textureAButton->size());
+
     ui->widget->GetGLWidget()->SetStrokeTexture(qFilename);
 }
 
 // Corner Texture
 void MainWindow::SetCornerTexture()
 {
-    QString qFilename = QFileDialog::getOpenFileName(this, "Set Corner Texture");
+    QString qFilename = QFileDialog::getOpenFileName(this,
+                                                     "Set Corner Texture",
+                                                     "/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes");
     if(qFilename.isEmpty()) return;
 
-    QPixmap image(qFilename);
-    image = image.scaled(ui->textureBLabel->size());
-    ui->textureBLabel->setPixmap(image);
+    ui->textureBButton->setIcon(QIcon(qFilename));
+    ui->textureBButton->setIconSize(ui->textureBButton->size());
+
+
     ui->widget->GetGLWidget()->SetCornerTexture(qFilename);
 }
 
@@ -82,8 +85,8 @@ void MainWindow::AnimationThread()
 
         if(this->ui->widget->GetGLWidget()->ShouldStop()  || duration > 300.0f)
         {
-            this->ui->widget->GetGLWidget()->MappingInterpolation();
-            this->ui->widget->GetGLWidget()->repaint();
+            //this->ui->widget->GetGLWidget()->MappingInterpolation();
+            //this->ui->widget->GetGLWidget()->repaint();
 
             ui->runningTimeLabel->setText("Complete in: " + QString::number(duration));
             ui->deltaLabel->setText("Delta: " + QString::number(ui->widget->GetGLWidget()->IterationDelta()));

@@ -11,6 +11,7 @@
 #include <QSvgGenerator>
 
 #include "VertexData.h"
+#include "SystemParams.h"
 
 GLWidget::GLWidget(QGLFormat format, QWidget *parent) :
     QGLWidget(format, parent),
@@ -60,10 +61,10 @@ void GLWidget::initializeGL()
     _sPainter = new StrokePainter();
     _sPainter->SetVertexDataHelper(_shaderProgram);
 
-    QString qFilenameA("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/g_01.png");
+    QString qFilenameA(SystemParams::stroke_texture_file.c_str());
     this->SetStrokeTexture(qFilenameA);
 
-    QString qFilenameB("/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/g_01.png");
+    QString qFilenameB(SystemParams::corner_texture_file.c_str());
     this->SetCornerTexture(qFilenameB);
 }
 

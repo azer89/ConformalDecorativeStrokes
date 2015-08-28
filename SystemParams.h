@@ -1,6 +1,9 @@
 #ifndef SYSTEMPARAMS_H
 #define SYSTEMPARAMS_H
 
+#include <iostream>
+//#include <cstring>
+
 class SystemParams
 {
 public:
@@ -20,6 +23,9 @@ public:
 
     static bool show_mesh;
     static bool show_texture;
+
+    static std::string stroke_texture_file;
+    static std::string corner_texture_file;
 
 };
 

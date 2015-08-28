@@ -19,3 +19,7 @@ bool SystemParams::enable_conformal_mapping = true;
 bool SystemParams::show_mesh = true;
 
 bool SystemParams::show_texture = false;
+
+std::string SystemParams::stroke_texture_file = "/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/g_01.png";
+
+std::string SystemParams::corner_texture_file = "/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes/g_01.png";

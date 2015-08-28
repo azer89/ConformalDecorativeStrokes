@@ -34,7 +34,7 @@ public:
     static AVector Rotate(AVector pt, float rad);
     static AVector Rotate(AVector pt, AVector centerPt, float rad);
 
-    static AVector GetQUadrilateralPosition(AVector ul, AVector ur, AVector bl, AVector br, float verticalRatio, float horizontalRatio);
+    static AVector GetQuadrilateralPosition(AVector ul, AVector ur, AVector bl, AVector br, float verticalRatio, float horizontalRatio);
 };
 
 #endif // UTILITYFUNCTIONS_H
