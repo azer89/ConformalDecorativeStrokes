@@ -19,6 +19,20 @@ public:
     QuadMesh();
     ~QuadMesh();
 
+    QuadMesh(AVector      leftStartPt,
+             AVector      leftEndPt,
+             AVector      rightStartPt,
+             AVector      rightEndPt,
+             AVector      sharpPt,
+             bool         isRightKite,
+             QuadMeshType quadMeshType);
+
+    QuadMesh(AVector      leftStartPt,
+             AVector      leftEndPt,
+             AVector      rightStartPt,
+             AVector      rightEndPt,
+             QuadMeshType quadMeshType);
+
     int GetWidth();
     int GetHeight();
 

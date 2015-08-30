@@ -7,6 +7,36 @@ QuadMesh::QuadMesh()
 {
 }
 
+QuadMesh::QuadMesh(AVector      leftStartPt,
+                   AVector      leftEndPt,
+                   AVector      rightStartPt,
+                   AVector      rightEndPt,
+                   AVector      sharpPt,
+                   bool         isRightKite,
+                   QuadMeshType quadMeshType)
+{
+    this->_leftStartPt  = leftStartPt;
+    this->_leftEndPt    = leftEndPt;
+    this->_rightStartPt = rightStartPt;
+    this->_rightEndPt   = rightEndPt;
+    this->_sharpPt      = sharpPt;
+    this->_isRightKite  = isRightKite;
+    this->_quadMeshType = quadMeshType;
+}
+
+QuadMesh::QuadMesh(AVector      leftStartPt,
+                   AVector      leftEndPt,
+                   AVector      rightStartPt,
+                   AVector      rightEndPt,
+                   QuadMeshType quadMeshType)
+{
+    this->_leftStartPt  = leftStartPt;
+    this->_leftEndPt    = leftEndPt;
+    this->_rightStartPt = rightStartPt;
+    this->_rightEndPt   = rightEndPt;
+    this->_quadMeshType = quadMeshType;
+}
+
 QuadMesh::~QuadMesh()
 {
 }

@@ -56,6 +56,8 @@ private:
     int                         _qMeshNumData;
     QOpenGLBuffer               _quadMeshesVbo;
     QOpenGLVertexArrayObject    _quadMeshesVao;
+    QVector3D                   _rectangleMeshesColor;
+    QVector3D                   _kiteMeshesColor;
 
     // texture
     std::vector<QImage>          _masterImages;
@@ -69,16 +71,20 @@ private:
     float _maxDist;
     QOpenGLBuffer               _selectedPointVbo;
     QOpenGLVertexArrayObject    _selectedPointVao;
+    QVector3D                   _selectedPointColor;
+    QVector3D                   _unselectedPointColor;
 
     // strokes
     std::vector<AVector>        _oriStrokeLines;
     QOpenGLBuffer               _oriStrokeLinesVbo;
     QOpenGLVertexArrayObject    _oriStrokeLinesVao;
+    QVector3D                   _oriStrokeColor;
 
     // middle spines
     std::vector<AVector>        _spineLines;       // resampled and simplified from strokeLines
     QOpenGLBuffer               _spineLinesVbo;
-    QOpenGLVertexArrayObject    _spineLinesVao;    
+    QOpenGLVertexArrayObject    _spineLinesVao;
+    QVector3D                   _spineLinesColor;
 
     // left lines of the strokes. I need these lines to calculate closest points on the borders
     std::vector<AVector>        _leftLines;
@@ -94,6 +100,7 @@ private:
     std::vector<AVector>        _constrainedPoints;
     QOpenGLBuffer               _constrainedPointsVbo;
     QOpenGLVertexArrayObject    _constrainedPointsVao;
+    QVector3D                   _constrainedPointColor;
 
     // debug points
     std::vector<AVector>        _debugPoints;

@@ -21,6 +21,17 @@ StrokePainter::StrokePainter() :
     _selectedIndex(-1),
     _maxDist(2.0f)
 {
+    _rectangleMeshesColor = QVector3D(0, 0, 0);
+    _kiteMeshesColor = QVector3D(0, 0, 1);
+
+    _selectedPointColor = QVector3D(0.5, 0.5, 1);
+    _unselectedPointColor = QVector3D(0, 0, 0);
+
+    _oriStrokeColor = QVector3D(0, 0, 0);
+
+    _spineLinesColor = QVector3D(0.5, 0.5, 1);
+
+    _constrainedPointColor = QVector3D(1, 0, 0);
 }
 
 StrokePainter::~StrokePainter()
@@ -93,9 +104,9 @@ void StrokePainter::CalculateInitialRibbon()
     CalculateLeftRightLines();
     CalculateKitesAndRectangles();
 
-    _vDataHelper->BuildLinesVertexData(_spineLines, &_spineLinesVbo, &_spineLinesVao, QVector3D(0.5, 0.5, 1));
-    _vDataHelper->BuildLinesVertexData(_leftLines, &_leftLinesVbo, &_leftLinesVao, QVector3D(0.5, 0.5, 1));
-    _vDataHelper->BuildLinesVertexData(_rightLines, &_rightLinesVbo, &_rightLinesVao, QVector3D(0.5, 0.5, 1));
+    _vDataHelper->BuildLinesVertexData(_spineLines, &_spineLinesVbo, &_spineLinesVao, _spineLinesColor);
+    //_vDataHelper->BuildLinesVertexData(_leftLines, &_leftLinesVbo, &_leftLinesVao, QVector3D(0.5, 0.5, 1));
+    //_vDataHelper->BuildLinesVertexData(_rightLines, &_rightLinesVbo, &_rightLinesVao, QVector3D(0.5, 0.5, 1));
 }
 
 void StrokePainter::CalculateSpines()
@@ -132,14 +143,7 @@ void StrokePainter::CalculateKitesAndRectangles()
                 AVector lStart = rMid + AVector(dir1.y, -dir1.x) * strokeWidth;
                 AVector lEnd = rMid + AVector(dir2.y, -dir2.x) * strokeWidth;
 
-                QuadMesh qMesh;
-                qMesh._leftStartPt  = lStart;
-                qMesh._leftEndPt    = lMid;
-                qMesh._rightStartPt = rMid;
-                qMesh._rightEndPt   = lEnd;
-                qMesh._sharpPt = lMid;
-                qMesh._isRightKite = true;
-                qMesh._quadMeshType = QuadMeshType::MESH_KITE;
+                QuadMesh qMesh(lStart, lMid, rMid, lEnd, lMid, true, QuadMeshType::MESH_KITE);
                 _quadMeshes.push_back(qMesh);
             }
             else if(rot1 < 0)
@@ -150,14 +154,7 @@ void StrokePainter::CalculateKitesAndRectangles()
                 AVector rStart = lMid + AVector(-dir1.y, dir1.x) * strokeWidth;
                 AVector rEnd  = lMid + AVector(-dir2.y, dir2.x) * strokeWidth;
 
-                QuadMesh qMesh;
-                qMesh._leftStartPt  = rStart;
-                qMesh._leftEndPt    = lMid;
-                qMesh._rightStartPt = rMid;
-                qMesh._rightEndPt   = rEnd;
-                qMesh._sharpPt = rMid;
-                qMesh._isRightKite = false;
-                qMesh._quadMeshType = QuadMeshType::MESH_KITE;
+                QuadMesh qMesh(rStart, lMid, rMid, rEnd, rMid, false, QuadMeshType::MESH_KITE);
                 _quadMeshes.push_back(qMesh);
             }
         }
@@ -187,22 +184,13 @@ void StrokePainter::CalculateKitesAndRectangles()
                 rightEnd = _leftLines[a+1] + rightDir * strokeWidth;
             }
 
-            QuadMesh qMesh;
-            qMesh._leftStartPt  = _leftLines[a];
-            qMesh._leftEndPt    = leftEnd;
-            qMesh._rightStartPt = _rightLines[a];
-            qMesh._rightEndPt   = rightEnd;
-            qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
+            QuadMesh qMesh(_leftLines[a], leftEnd, _rightLines[a], rightEnd, QuadMeshType::MESH_RECTANGLE);
             _quadMeshes.push_back(qMesh);
         }
         else if(a == 0 && _spineLines.size() == 2)  // START
         {
-            QuadMesh qMesh;
-            qMesh._leftStartPt  = _leftLines[a];
-            qMesh._leftEndPt    = _leftLines[a+1];
-            qMesh._rightStartPt = _rightLines[a];
-            qMesh._rightEndPt   = _rightLines[a+1];
-            qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
+
+            QuadMesh qMesh(_leftLines[a], _leftLines[a+1], _rightLines[a], _rightLines[a+1], QuadMeshType::MESH_RECTANGLE);
             _quadMeshes.push_back(qMesh);
         }
 
@@ -229,12 +217,7 @@ void StrokePainter::CalculateKitesAndRectangles()
                 rightStart = _leftLines[a] + rightDir * strokeWidth;
             }
 
-            QuadMesh qMesh;
-            qMesh._leftStartPt  = leftStart;
-            qMesh._leftEndPt    = _leftLines[a+1];
-            qMesh._rightStartPt = rightStart;
-            qMesh._rightEndPt   = _rightLines[a+1];
-            qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
+            QuadMesh qMesh(leftStart, _leftLines[a+1], rightStart, _rightLines[a+1], QuadMeshType::MESH_RECTANGLE);
             _quadMeshes.push_back(qMesh);
         }
 
@@ -280,12 +263,7 @@ void StrokePainter::CalculateKitesAndRectangles()
                 rightEnd = _leftLines[a+1] + rightDir * strokeWidth;
             }
 
-            QuadMesh qMesh;
-            qMesh._leftStartPt  = leftStart;
-            qMesh._leftEndPt    = leftEnd;
-            qMesh._rightStartPt = rightStart;
-            qMesh._rightEndPt   = rightEnd;
-            qMesh._quadMeshType = QuadMeshType::MESH_RECTANGLE;
+            QuadMesh qMesh(leftStart, leftEnd, rightStart, rightEnd, QuadMeshType::MESH_RECTANGLE);
             _quadMeshes.push_back(qMesh);
         }
     }
@@ -299,8 +277,8 @@ void StrokePainter::CalculateVertices()
         CalculateVertices(&_quadMeshes[a]);
     }
     _qMeshNumData = 0;
-    _vDataHelper->BuildPointsVertexData(_constrainedPoints, &_constrainedPointsVbo, &_constrainedPointsVao, QVector3D(1, 0, 0));
-    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
+    _vDataHelper->BuildPointsVertexData(_constrainedPoints, &_constrainedPointsVbo, &_constrainedPointsVao, _constrainedPointColor);
+    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectangleMeshesColor, _kiteMeshesColor);
 }
 
 void StrokePainter::CalculateVertices(QuadMesh* qMesh)
@@ -453,7 +431,7 @@ void StrokePainter::ConformalMappingOneStepSimple()
     _cMapping->ConformalMappingOneStepSimple(_quadMeshes);
 
     _qMeshNumData = 0;
-    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
+    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectangleMeshesColor, _kiteMeshesColor);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[0], &_qmTexVaos[0], _qmTexNumbers[0], QuadMeshType::MESH_RECTANGLE);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[1], &_qmTexVaos[1], _qmTexNumbers[1], QuadMeshType::MESH_KITE);
 }
@@ -470,7 +448,7 @@ void StrokePainter::ConformalMappingOneStep()
     //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0.25, 0));
 
     _qMeshNumData = 0;
-    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
+    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectangleMeshesColor, _kiteMeshesColor);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[0], &_qmTexVaos[0], _qmTexNumbers[0], QuadMeshType::MESH_RECTANGLE);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[1], &_qmTexVaos[1], _qmTexNumbers[1], QuadMeshType::MESH_KITE);
 }
@@ -489,7 +467,7 @@ void StrokePainter::MappingInterpolation()
     //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0.25, 0));
 
     _qMeshNumData = 0;
-    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, QVector3D(0, 0, 0), QVector3D(0, 0, 1));
+    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectangleMeshesColor, _kiteMeshesColor);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[0], &_qmTexVaos[0], _qmTexNumbers[0], QuadMeshType::MESH_RECTANGLE);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[1], &_qmTexVaos[1], _qmTexNumbers[1], QuadMeshType::MESH_KITE);
 }
@@ -508,7 +486,7 @@ void StrokePainter::mousePressEvent(float x, float y)
     if(_selectedIndex != -1)
     {
         // Selection mode: If we get a point
-        _vDataHelper->BuildPointsVertexData(_spineLines, &_selectedPointVbo, &_selectedPointVao, _selectedIndex, QVector3D(0, 0, 0), QVector3D(0.5, 0.5, 1));
+        _vDataHelper->BuildPointsVertexData(_spineLines, &_selectedPointVbo, &_selectedPointVao, _selectedIndex, _unselectedPointColor, _selectedPointColor);
     }
     else
     {        
@@ -532,14 +510,14 @@ void StrokePainter::mouseMoveEvent(float x, float y)
         CalculateVertices();
         ConformalMappingOneStep();
 
-        _vDataHelper->BuildPointsVertexData(_spineLines, &_selectedPointVbo, &_selectedPointVao, _selectedIndex, QVector3D(0, 0, 0), QVector3D(0.5, 0.5, 1));
+        _vDataHelper->BuildPointsVertexData(_spineLines, &_selectedPointVbo, &_selectedPointVao, _selectedIndex, _unselectedPointColor, _selectedPointColor);
 
     }
     else
     {
         // Draw mode
         _oriStrokeLines.push_back(AVector(x, y));
-        _vDataHelper->BuildLinesVertexData(_oriStrokeLines, &_oriStrokeLinesVbo, &_oriStrokeLinesVao, QVector3D(0, 0, 0));
+        _vDataHelper->BuildLinesVertexData(_oriStrokeLines, &_oriStrokeLinesVbo, &_oriStrokeLinesVao, _oriStrokeColor);
     }
 }
 
