@@ -5,6 +5,9 @@
 #include <QVector2D>
 #include <QVector3D>
 
+/**
+ * See related paper: "Warping Pictures Nicely"
+ */
 struct PlusSignVertex
 {
     AVector position;
@@ -13,7 +16,7 @@ struct PlusSignVertex
 
     float armLength;
     float angle;
-    bool shouldMove;
+    bool shouldMove;                // cannot move at all
     bool midVerticalConstrained;    // is fixed to a junction rib
     bool midHorizontalConstrained;  // is fixed to a spine
 

@@ -6,6 +6,11 @@
 #include <limits>
 #include <cmath>
 
+/**
+ * A struct to represent:
+ *     1. A Finite Lines
+ *     2. A Ray with a start point and a direction
+ */
 struct ALine
 {
 public:

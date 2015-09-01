@@ -5,6 +5,11 @@
 #include <cmath>
 #include <iostream> // for abs (?)
 
+/**
+ * A struct to represent:
+ *     1. A Point
+ *     2. A Vector (direction only)
+ */
 struct AVector
 {
 public:
