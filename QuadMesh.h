@@ -34,6 +34,7 @@ public:
              QuadMeshType quadMeshType);
 
     int GetWidth();
+
     int GetHeight();
 
     std::vector<AVector> GetABoundary(int index, bool isXUnchanged, bool isOri);

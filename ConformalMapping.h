@@ -3,6 +3,16 @@
 
 #include "QuadMesh.h"
 
+
+enum NeighborDirection
+{
+    ND_LEFT = 0,
+    ND_RIGHT = 1,
+    ND_UP = 2,
+    ND_DOWN = 3,
+};
+
+
 /**
  * Note that the iteration uses QTimer rather than a loop because of a "interactive animation" decision.
  * So you need to see mainwindow.cpp to see my timer details.
@@ -36,7 +46,10 @@ public:
 
 private:
     void ConformalMappingOneStepSimple(QuadMesh *qMesh);
-    void ConformalMappingOneStep(QuadMesh *qMesh);
+
+    void ConformalMappingOneStep(QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh);
+
+    PlusSignVertex GetNeighbor(int x, int y, NeighborDirection dir, QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh);
 
     void MappingInterpolation(QuadMesh *qMesh);
 

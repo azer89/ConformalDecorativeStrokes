@@ -102,7 +102,7 @@ public:
 
     PlusSignVertex()
     {
-        this->position = AVector(0, 0);
+        this->position = AVector(-1, -1);
         this->texCoord = QVector2D(0, 0);
         this->color = QVector3D(0, 0, 0);
 
@@ -111,6 +111,19 @@ public:
         this->shouldMove = true;
         this->midVerticalConstrained = false;
         this->midHorizontalConstrained = false;
+    }
+
+    bool IsValid()
+    {
+        float eps_val = std::numeric_limits<float>::epsilon() * 1000;
+
+        if(std::abs(this->position.x + 1.0f) < eps_val &&
+           std::abs(this->position.y + 1.0f) < eps_val)
+        {
+            return false;
+        }
+
+        return true;
     }
 };
 

@@ -99,7 +99,21 @@ void ConformalMapping::ConformalMappingOneStep(std::vector<QuadMesh>& quadMeshes
     {
         if(quadMeshes[a]._quadMeshType == QuadMeshType::MESH_KITE)
         {
-            ConformalMappingOneStep(&quadMeshes[a]);
+            QuadMesh* prevQMesh = 0;
+            QuadMesh* curQMesh = &quadMeshes[a];
+            QuadMesh* nextQMesh = 0;
+
+            if(a > 0)
+            {
+                prevQMesh = &quadMeshes[a - 1];
+            }
+
+            if(a < quadMeshes.size() - 1)
+            {
+                nextQMesh = &quadMeshes[a + 1];
+            }
+
+            ConformalMappingOneStep(prevQMesh, curQMesh, nextQMesh);
         }
     }
 }
@@ -115,11 +129,70 @@ void ConformalMapping::MappingInterpolation(std::vector<QuadMesh>& quadMeshes)
     }
 }
 
-void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
+PlusSignVertex ConformalMapping::GetNeighbor(int x, int y, NeighborDirection dir, QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh)
 {
-    std::vector<std::vector<PlusSignVertex>> tempVertices = qMesh->_psVertices;
-    int meshWidth = qMesh->GetWidth();
-    int meshHeight = qMesh->GetHeight();
+    // Implement this !!!
+
+    int meshWidth = curQMesh->GetWidth();
+    int meshHeight = curQMesh->GetHeight();
+
+    std::vector<std::vector<PlusSignVertex>> prevVertices = prevQMesh->_psVertices;
+    std::vector<std::vector<PlusSignVertex>> curVertices  = curQMesh->_psVertices;
+    std::vector<std::vector<PlusSignVertex>> nextVertices = nextQMesh->_psVertices;
+
+    if(dir == NeighborDirection::ND_LEFT)
+    {
+        if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+        {
+
+        }
+        else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
+        {
+
+        }
+    }
+    else if(dir == NeighborDirection::ND_RIGHT)
+    {
+        if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+        {
+
+        }
+        else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
+        {
+
+        }
+    }
+    else if(dir == NeighborDirection::ND_UP)
+    {
+        if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+        {
+
+        }
+        else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
+        {
+
+        }
+    }
+    else if(dir == NeighborDirection::ND_DOWN)
+    {
+        if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+        {
+
+        }
+        else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
+        {
+
+        }
+    }
+
+    return PlusSignVertex();
+}
+
+void ConformalMapping::ConformalMappingOneStep(QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh)
+{
+    std::vector<std::vector<PlusSignVertex>> tempVertices = curQMesh->_psVertices;
+    int meshWidth = curQMesh->GetWidth();
+    int meshHeight = curQMesh->GetHeight();
 
     for(int a = 0; a < meshWidth; a++)
     {
@@ -134,11 +207,17 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
             float sumArmAngles = 0;
             int numNeighbor = 0;
 
+            // Neighbors
+            PlusSignVertex lVertex;
+            PlusSignVertex rVertex;
+            PlusSignVertex uVertex;
+            PlusSignVertex bVertex;
+
             // have left and right
             if(a > 0 && a < meshWidth - 1)
             {
-                PlusSignVertex lVertex = tempVertices[a - 1][b];
-                PlusSignVertex rVertex = tempVertices[a + 1][b];
+                lVertex = tempVertices[a - 1][b];
+                rVertex = tempVertices[a + 1][b];
 
                 // left
                 sumPositions += lVertex.position;
@@ -156,7 +235,7 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
             // have left only
             else if(a > 0)
             {
-                PlusSignVertex lVertex = tempVertices[a - 1][b];
+                lVertex = tempVertices[a - 1][b];
                 AVector fakeNeighbor = lVertex.position + UtilityFunctions::Rotate( AVector(1, 0) * lVertex.armLength, lVertex.angle);
                 sumPositions += fakeNeighbor;
                 sumArmLengths += curPos.Distance(lVertex.position);
@@ -167,7 +246,7 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
             // have right only
             else if(a < meshWidth - 1)
             {
-                PlusSignVertex rVertex = tempVertices[a + 1][b];
+                rVertex = tempVertices[a + 1][b];
                 AVector fakeNeighbor = rVertex.position + UtilityFunctions::Rotate( AVector(-1, 0) * rVertex.armLength, rVertex.angle);
 
                 sumPositions += fakeNeighbor;
@@ -180,8 +259,8 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
             // have up and down
             if(b > 0 && b < meshHeight - 1)
             {
-                PlusSignVertex uVertex = tempVertices[a][b - 1];
-                PlusSignVertex bVertex = tempVertices[a][b + 1];
+                uVertex = tempVertices[a][b - 1];
+                bVertex = tempVertices[a][b + 1];
 
                 // up
                 sumPositions += uVertex.position;
@@ -198,7 +277,7 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
             // have up only
             else if(b > 0)
             {
-                PlusSignVertex uVertex = tempVertices[a][b - 1];
+                uVertex = tempVertices[a][b - 1];
                 AVector fakeNeighbor = uVertex.position + UtilityFunctions::Rotate( AVector(0, 1) * uVertex.armLength, uVertex.angle);
                 sumPositions += fakeNeighbor;
                 sumArmLengths += curPos.Distance(uVertex.position);
@@ -209,7 +288,8 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
             // have down only
             else if(b < meshHeight - 1)
             {
-                PlusSignVertex bVertex = tempVertices[a][b + 1];
+                bVertex = tempVertices[a][b + 1];
+
                 AVector fakeNeighbor = bVertex.position + UtilityFunctions::Rotate( AVector(0, -1) * bVertex.armLength, bVertex.angle);
                 sumPositions += fakeNeighbor;
                 sumArmLengths += curPos.Distance(bVertex.position);
@@ -227,7 +307,7 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
 
             if(numNeighbor < 4)
             {
-                tempVertices[a][b].position = qMesh->GetClosestPointFromBorders(sumPositions);
+                tempVertices[a][b].position = curQMesh->GetClosestPointFromBorders(sumPositions);
             }
             else
             {
@@ -240,10 +320,10 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh *qMesh)
     for(int a = 0; a < meshWidth; a++)
     {
         for(int b = 0; b < meshHeight; b++)
-            { sumDist += qMesh->_psVertices[a][b].position.Distance(tempVertices[a][b].position); }
+            { sumDist += curQMesh->_psVertices[a][b].position.Distance(tempVertices[a][b].position); }
     }
     _iterDist += sumDist;
-    qMesh->_psVertices = tempVertices;
+    curQMesh->_psVertices = tempVertices;
 }
 
 void ConformalMapping::MappingInterpolation(QuadMesh *qMesh)
