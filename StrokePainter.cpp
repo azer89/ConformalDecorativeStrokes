@@ -294,8 +294,8 @@ void StrokePainter::CalculateVertices(QuadMesh* qMesh)
             pt = pt + hVec * xFactor;
 
             bool shouldMove = true;
-            bool junctionRibsConstrained = false;
-            bool spinesConstrained = false;
+            //bool junctionRibsConstrained = false;
+            //bool spinesConstrained = false;
 
             if(qMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE) // RECTANGLE
             {
@@ -343,10 +343,9 @@ void StrokePainter::CalculateVertices(QuadMesh* qMesh)
                         shouldMove = false;
                     }
                 }
-
             }
 
-            PlusSignVertex psVert = PlusSignVertex(pt, shouldMove, junctionRibsConstrained, spinesConstrained);
+            PlusSignVertex psVert = PlusSignVertex(pt, shouldMove/*, junctionRibsConstrained, spinesConstrained*/);
             columnVertices.push_back(psVert);
         }
         qMesh->_psVertices.push_back(columnVertices);

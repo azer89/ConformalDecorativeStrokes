@@ -17,8 +17,8 @@ struct PlusSignVertex
     float armLength;
     float angle;
     bool shouldMove;                // cannot move at all
-    bool midVerticalConstrained;    // is fixed to a junction rib
-    bool midHorizontalConstrained;  // is fixed to a spine
+    //bool midVerticalConstrained;    // is fixed to a junction rib
+    //bool midHorizontalConstrained;  // is fixed to a spine
 
     bool isValid;
 
@@ -33,8 +33,8 @@ public:
         this->armLength = 0;
         this->angle = 0;
         this->shouldMove = true;
-        this->midVerticalConstrained = false;
-        this->midHorizontalConstrained = false;
+        //this->midVerticalConstrained = false;
+        //this->midHorizontalConstrained = false;
 
         this->isValid = true;
     }
@@ -48,8 +48,8 @@ public:
         this->armLength = 0;
         this->angle = 0;
         this->shouldMove = true;
-        this->midVerticalConstrained = false;
-        this->midHorizontalConstrained = false;
+        //this->midVerticalConstrained = false;
+        //this->midHorizontalConstrained = false;
 
         this->isValid = true;
     }
@@ -63,13 +63,28 @@ public:
         this->armLength = 0;
         this->angle = 0;
         this->shouldMove = true;
-        this->midVerticalConstrained = false;
-        this->midHorizontalConstrained = false;
+        //this->midVerticalConstrained = false;
+        //this->midHorizontalConstrained = false;
 
         this->isValid = true;
     }
 
-    PlusSignVertex(AVector position, bool shouldMove, bool midVerticalConstrained, bool midHorizontalConstrained)
+    /*PlusSignVertex(AVector position, bool shouldMove, bool midVerticalConstrained, bool midHorizontalConstrained)
+    {
+        this->position = position;
+        this->texCoord = QVector2D();
+        this->color = QVector3D();
+
+        this->armLength = 0;
+        this->angle = 0;
+        this->shouldMove = shouldMove;
+        //this->midVerticalConstrained = midVerticalConstrained;
+        //this->midHorizontalConstrained = midHorizontalConstrained;
+
+        this->isValid = true;
+    }*/
+
+    /*PlusSignVertex(AVector position, bool shouldMove, bool midVerticalConstrained)
     {
         this->position = position;
         this->texCoord = QVector2D();
@@ -79,25 +94,10 @@ public:
         this->angle = 0;
         this->shouldMove = shouldMove;
         this->midVerticalConstrained = midVerticalConstrained;
-        this->midHorizontalConstrained = midHorizontalConstrained;
-
-        this->isValid = true;
-    }
-
-    PlusSignVertex(AVector position, bool shouldMove, bool midVerticalConstrained)
-    {
-        this->position = position;
-        this->texCoord = QVector2D();
-        this->color = QVector3D();
-
-        this->armLength = 0;
-        this->angle = 0;
-        this->shouldMove = shouldMove;
-        this->midVerticalConstrained = midVerticalConstrained;
         this->midHorizontalConstrained = false;
 
         this->isValid = true;
-    }
+    }*/
 
     PlusSignVertex(AVector position, bool shouldMove)
     {
@@ -108,8 +108,8 @@ public:
         this->armLength = 0;
         this->angle = 0;
         this->shouldMove = shouldMove;
-        this->midVerticalConstrained = false;
-        this->midHorizontalConstrained = false;
+        //this->midVerticalConstrained = false;
+        //this->midHorizontalConstrained = false;
 
         this->isValid = true;
     }
@@ -123,8 +123,8 @@ public:
         this->armLength = 0;
         this->angle = 0;
         this->shouldMove = true;
-        this->midVerticalConstrained = false;
-        this->midHorizontalConstrained = false;
+        //this->midVerticalConstrained = false;
+        //this->midHorizontalConstrained = false;
 
         this->isValid = false;
     }

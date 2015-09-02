@@ -33,35 +33,33 @@ void ConformalMapping::ConformalMappingOneStepSimple(QuadMesh *qMesh)
     {
         for(int b = 0; b < meshHeight; b++)
         {
-            if(!tempVertices[a][b].shouldMove)
-                { continue; }
+            if(!tempVertices[a][b].shouldMove) { continue; }
 
             AVector sumPositions(0, 0);
             int numNeighbor = 0;
 
-            // left
-            if(a > 0)
+            if(a > 0) // left
             {
                 sumPositions += tempVertices[a - 1][b].position;
                 numNeighbor++;
             }
 
-            // right
-            if(a < meshWidth - 1)
+
+            if(a < meshWidth - 1) // right
             {
                 sumPositions = sumPositions + tempVertices[a + 1][b].position;
                 numNeighbor++;
             }
 
-            // up
-            if(b > 0)
+
+            if(b > 0) // up
             {
                 sumPositions += tempVertices[a][b - 1].position;
                 numNeighbor++;
             }
 
-            // bottom
-            if(b < meshHeight - 1)
+
+            if(b < meshHeight - 1) // bottom
             {
                 sumPositions += tempVertices[a][b + 1].position;
                 numNeighbor++;
@@ -69,14 +67,8 @@ void ConformalMapping::ConformalMappingOneStepSimple(QuadMesh *qMesh)
 
             sumPositions  = sumPositions / (float)numNeighbor;
 
-            if(numNeighbor < 4)
-            {
-                tempVertices[a][b].position = qMesh->GetClosestPointFromBorders(sumPositions);
-            }
-            else
-            {
-                tempVertices[a][b].position = sumPositions;
-            }
+            if(numNeighbor < 4) { tempVertices[a][b].position = qMesh->GetClosestPointFromBorders(sumPositions); }
+            else { tempVertices[a][b].position = sumPositions; }
         }
     }
 
@@ -99,21 +91,21 @@ void ConformalMapping::ConformalMappingOneStep(std::vector<QuadMesh>& quadMeshes
     {
         //if(quadMeshes[a]._quadMeshType == QuadMeshType::MESH_KITE)
         //{
-            QuadMesh* prevQMesh = 0;
-            QuadMesh* curQMesh = &quadMeshes[a];
-            QuadMesh* nextQMesh = 0;
+        QuadMesh* prevQMesh = 0;
+        QuadMesh* curQMesh = &quadMeshes[a];
+        QuadMesh* nextQMesh = 0;
 
-            if(a > 0)
-            {
-                prevQMesh = &quadMeshes[a - 1];
-            }
+        if(a > 0)
+        {
+            prevQMesh = &quadMeshes[a - 1];
+        }
 
-            if(a < quadMeshes.size() - 1)
-            {
-                nextQMesh = &quadMeshes[a + 1];
-            }
+        if(a < quadMeshes.size() - 1)
+        {
+            nextQMesh = &quadMeshes[a + 1];
+        }
 
-            ConformalMappingOneStep(prevQMesh, curQMesh, nextQMesh);
+        ConformalMappingOneStep(prevQMesh, curQMesh, nextQMesh);
         //}
     }
 }
