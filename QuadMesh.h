@@ -51,7 +51,7 @@ public:
     AVector _rightEndPt;
 
     QuadMeshType _quadMeshType;
-    AVector _sharpPt; // for kite only
+    AVector _innerConcavePt; // for kite only
     bool _isRightKite; // a stroke which turns right
 
     // movable vertices
@@ -59,6 +59,10 @@ public:
 
     // original vertices (we do not apply any conformal mapping)
     std::vector<std::vector<PlusSignVertex>> _opsVertices;
+
+    //std::vector<std::vector<PlusSignVertex>> _tempVertices;
+    AVector sharpPt() const;
+    void setSharpPt(const AVector &sharpPt);
 };
 
 #endif // QUADMESH_H

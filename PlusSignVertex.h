@@ -20,6 +20,8 @@ struct PlusSignVertex
     bool midVerticalConstrained;    // is fixed to a junction rib
     bool midHorizontalConstrained;  // is fixed to a spine
 
+    bool isValid;
+
 public:
 
     PlusSignVertex(AVector position, QVector2D texCoord, QVector3D color)
@@ -33,6 +35,8 @@ public:
         this->shouldMove = true;
         this->midVerticalConstrained = false;
         this->midHorizontalConstrained = false;
+
+        this->isValid = true;
     }
 
     PlusSignVertex(AVector position, QVector2D texCoord)
@@ -46,6 +50,8 @@ public:
         this->shouldMove = true;
         this->midVerticalConstrained = false;
         this->midHorizontalConstrained = false;
+
+        this->isValid = true;
     }
 
     PlusSignVertex(AVector position)
@@ -59,6 +65,8 @@ public:
         this->shouldMove = true;
         this->midVerticalConstrained = false;
         this->midHorizontalConstrained = false;
+
+        this->isValid = true;
     }
 
     PlusSignVertex(AVector position, bool shouldMove, bool midVerticalConstrained, bool midHorizontalConstrained)
@@ -72,6 +80,8 @@ public:
         this->shouldMove = shouldMove;
         this->midVerticalConstrained = midVerticalConstrained;
         this->midHorizontalConstrained = midHorizontalConstrained;
+
+        this->isValid = true;
     }
 
     PlusSignVertex(AVector position, bool shouldMove, bool midVerticalConstrained)
@@ -85,6 +95,8 @@ public:
         this->shouldMove = shouldMove;
         this->midVerticalConstrained = midVerticalConstrained;
         this->midHorizontalConstrained = false;
+
+        this->isValid = true;
     }
 
     PlusSignVertex(AVector position, bool shouldMove)
@@ -98,6 +110,8 @@ public:
         this->shouldMove = shouldMove;
         this->midVerticalConstrained = false;
         this->midHorizontalConstrained = false;
+
+        this->isValid = true;
     }
 
     PlusSignVertex()
@@ -111,10 +125,14 @@ public:
         this->shouldMove = true;
         this->midVerticalConstrained = false;
         this->midHorizontalConstrained = false;
+
+        this->isValid = false;
     }
 
     bool IsValid()
     {
+        return this->isValid;
+        /*
         float eps_val = std::numeric_limits<float>::epsilon() * 1000;
 
         if(std::abs(this->position.x + 1.0f) < eps_val &&
@@ -124,6 +142,7 @@ public:
         }
 
         return true;
+        */
     }
 };
 

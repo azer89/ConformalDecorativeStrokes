@@ -135,26 +135,24 @@ void StrokePainter::CalculateKitesAndRectangles()
             AVector dir2 = curLine.Direction().Norm();
 
             float rot1 = UtilityFunctions::GetRotation(dir1, dir2);
-            if(rot1 > 0)
+            if(rot1 > 0) // turn right: positive rotation
             {
-                // turn right: positive rotation
-                AVector lMid = _leftLines[a];
-                AVector rMid = _rightLines[a];
-                AVector lStart = rMid + AVector(dir1.y, -dir1.x) * strokeWidth;
-                AVector lEnd = rMid + AVector(dir2.y, -dir2.x) * strokeWidth;
-
-                QuadMesh qMesh(lStart, lMid, rMid, lEnd, lMid, true, QuadMeshType::MESH_KITE);
+                QuadMesh qMesh(_rightLines[a] + AVector(dir1.y, -dir1.x) * strokeWidth, /* lStart */
+                               _leftLines[a],                                           /* lMid */
+                               _rightLines[a],                                          /* rMid */
+                               _rightLines[a] + AVector(dir2.y, -dir2.x) * strokeWidth, /* lEnd */
+                               _leftLines[a],                                           /* lMid  */
+                               true, QuadMeshType::MESH_KITE);
                 _quadMeshes.push_back(qMesh);
             }
-            else if(rot1 < 0)
+            else if(rot1 < 0) // turn left: negative rotation
             {
-                // turn left: negative rotation
-                AVector lMid = _leftLines[a];
-                AVector rMid = _rightLines[a];
-                AVector rStart = lMid + AVector(-dir1.y, dir1.x) * strokeWidth;
-                AVector rEnd  = lMid + AVector(-dir2.y, dir2.x) * strokeWidth;
-
-                QuadMesh qMesh(rStart, lMid, rMid, rEnd, rMid, false, QuadMeshType::MESH_KITE);
+                QuadMesh qMesh(_leftLines[a] + AVector(-dir1.y, dir1.x) * strokeWidth, /* rStart */
+                               _leftLines[a],                                          /* lMid */
+                               _rightLines[a],                                         /* rMid */
+                               _leftLines[a] + AVector(-dir2.y, dir2.x) * strokeWidth, /* rEnd */
+                               _rightLines[a],                                         /* rMid */
+                               false, QuadMeshType::MESH_KITE);
                 _quadMeshes.push_back(qMesh);
             }
         }
@@ -171,29 +169,19 @@ void StrokePainter::CalculateKitesAndRectangles()
 
             AVector leftEnd = _leftLines[a+1];
             AVector rightEnd = _rightLines[a+1];
-            if(rot > 0)
-            {
-                // turn right: positive rotation
-                AVector leftDir(dir1.y, -dir1.x);
-                leftEnd = _rightLines[a+1] + leftDir * strokeWidth;
-            }
-            else if(rot < 0)
-            {
-                // turn left: negative rotation
-                AVector rightDir(-dir1.y, dir1.x);
-                rightEnd = _leftLines[a+1] + rightDir * strokeWidth;
-            }
+            if(rot > 0)      // turn right: positive rotation
+                { leftEnd = _rightLines[a+1] + AVector(dir1.y, -dir1.x) * strokeWidth; /* leftDir */ }
+            else if(rot < 0) // turn left: negative rotation
+                { rightEnd = _leftLines[a+1] + AVector(-dir1.y, dir1.x) * strokeWidth; /* rightDir */ }
 
             QuadMesh qMesh(_leftLines[a], leftEnd, _rightLines[a], rightEnd, QuadMeshType::MESH_RECTANGLE);
             _quadMeshes.push_back(qMesh);
         }
         else if(a == 0 && _spineLines.size() == 2)  // START
         {
-
             QuadMesh qMesh(_leftLines[a], _leftLines[a+1], _rightLines[a], _rightLines[a+1], QuadMeshType::MESH_RECTANGLE);
             _quadMeshes.push_back(qMesh);
         }
-
         else if(a == _spineLines.size() - 2 && _spineLines.size() > 2) // END
         {
             ALine prevLine(_spineLines[a-1], _spineLines[a]);
@@ -204,23 +192,14 @@ void StrokePainter::CalculateKitesAndRectangles()
 
             AVector leftStart = _leftLines[a];
             AVector rightStart = _rightLines[a];
-            if(rot > 0)
-            {
-                // turn right: positive rotation
-                AVector leftDir(dir2.y, -dir2.x);
-                leftStart = _rightLines[a] + leftDir * strokeWidth;
-            }
-            else if(rot < 0)
-            {
-                // turn left: negative rotation
-                AVector rightDir(-dir2.y, dir2.x);
-                rightStart = _leftLines[a] + rightDir * strokeWidth;
-            }
+            if(rot > 0)      // turn right: positive rotation
+                { leftStart = _rightLines[a] + AVector(dir2.y, -dir2.x) * strokeWidth; /* leftDir */ }
+            else if(rot < 0) // turn left: negative rotation
+                { rightStart = _leftLines[a] + AVector(-dir2.y, dir2.x) * strokeWidth; /* rightDir */ }
 
             QuadMesh qMesh(leftStart, _leftLines[a+1], rightStart, _rightLines[a+1], QuadMeshType::MESH_RECTANGLE);
             _quadMeshes.push_back(qMesh);
         }
-
         else if(a > 0)  // MIDDLE
         {
             ALine prevLine(_spineLines[a-1], _spineLines[a]);
@@ -234,34 +213,20 @@ void StrokePainter::CalculateKitesAndRectangles()
             float rot1 = UtilityFunctions::GetRotation(dir1, dir2);
             float rot2 = UtilityFunctions::GetRotation(dir2, dir3);
 
-            AVector leftStart = _leftLines[a];
+            AVector leftStart  = _leftLines[a];
             AVector rightStart = _rightLines[a];
-            AVector leftEnd = _leftLines[a+1];
-            AVector rightEnd = _rightLines[a+1];
+            AVector leftEnd    = _leftLines[a+1];
+            AVector rightEnd   = _rightLines[a+1];
 
-            // start
-            if(rot1 > 0)
-            {
-                AVector leftDir(dir2.y, -dir2.x);
-                leftStart = _rightLines[a] + leftDir * strokeWidth;
-            }
+            if(rot1 > 0) // start
+                { leftStart = _rightLines[a] + AVector(dir2.y, -dir2.x) * strokeWidth; /* leftDir */ }
             else if(rot1 < 0)
-            {
-                AVector rightDir(-dir2.y, dir2.x);
-                rightStart = _leftLines[a] + rightDir * strokeWidth;
-            }
+                { rightStart = _leftLines[a] + AVector(-dir2.y, dir2.x) * strokeWidth; /* rightDir */ }
 
-            // end
-            if(rot2 > 0)
-            {
-                AVector leftDir(dir2.y, -dir2.x);
-                leftEnd = _rightLines[a+1] + leftDir * strokeWidth;
-            }
+            if(rot2 > 0) // end
+                { leftEnd = _rightLines[a+1] + AVector(dir2.y, -dir2.x) * strokeWidth; /* leftDir */ }
             else if(rot2 < 0)
-            {
-                AVector rightDir(-dir2.y, dir2.x);
-                rightEnd = _leftLines[a+1] + rightDir * strokeWidth;
-            }
+                { rightEnd = _leftLines[a+1] + AVector(-dir2.y, dir2.x) * strokeWidth; /* rightDir */ }
 
             QuadMesh qMesh(leftStart, leftEnd, rightStart, rightEnd, QuadMeshType::MESH_RECTANGLE);
             _quadMeshes.push_back(qMesh);
@@ -361,7 +326,7 @@ void StrokePainter::CalculateVertices(QuadMesh* qMesh)
             {
                 if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE) // KITE
                 {
-                    if(pt.Distance(qMesh->_sharpPt) < std::numeric_limits<float>::epsilon() * 100)
+                    if(pt.Distance(qMesh->_innerConcavePt) < std::numeric_limits<float>::epsilon() * 100)
                     {
                         _constrainedPoints.push_back(pt);
                         shouldMove = false;

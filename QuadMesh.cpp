@@ -19,7 +19,7 @@ QuadMesh::QuadMesh(AVector      leftStartPt,
     this->_leftEndPt    = leftEndPt;
     this->_rightStartPt = rightStartPt;
     this->_rightEndPt   = rightEndPt;
-    this->_sharpPt      = sharpPt;
+    this->_innerConcavePt      = sharpPt;
     this->_isRightKite  = isRightKite;
     this->_quadMeshType = quadMeshType;
 }
@@ -86,3 +86,13 @@ AVector QuadMesh::GetClosestPointFromBorders(AVector pt)
     }
     return closestPt;
 }
+AVector QuadMesh::sharpPt() const
+{
+    return _innerConcavePt;
+}
+
+void QuadMesh::setSharpPt(const AVector &sharpPt)
+{
+    _innerConcavePt = sharpPt;
+}
+

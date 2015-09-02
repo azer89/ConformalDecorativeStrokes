@@ -6,10 +6,10 @@
 
 enum NeighborDirection
 {
-    ND_LEFT = 0,
+    ND_LEFT  = 0,
     ND_RIGHT = 1,
-    ND_UP = 2,
-    ND_DOWN = 3,
+    ND_UP    = 2,
+    ND_DOWN  = 3,
 };
 
 
@@ -49,7 +49,11 @@ private:
 
     void ConformalMappingOneStep(QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh);
 
-    PlusSignVertex GetNeighbor(int x, int y, NeighborDirection dir, QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh);
+    PlusSignVertex GetNeighbor(int x, int y, NeighborDirection dir,
+                               QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh,
+                               std::vector<std::vector<PlusSignVertex>> pTempVertices,
+                               std::vector<std::vector<PlusSignVertex>> cTempVertices,
+                               std::vector<std::vector<PlusSignVertex>> nTempVertices);
 
     void MappingInterpolation(QuadMesh *qMesh);
 
