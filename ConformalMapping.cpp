@@ -16,10 +16,10 @@ void ConformalMapping::ConformalMappingOneStepSimple(std::vector<QuadMesh>& quad
     this->_iterDist = 0;
     for(uint a = 0; a < quadMeshes.size(); a++)
     {
-        if(quadMeshes[a]._quadMeshType == QuadMeshType::MESH_KITE)
-        {
+        //if(quadMeshes[a]._quadMeshType == QuadMeshType::MESH_KITE)
+        //{
             ConformalMappingOneStepSimple(&quadMeshes[a]);
-        }
+        //}
     }
 }
 
@@ -97,8 +97,8 @@ void ConformalMapping::ConformalMappingOneStep(std::vector<QuadMesh>& quadMeshes
     this->_iterDist = 0;
     for(uint a = 0; a < quadMeshes.size(); a++)
     {
-        if(quadMeshes[a]._quadMeshType == QuadMeshType::MESH_KITE)
-        {
+        //if(quadMeshes[a]._quadMeshType == QuadMeshType::MESH_KITE)
+        //{
             QuadMesh* prevQMesh = 0;
             QuadMesh* curQMesh = &quadMeshes[a];
             QuadMesh* nextQMesh = 0;
@@ -114,7 +114,7 @@ void ConformalMapping::ConformalMappingOneStep(std::vector<QuadMesh>& quadMeshes
             }
 
             ConformalMappingOneStep(prevQMesh, curQMesh, nextQMesh);
-        }
+        //}
     }
 }
 
@@ -129,7 +129,9 @@ void ConformalMapping::MappingInterpolation(std::vector<QuadMesh>& quadMeshes)
     }
 }
 
-PlusSignVertex ConformalMapping::GetNeighbor(int x, int y, NeighborDirection dir, QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh)
+PlusSignVertex ConformalMapping::GetNeighbor(int x, int y,
+                                             NeighborDirection dir,
+                                             QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh)
 {
     // Implement this !!!
 
@@ -140,56 +142,56 @@ PlusSignVertex ConformalMapping::GetNeighbor(int x, int y, NeighborDirection dir
     std::vector<std::vector<PlusSignVertex>> curVertices  = curQMesh->_psVertices;
     std::vector<std::vector<PlusSignVertex>> nextVertices = nextQMesh->_psVertices;
 
-    if(dir == NeighborDirection::ND_LEFT)
+
+    if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && curQMesh->_isRightKite)
     {
-        if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+        if(dir == NeighborDirection::ND_LEFT) // exists
         {
-
         }
-        else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
+        else if(dir == NeighborDirection::ND_RIGHT)
         {
-
+            return PlusSignVertex();
+        }
+        else if(dir == NeighborDirection::ND_UP)
+        {
+            return PlusSignVertex();
+        }
+        else if(dir == NeighborDirection::ND_DOWN) // exists
+        {
         }
     }
-    else if(dir == NeighborDirection::ND_RIGHT)
+    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && !curQMesh->_isRightKite)
     {
-        if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+        if(dir == NeighborDirection::ND_LEFT)
         {
-
         }
-        else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
+        else if(dir == NeighborDirection::ND_RIGHT)
         {
-
+        }
+        else if(dir == NeighborDirection::ND_UP)
+        {
+        }
+        else if(dir == NeighborDirection::ND_DOWN)
+        {
         }
     }
-    else if(dir == NeighborDirection::ND_UP)
+    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
     {
-        if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
-        {
 
-        }
-        else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
-        {
-
-        }
     }
-    else if(dir == NeighborDirection::ND_DOWN)
-    {
-        if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
-        {
 
-        }
-        else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
-        {
 
-        }
-    }
 
     return PlusSignVertex();
 }
 
 void ConformalMapping::ConformalMappingOneStep(QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh)
 {
+    //if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
+    //{
+    //    std::cout << "rectangle\n";
+    //}
+
     std::vector<std::vector<PlusSignVertex>> tempVertices = curQMesh->_psVertices;
     int meshWidth = curQMesh->GetWidth();
     int meshHeight = curQMesh->GetHeight();

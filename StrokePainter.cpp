@@ -332,6 +332,19 @@ void StrokePainter::CalculateVertices(QuadMesh* qMesh)
             bool junctionRibsConstrained = false;
             bool spinesConstrained = false;
 
+            if(qMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE) // RECTANGLE
+            {
+                if((xIter == 0         && yIter == 0) ||
+                   (xIter == xLoop - 1 && yIter == 0) ||
+                   (xIter == 0         && yIter == yLoop - 1) ||
+                   (xIter == xLoop - 1 && yIter == yLoop - 1))
+                {
+                    //std::cout << "rectangle\n";
+                    _constrainedPoints.push_back(pt);
+                    shouldMove = false;
+                }
+            }
+
             if(!SystemParams::fixed_separation_constraint && qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
             {
                 if( (xIter == 0 && yIter == 0) ||
@@ -346,7 +359,7 @@ void StrokePainter::CalculateVertices(QuadMesh* qMesh)
 
             if(SystemParams::fixed_separation_constraint)
             {
-                if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+                if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE) // KITE
                 {
                     if(pt.Distance(qMesh->_sharpPt) < std::numeric_limits<float>::epsilon() * 100)
                     {
@@ -360,10 +373,12 @@ void StrokePainter::CalculateVertices(QuadMesh* qMesh)
                     }
                     else if(!qMesh->_isRightKite && (xIter == xLoop - 1 || yIter == 0))
                     {
+
                         _constrainedPoints.push_back(pt);
                         shouldMove = false;
                     }
                 }
+
             }
 
             PlusSignVertex psVert = PlusSignVertex(pt, shouldMove, junctionRibsConstrained, spinesConstrained);
@@ -556,7 +571,7 @@ void StrokePainter::Draw()
         _selectedPointVao.release();
     }
 
-    /*if(SystemParams::show_mesh && _constrainedPointsVao.isCreated())
+    if(SystemParams::show_mesh && _constrainedPointsVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glPointSize(4.0f);
@@ -564,7 +579,7 @@ void StrokePainter::Draw()
         glDrawArrays(GL_POINTS, 0, _constrainedPoints.size());
         _constrainedPointsVao.release();
     }
-    */
+
 
     if(SystemParams::show_mesh && _debugPointsVao.isCreated())
     {
