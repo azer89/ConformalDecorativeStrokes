@@ -74,7 +74,7 @@ public:
 
     void ConformalMappingOneStep() { _sPainter->ConformalMappingOneStep(); }
     void MappingInterpolation() { _sPainter->MappingInterpolation(); }
-    void CalculateVertices() { _sPainter->CalculateVertices(); }
+    void CalculateVertices() { _sPainter->CalculateVertices1(); }
 
 
     /**

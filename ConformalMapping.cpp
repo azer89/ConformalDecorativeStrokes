@@ -13,6 +13,9 @@ ConformalMapping::ConformalMapping() :
 
 void ConformalMapping::ConformalMappingOneStepSimple(std::vector<QuadMesh>& quadMeshes)
 {
+    this->_debugPoints.clear();
+    this->_debugLines.clear();
+
     this->_iterDist = 0;
     for(uint a = 0; a < quadMeshes.size(); a++)
     {
@@ -86,6 +89,9 @@ void ConformalMapping::ConformalMappingOneStepSimple(QuadMesh *qMesh)
 
 void ConformalMapping::ConformalMappingOneStep(std::vector<QuadMesh>& quadMeshes)
 {
+    this->_debugPoints.clear();
+    this->_debugLines.clear();
+
     this->_iterDist = 0;
     for(uint a = 0; a < quadMeshes.size(); a++)
     {
@@ -95,15 +101,8 @@ void ConformalMapping::ConformalMappingOneStep(std::vector<QuadMesh>& quadMeshes
         QuadMesh* curQMesh = &quadMeshes[a];
         QuadMesh* nextQMesh = 0;
 
-        if(a > 0)
-        {
-            prevQMesh = &quadMeshes[a - 1];
-        }
-
-        if(a < quadMeshes.size() - 1)
-        {
-            nextQMesh = &quadMeshes[a + 1];
-        }
+        if(a > 0) { prevQMesh = &quadMeshes[a - 1]; }
+        if(a < quadMeshes.size() - 1) { nextQMesh = &quadMeshes[a + 1]; }
 
         ConformalMappingOneStep(prevQMesh, curQMesh, nextQMesh);
         //}
@@ -157,17 +156,18 @@ PlusSignVertex ConformalMapping::GetNeighbor(int x, int y,
     else if(dir == NeighborDirection::ND_DOWN && y < cHeight - 1)
         { return cTempVertices[x][y + 1]; }
 
+
     if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && curQMesh->_isRightKite)
     {
         if(dir == NeighborDirection::ND_LEFT)
         {
             PlusSignVertex tempVert = pTempVertices[pWidth - 2][y];
-            _debugPoints.push_back(tempVert);
+            //_debugLines.push_back(ALine(curQMesh->_opsVertices[x][y].position, tempVert.position));
         }
         else if(dir == NeighborDirection::ND_DOWN)
         {
-            PlusSignVertex tempVert = nTempVertices[1][nHeight - x];
-            _debugPoints.push_back(tempVert);
+            PlusSignVertex tempVert = nTempVertices[1][nHeight - (x + 1)];
+            //_debugLines.push_back(ALine(curQMesh->_opsVertices[x][y].position, tempVert.position));
         }
     }
     else if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && !curQMesh->_isRightKite)
@@ -175,37 +175,90 @@ PlusSignVertex ConformalMapping::GetNeighbor(int x, int y,
         if(dir == NeighborDirection::ND_RIGHT)
         {
             PlusSignVertex tempVert = nTempVertices[1][y];
-            _debugPoints.push_back(tempVert);
+            //_debugLines.push_back(ALine(curQMesh->_opsVertices[x][y].position, tempVert.position));
         }
         else if(dir == NeighborDirection::ND_UP)
         {
-            PlusSignVertex tempVert = pTempVertices[pWidth - 2][pHeight - x];
-            _debugPoints.push_back(tempVert);
+            PlusSignVertex tempVert = pTempVertices[pWidth - 2][pHeight - (x + 1)];
+            //_debugLines.push_back(ALine(curQMesh->_opsVertices[x][y].position, tempVert.position));
         }
     }
     else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
     {
         if(dir == NeighborDirection::ND_LEFT && prevQMesh && prevQMesh->_isRightKite)
         {
-            PlusSignVertex tempVert = pTempVertices[pWidth - y][pHeight - 2];
-            _debugPoints.push_back(tempVert);
+            PlusSignVertex tempVert = pTempVertices[pWidth - (y + 1)][pHeight - 2];
+            //_debugLines.push_back(ALine(curQMesh->_opsVertices[x][y].position, tempVert.position));
         }
         else if(dir == NeighborDirection::ND_LEFT && prevQMesh && !prevQMesh->_isRightKite)
         {
             PlusSignVertex tempVert = pTempVertices[pWidth - 2][y];
-            _debugPoints.push_back(tempVert);
+            //_debugLines.push_back(ALine(curQMesh->_opsVertices[x][y].position, tempVert.position));
         }
         else if(dir == NeighborDirection::ND_RIGHT && nextQMesh && nextQMesh->_isRightKite)
         {
             PlusSignVertex tempVert = nTempVertices[1][y];
-            _debugPoints.push_back(tempVert);
+            //_debugLines.push_back(ALine(curQMesh->_opsVertices[x][y].position, tempVert.position));
         }
         else if(dir == NeighborDirection::ND_RIGHT && nextQMesh && !nextQMesh->_isRightKite)
         {
-            PlusSignVertex tempVert = nTempVertices[nWidth - y][1];
-            _debugPoints.push_back(tempVert);
+            PlusSignVertex tempVert = nTempVertices[nWidth - (y + 1)][1];
+            //_debugLines.push_back(ALine(curQMesh->_opsVertices[x][y].position, tempVert.position));
         }
     }
+
+
+    /*
+    if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && curQMesh->_isRightKite)
+    {
+        if(dir == NeighborDirection::ND_LEFT)
+        {
+            PlusSignVertex tempVert = pTempVertices[pWidth - 1][y];
+            //_debugPoints.push_back(tempVert.position);
+        }
+        else if(dir == NeighborDirection::ND_DOWN)
+        {
+            PlusSignVertex tempVert = nTempVertices[0][nHeight - (x + 1)];
+            //_debugPoints.push_back(tempVert.position);
+        }
+    }
+    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && !curQMesh->_isRightKite)
+    {
+        if(dir == NeighborDirection::ND_RIGHT)
+        {
+            PlusSignVertex tempVert = nTempVertices[0][y];
+            //_debugPoints.push_back(tempVert.position);
+        }
+        else if(dir == NeighborDirection::ND_UP)
+        {
+            PlusSignVertex tempVert = pTempVertices[pWidth - 1][pHeight - (x + 1)];
+            //_debugPoints.push_back(tempVert.position);
+        }
+    }
+    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
+    {
+        if(dir == NeighborDirection::ND_LEFT && prevQMesh && prevQMesh->_isRightKite)
+        {
+            PlusSignVertex tempVert = pTempVertices[pWidth - (y + 1)][pHeight - 1];
+            //_debugPoints.push_back(tempVert.position);
+        }
+        else if(dir == NeighborDirection::ND_LEFT && prevQMesh && !prevQMesh->_isRightKite)
+        {
+            PlusSignVertex tempVert = pTempVertices[pWidth - 1][y];
+            //_debugPoints.push_back(tempVert.position);
+        }
+        else if(dir == NeighborDirection::ND_RIGHT && nextQMesh && nextQMesh->_isRightKite)
+        {
+            PlusSignVertex tempVert = nTempVertices[0][y];
+            //_debugPoints.push_back(tempVert.position);
+        }
+        else if(dir == NeighborDirection::ND_RIGHT && nextQMesh && !nextQMesh->_isRightKite)
+        {
+            PlusSignVertex tempVert = nTempVertices[nWidth - (y + 1)][0];
+            //_debugPoints.push_back(tempVert.position);
+        }
+    }*/
+
 
     return PlusSignVertex();
 }
@@ -226,6 +279,7 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh* prevQMesh, QuadMesh* cu
     {
         for(int b = 0; b < meshHeight; b++)
         {
+            // UNCOMMENT THIS
             if(!cTempVertices[a][b].shouldMove) { continue; }
 
             AVector curPos = cTempVertices[a][b].position;
@@ -239,6 +293,9 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh* prevQMesh, QuadMesh* cu
             PlusSignVertex rVertex = GetNeighbor(a, b, NeighborDirection::ND_RIGHT, prevQMesh, curQMesh, nextQMesh, pTempVertices, cTempVertices, nTempVertices);
             PlusSignVertex uVertex = GetNeighbor(a, b, NeighborDirection::ND_UP,    prevQMesh, curQMesh, nextQMesh, pTempVertices, cTempVertices, nTempVertices);
             PlusSignVertex bVertex = GetNeighbor(a, b, NeighborDirection::ND_DOWN,  prevQMesh, curQMesh, nextQMesh, pTempVertices, cTempVertices, nTempVertices);
+
+            // DELETE THIS
+            //if(!cTempVertices[a][b].shouldMove) { continue; }
 
             // have left and right
             if(lVertex.IsValid() && rVertex.IsValid())
@@ -319,6 +376,8 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh* prevQMesh, QuadMesh* cu
 
             cTempVertices[a][b].armLength = sumArmLengths;
             cTempVertices[a][b].angle = sumArmAngles;
+
+
 
             if(numNeighbor < 4)
             {

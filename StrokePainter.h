@@ -32,8 +32,12 @@ public:
     void ConformalMappingOneStep();
     void MappingInterpolation();
 
-    void CalculateVertices();
-    void CalculateVertices(QuadMesh *qMesh);
+    // meshes are connected during a conformal mapping computation
+    void CalculateVertices2(QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh);
+
+    // meshes are separated to each other
+    void CalculateVertices1();
+    void CalculateVertices1(QuadMesh *qMesh);
 
     int QuadMeshSize() { return _quadMeshes.size(); }
     float IterationDelta() { return _cMapping->GetIterDist(); }

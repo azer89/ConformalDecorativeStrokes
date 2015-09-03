@@ -13,7 +13,7 @@ float SystemParams::mesh_size = 1.0f;
 float SystemParams::rdp_epsilon = 5.0f;
 
 bool SystemParams::fixed_separation_constraint = false;
-bool SystemParams::enable_conformal_mapping = true;
+bool SystemParams::enable_conformal_mapping = false;
 
 
 bool SystemParams::show_mesh = true;
