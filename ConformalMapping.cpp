@@ -129,64 +129,84 @@ PlusSignVertex ConformalMapping::GetNeighbor(int x, int y,
                                              std::vector<std::vector<PlusSignVertex> > nTempVertices)
 {
 
-    int pMeshWidth  = 0;
-    int pMeshHeight = 0;
-    int cMeshWidth  = curQMesh->GetWidth();
-    int cMeshHeight = curQMesh->GetHeight();
-    int nMeshWidth  = 0;
-    int nMeshHeight = 0;
+    int pWidth  = 0;
+    int pHeight = 0;
+    int cWidth  = curQMesh->GetWidth();
+    int cHeight = curQMesh->GetHeight();
+    int nWidth  = 0;
+    int nHeight = 0;
 
     if(prevQMesh)
     {
-        pMeshWidth  = prevQMesh->GetWidth();
-        pMeshHeight = prevQMesh->GetHeight();
+        pWidth  = prevQMesh->GetWidth();
+        pHeight = prevQMesh->GetHeight();
     }
 
     if(nextQMesh)
     {
-        nMeshWidth  = nextQMesh->GetWidth();
-        nMeshHeight = nextQMesh->GetHeight();
+        nWidth  = nextQMesh->GetWidth();
+        nHeight = nextQMesh->GetHeight();
     }
 
     if(dir == NeighborDirection::ND_LEFT && x > 0)
         { return cTempVertices[x - 1][y]; }
-    else if(dir == NeighborDirection::ND_RIGHT && x < cMeshWidth - 1)
+    else if(dir == NeighborDirection::ND_RIGHT && x < cWidth - 1)
         { return cTempVertices[x + 1][y]; }
     else if(dir == NeighborDirection::ND_UP && y > 0)
         { return cTempVertices[x][y - 1]; }
-    else if(dir == NeighborDirection::ND_DOWN && y < cMeshHeight - 1)
+    else if(dir == NeighborDirection::ND_DOWN && y < cHeight - 1)
         { return cTempVertices[x][y + 1]; }
 
-    /*
     if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && curQMesh->_isRightKite)
     {
         if(dir == NeighborDirection::ND_LEFT)
         {
+            PlusSignVertex tempVert = pTempVertices[pWidth - 2][y];
+            _debugPoints.push_back(tempVert);
         }
         else if(dir == NeighborDirection::ND_DOWN)
         {
+            PlusSignVertex tempVert = nTempVertices[1][nHeight - x];
+            _debugPoints.push_back(tempVert);
         }
     }
     else if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && !curQMesh->_isRightKite)
     {
         if(dir == NeighborDirection::ND_RIGHT)
         {
+            PlusSignVertex tempVert = nTempVertices[1][y];
+            _debugPoints.push_back(tempVert);
         }
         else if(dir == NeighborDirection::ND_UP)
         {
+            PlusSignVertex tempVert = pTempVertices[pWidth - 2][pHeight - x];
+            _debugPoints.push_back(tempVert);
         }
     }
     else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
     {
-        if(dir == NeighborDirection::ND_LEFT)
+        if(dir == NeighborDirection::ND_LEFT && prevQMesh && prevQMesh->_isRightKite)
         {
+            PlusSignVertex tempVert = pTempVertices[pWidth - y][pHeight - 2];
+            _debugPoints.push_back(tempVert);
         }
-        else if(dir == NeighborDirection::ND_RIGHT)
+        else if(dir == NeighborDirection::ND_LEFT && prevQMesh && !prevQMesh->_isRightKite)
         {
-
+            PlusSignVertex tempVert = pTempVertices[pWidth - 2][y];
+            _debugPoints.push_back(tempVert);
+        }
+        else if(dir == NeighborDirection::ND_RIGHT && nextQMesh && nextQMesh->_isRightKite)
+        {
+            PlusSignVertex tempVert = nTempVertices[1][y];
+            _debugPoints.push_back(tempVert);
+        }
+        else if(dir == NeighborDirection::ND_RIGHT && nextQMesh && !nextQMesh->_isRightKite)
+        {
+            PlusSignVertex tempVert = nTempVertices[nWidth - y][1];
+            _debugPoints.push_back(tempVert);
         }
     }
-    */
+
     return PlusSignVertex();
 }
 
@@ -250,7 +270,6 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh* prevQMesh, QuadMesh* cu
             else if(rVertex.IsValid())
             {
                 AVector fakeNeighbor = rVertex.position + UtilityFunctions::Rotate( AVector(-1, 0) * rVertex.armLength, rVertex.angle);
-
                 sumPositions += fakeNeighbor;
                 sumArmLengths += curPos.Distance(rVertex.position);
                 sumArmAngles += UtilityFunctions::GetRotation(AVector(1, 0), (rVertex.position - curPos).Norm());
