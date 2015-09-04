@@ -55,7 +55,15 @@ private:
                                std::vector<std::vector<PlusSignVertex>> cTempVertices,
                                std::vector<std::vector<PlusSignVertex>> nTempVertices);
 
+    void UpdateNeighbor(int x, int y,
+                                  QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh,
+                                  std::vector<std::vector<PlusSignVertex> > &pTempVertices,
+                                  std::vector<std::vector<PlusSignVertex> > &cTempVertices,
+                                  std::vector<std::vector<PlusSignVertex> > &nTempVertices);
+
     void MappingInterpolation(QuadMesh *qMesh);
+
+    AVector GetClosestPointFromBorders(int x, int y, AVector pt, QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh);
 
     void GetClosestIndicesAndRatios(std::vector<AVector> boundary1,
                            std::vector<AVector> boundary2,

@@ -316,6 +316,11 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
                     _constrainedPoints.push_back(pt);
                     shouldMove = false;
                 }
+                else if(!prevQMesh && xIter == 0)
+                {
+                    _constrainedPoints.push_back(pt);
+                    shouldMove = false;
+                }
 
 
                 // conditional right (next)
@@ -334,6 +339,11 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
                 else if(nextQMesh && !nextQMesh->_isRightKite && (xIter == xLoop - 1 && yIter == 0))
                 {
                     // next is left kite, mark upright
+                    _constrainedPoints.push_back(pt);
+                    shouldMove = false;
+                }
+                else if(!nextQMesh && xIter == xLoop - 1)
+                {
                     _constrainedPoints.push_back(pt);
                     shouldMove = false;
                 }
@@ -550,8 +560,6 @@ void StrokePainter::ConformalMappingOneStepSimple()
 
 void StrokePainter::ConformalMappingOneStep()
 {
-    std::cout << "ConformalMappingOneStep\n";
-
     _cMapping->ConformalMappingOneStep(_quadMeshes);
 
     //_debugLines = _cMapping->_debugLines;
