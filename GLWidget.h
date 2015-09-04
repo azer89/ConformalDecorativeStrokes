@@ -74,7 +74,12 @@ public:
 
     void ConformalMappingOneStep() { _sPainter->ConformalMappingOneStep(); }
     void MappingInterpolation() { _sPainter->MappingInterpolation(); }
-    void CalculateVertices() { _sPainter->CalculateVertices1(); }
+    void CalculateVertices()
+    {
+        _sPainter->CalculateSpines();
+        _sPainter->CalculateInitialRibbon();
+        _sPainter->CalculateVertices1();
+    }
 
 
     /**
@@ -127,6 +132,11 @@ public:
      * Mouse release
      */
     void mouseReleaseEvent(int x, int y);
+
+    // keyboard
+    void keyboardPressEvent(Qt::Key key);
+
+    void keyboardReleaseEvent(Qt::Key key);
 
     /**
      * Mouse double click.

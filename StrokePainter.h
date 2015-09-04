@@ -28,6 +28,11 @@ public:
 
     void Draw();
 
+    void CalculateInitialRibbon();          // shouln't be public
+    void CalculateLeftRightLines();         // shouln't be public
+    void CalculateKitesAndRectangles();     // shouln't be public
+    void CalculateSpines();                 // shouln't be public
+
     void ConformalMappingOneStepSimple();
     void ConformalMappingOneStep();
     void MappingInterpolation();
@@ -117,10 +122,7 @@ private:
     QOpenGLVertexArrayObject    _debugLinesVao;
 
 private:
-    void CalculateInitialRibbon();
-    void CalculateLeftRightLines();
-    void CalculateKitesAndRectangles();
-    void CalculateSpines();
+
 
     AVector GetClosestPointFromLeftRightLines(AVector pt);
     AVector GetClosestPointFromSpineLines(AVector pt);

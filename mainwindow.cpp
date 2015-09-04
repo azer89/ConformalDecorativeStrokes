@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->fixedSeparationCheckBox, SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
     connect(ui->conformalMappingCheckBox,SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
     connect(ui->quadSizeSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
+    connect(ui->kiteLegsSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
 
     connect(ui->meshCheckBox,            SIGNAL(stateChanged(int)),       this, SLOT(SetDisplay()));
     connect(ui->textureCheckBox,         SIGNAL(stateChanged(int)),       this, SLOT(SetDisplay()));
@@ -122,6 +123,8 @@ void MainWindow::SetParams()
     SystemParams::fixed_separation_constraint = ui->fixedSeparationCheckBox->isChecked();
     SystemParams::enable_conformal_mapping = ui->conformalMappingCheckBox->isChecked();
     SystemParams::mesh_size = ui->quadSizeSpinBox->value();
+
+    SystemParams::kite_leg_length = ui->kiteLegsSpinBox->value();
 
     ui->runningTimeLabel->setText("Time: 0");
     ui->deltaLabel->setText("Delta: 0");

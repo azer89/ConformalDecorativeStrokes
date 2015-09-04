@@ -15,6 +15,8 @@ public:
 
     static float mesh_size;
 
+    static float kite_leg_length;
+
     // simplifying drawn strokes
     static float rdp_epsilon;
 

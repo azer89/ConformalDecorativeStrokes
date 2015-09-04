@@ -116,6 +116,22 @@ void StrokePainter::CalculateSpines()
     std::vector<AVector> tempLine;
     CurveRDP::SimplifyRDP(_oriStrokeLines, tempLine, SystemParams::rdp_epsilon);
     _spineLines = std::vector<AVector>(tempLine);
+
+    if(_spineLines.size() == 3)
+    {
+        float length = SystemParams::kite_leg_length;
+
+        AVector pt1 = _spineLines[0];
+        AVector pt2 = _spineLines[1];
+        AVector pt3 = _spineLines[2];
+
+
+        AVector dirA = pt2.DirectionTo(pt1).Norm();
+        AVector dirB = pt2.DirectionTo(pt3).Norm();
+
+        _spineLines[0] = pt2 + dirA * length;
+        _spineLines[2] = pt2 + dirB * length;
+    }
 }
 
 void StrokePainter::CalculateKitesAndRectangles()

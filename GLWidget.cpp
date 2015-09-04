@@ -166,6 +166,16 @@ void GLWidget::mouseReleaseEvent(int x, int y)
     this->repaint();
 }
 
+void GLWidget::keyboardPressEvent(Qt::Key key)
+{
+
+}
+
+void GLWidget::keyboardReleaseEvent(Qt::Key key)
+{
+
+}
+
 void GLWidget::mouseDoubleClick(int x, int y)
 {
     double dx = x + _scrollOffset.x();

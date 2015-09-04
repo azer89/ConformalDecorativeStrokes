@@ -10,6 +10,8 @@ float SystemParams::stroke_width = 10.0f;
 
 float SystemParams::mesh_size = 1.0f;
 
+float SystemParams::kite_leg_length = 30;
+
 float SystemParams::rdp_epsilon = 5.0f;
 
 bool SystemParams::fixed_separation_constraint = false;
