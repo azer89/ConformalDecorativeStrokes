@@ -304,15 +304,6 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
 
             if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE) // RECTANGLE
             {
-                /*if((xIter == 0         && yIter == 0) ||       // up left
-                   (xIter == xLoop - 1 && yIter == 0) ||         // up right
-                   (xIter == 0         && yIter == yLoop - 1) || // down left
-                   (xIter == xLoop - 1 && yIter == yLoop - 1))   // down right
-                {
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }*/
-
                 // conditional left (prev)
                 if(!prevQMesh && ( (xIter == 0 && yIter == 0) || (xIter == 0 && yIter == yLoop - 1) ))
                 {
@@ -366,9 +357,7 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
             }
             else if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
             {
-                if( /*(xIter == 0 && yIter == 0) ||
-                    (xIter == xLoop - 1 && yIter == yLoop - 1) || */
-                    (xIter == 0 && yIter == yLoop - 1) ||
+                if( (xIter == 0 && yIter == yLoop - 1) ||
                     (xIter == xLoop - 1 && yIter == 0))
                 {
                     _constrainedPoints.push_back(pt);
@@ -376,7 +365,7 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
                 }
             }
 
-            PlusSignVertex psVert = PlusSignVertex(pt, shouldMove/*, junctionRibsConstrained, spinesConstrained*/);
+            PlusSignVertex psVert = PlusSignVertex(pt, shouldMove);
             columnVertices.push_back(psVert);
         }
         curQMesh->_psVertices.push_back(columnVertices);

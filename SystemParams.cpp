@@ -22,6 +22,6 @@ bool SystemParams::show_mesh = true;
 
 bool SystemParams::show_texture = false;
 
-std::string SystemParams::stroke_texture_file = "../ConformalDecorativeStrokes/decorative_strokes/g_09.png";
+std::string SystemParams::stroke_texture_file = "../ConformalDecorativeStrokes/decorative_strokes/the_grammar_of_ornaments/23-01-c_leg1.png";
 
-std::string SystemParams::corner_texture_file = "../ConformalDecorativeStrokes/decorative_strokes/g_10.png";
+std::string SystemParams::corner_texture_file = "../ConformalDecorativeStrokes/decorative_strokes/the_grammar_of_ornaments/23-01-c_kite.png";

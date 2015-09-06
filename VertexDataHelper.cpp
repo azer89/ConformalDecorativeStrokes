@@ -87,7 +87,6 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<std::vector<Plu
         isInit = true;
     }
 
-
     int heightMinOne = mesh_height - 1;
 
     QVector<VertexData> data;
@@ -193,11 +192,16 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
     QVector<VertexData> data;
     for(uint iter = 0; iter < quadMeshes.size(); iter++)
     {
-        QuadMesh qMesh = quadMeshes[iter];
+        QuadMesh* prevQMesh = 0;
+        QuadMesh* curQMesh = &quadMeshes[iter];
+        QuadMesh* nextQMesh = 0;
 
-        if(qMesh._quadMeshType != qmType){ continue; }
+        if(iter > 0) { prevQMesh = &quadMeshes[iter - 1]; }
+        if(iter < quadMeshes.size() - 1) { nextQMesh = &quadMeshes[iter + 1]; }
 
-        std::vector<std::vector<PlusSignVertex>> plusSignVertices = qMesh._psVertices;
+        if(curQMesh->_quadMeshType != qmType){ continue; }
+
+        std::vector<std::vector<PlusSignVertex>> plusSignVertices = curQMesh->_psVertices;
         int mesh_width = plusSignVertices.size();
         int mesh_height = plusSignVertices[0].size();
         int heightMinOne = mesh_height - 1;
@@ -219,19 +223,69 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                 AVector cVec = plusSignVertices[a+1][b+1].position;
                 AVector dVec = plusSignVertices[a][b+1].position;
 
-                if(qMesh._quadMeshType == QuadMeshType::MESH_KITE && !qMesh._isRightKite)
+                if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && !curQMesh->_isRightKite)
                 {
+                    data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(xCoord1, 1.0f - yCoord1)));
+                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(xCoord2, 1.0f - yCoord1)));
+                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(xCoord2, 1.0f - yCoord2)));
+                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(xCoord1, 1.0f - yCoord2)));
+
+                    /*
                     data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(1.0f - xCoord1, 1.0f - yCoord1)));
                     data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(1.0f - xCoord2, 1.0f - yCoord1)));
                     data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(1.0f - xCoord2, 1.0f - yCoord2)));
                     data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(1.0f - xCoord1, 1.0f - yCoord2)));
+                    */
                 }
-                else
+                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && curQMesh->_isRightKite)
+                {
+                    data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(1.0f - xCoord1, yCoord1)));
+                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(1.0f - xCoord2, yCoord1)));
+                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(1.0f - xCoord2, yCoord2)));
+                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(1.0f - xCoord1, yCoord2)));
+
+                    /*
+                    data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(xCoord1, yCoord1)));
+                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(xCoord2, yCoord1)));
+                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(xCoord2, yCoord2)));
+                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(xCoord1, yCoord2)));
+                    */
+                }
+                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE &&
+                        prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
+                        prevQMesh->_isRightKite)
                 {
                     data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(xCoord1, yCoord1)));
                     data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(xCoord2, yCoord1)));
                     data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(xCoord2, yCoord2)));
                     data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(xCoord1, yCoord2)));
+                }
+                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE &&
+                        prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
+                        !prevQMesh->_isRightKite)
+                {
+                    data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(xCoord1, 1.0f - yCoord1)));
+                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(xCoord2, 1.0f - yCoord1)));
+                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(xCoord2, 1.0f - yCoord2)));
+                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(xCoord1, 1.0f - yCoord2)));
+                }
+                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE &&
+                        nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
+                        nextQMesh->_isRightKite)
+                {
+                    data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(1.0f - xCoord1, yCoord1)));
+                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(1.0f - xCoord2, yCoord1)));
+                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(1.0f - xCoord2, yCoord2)));
+                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(1.0f - xCoord1, yCoord2)));
+                }
+                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE &&
+                        nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
+                        !nextQMesh->_isRightKite)
+                {
+                    data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(1.0f - xCoord1, 1.0f - yCoord1)));
+                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(1.0f - xCoord2, 1.0f - yCoord1)));
+                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(1.0f - xCoord2, 1.0f - yCoord2)));
+                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(1.0f - xCoord1, 1.0f - yCoord2)));
                 }
             }
         }
