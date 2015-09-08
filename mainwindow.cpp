@@ -13,9 +13,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->widget->GetGLWidget(),   SIGNAL(CalculateConformalMap()), this, SLOT(AnimationStart()));
 
-    connect(ui->iterThresholdSpinBox,    SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+
     connect(ui->conformalMappingCheckBox,SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
     connect(ui->quadSizeSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
+    connect(ui->iterThresholdSpinBox,    SIGNAL(valueChanged(double)),       this, SLOT(SetParams()));
     connect(ui->kiteLegsSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
 
     connect(ui->meshCheckBox,            SIGNAL(stateChanged(int)),       this, SLOT(SetDisplay()));
