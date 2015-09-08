@@ -388,9 +388,15 @@ void StrokePainter::CalculateVertices()
         if(a > 0) { prevQMesh = &_quadMeshes[a - 1]; }
         if(a < _quadMeshes.size() - 1) { nextQMesh = &_quadMeshes[a + 1]; }
 
-        CalculateLinearVertices(curQMesh);
-        //CalculateVertices2(prevQMesh, curQMesh, nextQMesh);
-        //CalculateVertices1(curQMesh);
+        if(SystemParams::enable_conformal_mapping)
+        {
+            CalculateVertices2(prevQMesh, curQMesh, nextQMesh);
+            //CalculateVertices1(curQMesh);
+        }
+        else
+        {
+            CalculateLinearVertices(curQMesh);
+        }
     }
     _qMeshNumData = 0;
     _vDataHelper->BuildPointsVertexData(_constrainedPoints, &_constrainedPointsVbo, &_constrainedPointsVao, _constrainedPointColor);
@@ -655,8 +661,7 @@ void StrokePainter::ConformalMappingOneStepSimple()
 
 void StrokePainter::ConformalMappingOneStep()
 {
-    // UNCOMMENT THIS
-    //_cMapping->ConformalMappingOneStep(_quadMeshes);
+    _cMapping->ConformalMappingOneStep(_quadMeshes);
 
     //_debugLines = _cMapping->_debugLines;
     //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0.25, 0));

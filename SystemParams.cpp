@@ -17,7 +17,7 @@ float SystemParams::rdp_epsilon = 5.0f;
 float SystemParams::iter_threshold = 0.001f;
 
 //bool SystemParams::fixed_separation_constraint = false;
-bool SystemParams::enable_conformal_mapping = false;
+bool SystemParams::enable_conformal_mapping = true;
 
 
 bool SystemParams::show_mesh = true;

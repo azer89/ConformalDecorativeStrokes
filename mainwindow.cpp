@@ -14,10 +14,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->widget->GetGLWidget(),   SIGNAL(CalculateConformalMap()), this, SLOT(AnimationStart()));
 
 
-    connect(ui->conformalMappingCheckBox,SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+    //connect(ui->conformalMappingCheckBox,SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
     connect(ui->quadSizeSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
-    connect(ui->iterThresholdSpinBox,    SIGNAL(valueChanged(double)),       this, SLOT(SetParams()));
+    connect(ui->iterThresholdSpinBox,    SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
     connect(ui->kiteLegsSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
+
+    connect(ui->linearWarpingRadioButton,    SIGNAL(clicked(bool)),    this, SLOT(SetParams()));
+    connect(ui->conformalWarpingRadioButton, SIGNAL(clicked(bool)),    this, SLOT(SetParams()));
 
     connect(ui->meshCheckBox,            SIGNAL(stateChanged(int)),       this, SLOT(SetDisplay()));
     connect(ui->textureCheckBox,         SIGNAL(stateChanged(int)),       this, SLOT(SetDisplay()));
@@ -121,9 +124,9 @@ void MainWindow::SetDisplay()
 
 void MainWindow::SetParams()
 {
-    //SystemParams::fixed_separation_constraint = ui->fixedSeparationCheckBox->isChecked();
     SystemParams::iter_threshold = ui->iterThresholdSpinBox->value();
-    SystemParams::enable_conformal_mapping = ui->conformalMappingCheckBox->isChecked();
+    SystemParams::enable_conformal_mapping = ui->conformalWarpingRadioButton->isChecked();
+
     SystemParams::mesh_size = ui->quadSizeSpinBox->value();
 
     SystemParams::kite_leg_length = ui->kiteLegsSpinBox->value();
