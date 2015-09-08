@@ -49,12 +49,18 @@ void StrokePainter::SetStrokeTexture(QString img)
 {
     _masterImages[0].load(img);
     _masterTextures[0] = new QOpenGLTexture(_masterImages[0]);
+
+    //QOpenGLTexture* tex = _masterTextures[0];
+    //std::cout << tex->width() << " " << tex->height() << "\n";
 }
 
 void StrokePainter::SetCornerTexture(QString img)
 {
     _masterImages[1].load(img);
     _masterTextures[1] = new QOpenGLTexture(_masterImages[1]);
+
+    //QOpenGLTexture* tex = _masterTextures[1];
+    //std::cout << tex->width() << " " << tex->height() << "\n";
 }
 
 void StrokePainter::CalculateLeftRightLines()
@@ -125,7 +131,6 @@ void StrokePainter::CalculateSpines()
         AVector pt2 = _spineLines[1];
         AVector pt3 = _spineLines[2];
 
-
         AVector dirA = pt2.DirectionTo(pt1).Norm();
         AVector dirB = pt2.DirectionTo(pt3).Norm();
 
@@ -194,7 +199,7 @@ void StrokePainter::CalculateKitesAndRectangles()
             QuadMesh qMesh(_leftLines[a], leftEnd, _rightLines[a], rightEnd, QuadMeshType::MESH_RECTANGLE);
             _quadMeshes.push_back(qMesh);
         }
-        else if(a == 0 && _spineLines.size() == 2)  // START
+        else if(a == 0 && _spineLines.size() == 2)  // start
         {
             QuadMesh qMesh(_leftLines[a], _leftLines[a+1], _rightLines[a], _rightLines[a+1], QuadMeshType::MESH_RECTANGLE);
             _quadMeshes.push_back(qMesh);
@@ -276,6 +281,11 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
 
     int intMeshHeight = SystemParams::stroke_width / meshSize;
     int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
+
+    //if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
+    //{
+    //    intMeshWidth = 3;
+    //}
 
     // to do: fix this bug
     if(intMeshWidth == 0) { intMeshWidth = intMeshHeight; }

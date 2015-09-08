@@ -56,17 +56,6 @@ public:
     bool IsValid()
     {
         return this->isValid;
-        /*
-        float eps_val = std::numeric_limits<float>::epsilon() * 1000;
-
-        if(std::abs(this->position.x + 1.0f) < eps_val &&
-           std::abs(this->position.y + 1.0f) < eps_val)
-        {
-            return false;
-        }
-
-        return true;
-        */
     }
 };
 

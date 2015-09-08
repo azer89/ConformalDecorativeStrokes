@@ -20,7 +20,9 @@ public:
     // simplifying drawn strokes
     static float rdp_epsilon;
 
-    static bool fixed_separation_constraint;
+    static float iter_threshold;
+
+    //static bool fixed_separation_constraint;
     static bool enable_conformal_mapping;
 
     static bool show_mesh;
@@ -28,6 +30,11 @@ public:
 
     static std::string stroke_texture_file;
     static std::string corner_texture_file;
+
+    static std::string texture_dir;
+
+    static std::string v_shader_file;
+    static std::string f_shader_file;
 
 };
 

@@ -7,6 +7,8 @@
 #include "PlusSignVertex.h"
 #include "QuadMesh.h"
 
+#include "SystemParams.h"
+
 #include "VertexDataHelper.h"
 #include "ConformalMapping.h"
 
@@ -44,9 +46,9 @@ public:
     void CalculateVertices1();
     void CalculateVertices1(QuadMesh *qMesh);
 
-    int QuadMeshSize() { return _quadMeshes.size(); }
+    int   QuadMeshSize()   { return _quadMeshes.size(); }
     float IterationDelta() { return _cMapping->GetIterDist(); }
-    bool ShouldStop() { return _cMapping->GetIterDist() < std::numeric_limits<float>::epsilon(); }
+    bool  ShouldStop()     { return _cMapping->GetIterDist() < SystemParams::iter_threshold /*std::numeric_limits<float>::epsilon()*/; }
 
     void SetStrokeTexture(QString img);
     void SetCornerTexture(QString img);
@@ -122,8 +124,6 @@ private:
     QOpenGLVertexArrayObject    _debugLinesVao;
 
 private:
-
-
     AVector GetClosestPointFromLeftRightLines(AVector pt);
     AVector GetClosestPointFromSpineLines(AVector pt);
     AVector GetClosestPointFromSpinePoints(AVector pt);

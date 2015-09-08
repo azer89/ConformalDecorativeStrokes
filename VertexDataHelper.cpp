@@ -223,70 +223,72 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                 AVector cVec = plusSignVertices[a+1][b+1].position;
                 AVector dVec = plusSignVertices[a][b+1].position;
 
+                QVector2D uv1;
+                QVector2D uv2;
+                QVector2D uv3;
+                QVector2D uv4;
+
                 if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && !curQMesh->_isRightKite)
                 {
-                    data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(xCoord1, 1.0f - yCoord1)));
-                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(xCoord2, 1.0f - yCoord1)));
-                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(xCoord2, 1.0f - yCoord2)));
-                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(xCoord1, 1.0f - yCoord2)));
-
-                    /*
-                    data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(1.0f - xCoord1, 1.0f - yCoord1)));
-                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(1.0f - xCoord2, 1.0f - yCoord1)));
-                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(1.0f - xCoord2, 1.0f - yCoord2)));
-                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(1.0f - xCoord1, 1.0f - yCoord2)));
-                    */
+                    // a left kite
+                    uv1 = QVector2D(xCoord1, 1.0f - yCoord1);
+                    uv2 = QVector2D(xCoord2, 1.0f - yCoord1);
+                    uv3 = QVector2D(xCoord2, 1.0f - yCoord2);
+                    uv4 = QVector2D(xCoord1, 1.0f - yCoord2);
                 }
                 else if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && curQMesh->_isRightKite)
                 {
-                    data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(1.0f - xCoord1, yCoord1)));
-                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(1.0f - xCoord2, yCoord1)));
-                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(1.0f - xCoord2, yCoord2)));
-                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(1.0f - xCoord1, yCoord2)));
-
-                    /*
-                    data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(xCoord1, yCoord1)));
-                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(xCoord2, yCoord1)));
-                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(xCoord2, yCoord2)));
-                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(xCoord1, yCoord2)));
-                    */
+                    // a right kite
+                    uv1 = QVector2D(1.0f - xCoord1, yCoord1);
+                    uv2 = QVector2D(1.0f - xCoord2, yCoord1);
+                    uv3 = QVector2D(1.0f - xCoord2, yCoord2);
+                    uv4 = QVector2D(1.0f - xCoord1, yCoord2);
                 }
                 else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE &&
                         prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
                         prevQMesh->_isRightKite)
                 {
-                    data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(xCoord1, yCoord1)));
-                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(xCoord2, yCoord1)));
-                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(xCoord2, yCoord2)));
-                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(xCoord1, yCoord2)));
+                    // previous neighbour is a right kite
+                    uv1 = QVector2D(xCoord1, yCoord1);
+                    uv2 = QVector2D(xCoord2, yCoord1);
+                    uv3 = QVector2D(xCoord2, yCoord2);
+                    uv4 = QVector2D(xCoord1, yCoord2);
                 }
                 else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE &&
                         prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
                         !prevQMesh->_isRightKite)
                 {
-                    data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(xCoord1, 1.0f - yCoord1)));
-                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(xCoord2, 1.0f - yCoord1)));
-                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(xCoord2, 1.0f - yCoord2)));
-                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(xCoord1, 1.0f - yCoord2)));
+                    // previous neighbor is a left kite
+                    uv1 = QVector2D(xCoord1, 1.0f - yCoord1);
+                    uv2 = QVector2D(xCoord2, 1.0f - yCoord1);
+                    uv3 = QVector2D(xCoord2, 1.0f - yCoord2);
+                    uv4 = QVector2D(xCoord1, 1.0f - yCoord2);
                 }
                 else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE &&
                         nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
                         nextQMesh->_isRightKite)
                 {
-                    data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(1.0f - xCoord1, yCoord1)));
-                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(1.0f - xCoord2, yCoord1)));
-                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(1.0f - xCoord2, yCoord2)));
-                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(1.0f - xCoord1, yCoord2)));
+                    // next neighbor is a right kite
+                    uv1 = QVector2D(1.0f - xCoord1, yCoord1);
+                    uv2 = QVector2D(1.0f - xCoord2, yCoord1);
+                    uv3 = QVector2D(1.0f - xCoord2, yCoord2);
+                    uv4 = QVector2D(1.0f - xCoord1, yCoord2);
                 }
                 else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE &&
                         nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
                         !nextQMesh->_isRightKite)
                 {
-                    data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(1.0f - xCoord1, 1.0f - yCoord1)));
-                    data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(1.0f - xCoord2, 1.0f - yCoord1)));
-                    data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(1.0f - xCoord2, 1.0f - yCoord2)));
-                    data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(1.0f - xCoord1, 1.0f - yCoord2)));
+                    // next neightbor is a left kite
+                    uv1 = QVector2D(1.0f - xCoord1, 1.0f - yCoord1);
+                    uv2 = QVector2D(1.0f - xCoord2, 1.0f - yCoord1);
+                    uv3 = QVector2D(1.0f - xCoord2, 1.0f - yCoord2);
+                    uv4 = QVector2D(1.0f - xCoord1, 1.0f - yCoord2);
                 }
+
+                data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), uv1));
+                data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), uv2));
+                data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), uv3));
+                data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), uv4));
             }
         }
     }

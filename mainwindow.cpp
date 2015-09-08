@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->widget->GetGLWidget(),   SIGNAL(CalculateConformalMap()), this, SLOT(AnimationStart()));
 
-    connect(ui->fixedSeparationCheckBox, SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+    connect(ui->iterThresholdSpinBox,    SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
     connect(ui->conformalMappingCheckBox,SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
     connect(ui->quadSizeSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
     connect(ui->kiteLegsSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
@@ -49,7 +49,7 @@ void MainWindow::SetStrokeTexture()
 {
     QString qFilename = QFileDialog::getOpenFileName(this,
                                                      "Set Stroke Texture",
-                                                     "/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes");
+                                                     SystemParams::texture_dir.c_str());
     if(qFilename.isEmpty()) return;
 
     ui->textureAButton->setIcon(QIcon(qFilename));
@@ -63,7 +63,7 @@ void MainWindow::SetCornerTexture()
 {
     QString qFilename = QFileDialog::getOpenFileName(this,
                                                      "Set Corner Texture",
-                                                     "/home/azer/workspace/cpp/ConformalDecorativeStrokes/decorative_strokes");
+                                                     SystemParams::texture_dir.c_str());
     if(qFilename.isEmpty()) return;
 
     ui->textureBButton->setIcon(QIcon(qFilename));
@@ -84,13 +84,13 @@ void MainWindow::AnimationThread()
         this->ui->widget->GetGLWidget()->ConformalMappingOneStep();
         this->ui->widget->GetGLWidget()->repaint();
 
-        if(this->ui->widget->GetGLWidget()->ShouldStop()  || duration > 300.0f)
+        if(this->ui->widget->GetGLWidget()->ShouldStop()/*  || duration > 300.0f */ )
         {
             //this->ui->widget->GetGLWidget()->MappingInterpolation();
             //this->ui->widget->GetGLWidget()->repaint();
+            //ui->runningTimeLabel->setText("Complete in: " + QString::number(duration));
+            //ui->deltaLabel->setText("Delta: " + QString::number(ui->widget->GetGLWidget()->IterationDelta()));
 
-            ui->runningTimeLabel->setText("Complete in: " + QString::number(duration));
-            ui->deltaLabel->setText("Delta: " + QString::number(ui->widget->GetGLWidget()->IterationDelta()));
             animTimer->stop();
         }
     }
@@ -120,7 +120,8 @@ void MainWindow::SetDisplay()
 
 void MainWindow::SetParams()
 {
-    SystemParams::fixed_separation_constraint = ui->fixedSeparationCheckBox->isChecked();
+    //SystemParams::fixed_separation_constraint = ui->fixedSeparationCheckBox->isChecked();
+    SystemParams::iter_threshold = ui->iterThresholdSpinBox->value();
     SystemParams::enable_conformal_mapping = ui->conformalMappingCheckBox->isChecked();
     SystemParams::mesh_size = ui->quadSizeSpinBox->value();
 
