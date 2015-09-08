@@ -39,12 +39,15 @@ public:
     void ConformalMappingOneStep();
     void MappingInterpolation();
 
-    // meshes are connected during a conformal mapping computation
-    void CalculateVertices2(QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh);
+    // illustrator style
+    void CalculateLinearVertices(QuadMesh *qMesh);
 
     // meshes are separated to each other
-    void CalculateVertices1();
+    void CalculateVertices();
     void CalculateVertices1(QuadMesh *qMesh);
+
+    // meshes are connected during a conformal mapping computation
+    void CalculateVertices2(QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh);
 
     int   QuadMeshSize()   { return _quadMeshes.size(); }
     float IterationDelta() { return _cMapping->GetIterDist(); }
@@ -99,13 +102,13 @@ private:
 
     // left lines of the strokes. I need these lines to calculate closest points on the borders
     std::vector<AVector>        _leftLines;
-    QOpenGLBuffer               _leftLinesVbo;
-    QOpenGLVertexArrayObject    _leftLinesVao;
+    //QOpenGLBuffer               _leftLinesVbo;
+    //QOpenGLVertexArrayObject    _leftLinesVao;
 
     // right lines of the stroke. I need these lines to calculate closest points on the borders
     std::vector<AVector>        _rightLines;
-    QOpenGLBuffer               _rightLinesVbo;
-    QOpenGLVertexArrayObject    _rightLinesVao;
+    //QOpenGLBuffer               _rightLinesVbo;
+    //QOpenGLVertexArrayObject    _rightLinesVao;
 
     // constrained points
     std::vector<AVector>        _constrainedPoints;

@@ -260,41 +260,34 @@ void StrokePainter::CalculateKitesAndRectangles()
 
 void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, QuadMesh *nextQMesh)
 {
-    curQMesh->_psVertices.clear();
-    curQMesh->_opsVertices.clear();
+    curQMesh->_psVertices.clear();  // for conformal mapping
+    curQMesh->_opsVertices.clear(); // initial vertices (should not be modified)
 
+    // four corner points
     AVector lStartPt = curQMesh->_leftStartPt;
     AVector lEndPt   = curQMesh->_leftEndPt ;
-
     AVector rStartPt = curQMesh->_rightStartPt;
     AVector rEndPt   = curQMesh->_rightEndPt;
 
-    AVector vVec = rStartPt - lStartPt;
+    AVector vVec = rStartPt - lStartPt;  // a vertical vector (pointing downward)
+    AVector uHVec = (lEndPt - lStartPt); // an upper horizontal vector from start to end
+    AVector bHVec = (rEndPt - rStartPt); // a lower horizontal vector from start to end
 
-    AVector uHVec = (lEndPt - lStartPt);
-    AVector bHVec = (rEndPt - rStartPt);
-
-    AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();
-    AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();
+    AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();  // for calculating mesh width
+    AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();      // for calculating mesh width
 
     float meshSize = SystemParams::mesh_size;
 
     int intMeshHeight = SystemParams::stroke_width / meshSize;
     int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
 
-    //if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE)
-    //{
-    //    intMeshWidth = 3;
-    //}
-
     // to do: fix this bug
     if(intMeshWidth == 0) { intMeshWidth = intMeshHeight; }
 
     if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE) { intMeshWidth = intMeshHeight; }
 
-    int xLoop = intMeshWidth;
+    int xLoop = intMeshWidth + 1;
     int yLoop = intMeshHeight + 1;
-    xLoop++;
 
     for(int xIter = 0; xIter < xLoop; xIter++)
     {
@@ -383,7 +376,7 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
     }
 }
 
-void StrokePainter::CalculateVertices1()
+void StrokePainter::CalculateVertices()
 {
     _constrainedPoints.clear();
     for(uint a = 0; a < _quadMeshes.size(); a++)        
@@ -395,7 +388,8 @@ void StrokePainter::CalculateVertices1()
         if(a > 0) { prevQMesh = &_quadMeshes[a - 1]; }
         if(a < _quadMeshes.size() - 1) { nextQMesh = &_quadMeshes[a + 1]; }
 
-        CalculateVertices2(prevQMesh, curQMesh, nextQMesh);
+        CalculateLinearVertices(curQMesh);
+        //CalculateVertices2(prevQMesh, curQMesh, nextQMesh);
         //CalculateVertices1(curQMesh);
     }
     _qMeshNumData = 0;
@@ -403,6 +397,92 @@ void StrokePainter::CalculateVertices1()
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectangleMeshesColor, _kiteMeshesColor);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[0], &_qmTexVaos[0], _qmTexNumbers[0], QuadMeshType::MESH_RECTANGLE);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[1], &_qmTexVaos[1], _qmTexNumbers[1], QuadMeshType::MESH_KITE);
+}
+
+// illustrator-style texture mapping
+void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
+{
+    qMesh->_psVertices.clear();
+    qMesh->_opsVertices.clear();
+
+    AVector lStartPt = qMesh->_leftStartPt;
+    AVector lEndPt   = qMesh->_leftEndPt ;
+    AVector rStartPt = qMesh->_rightStartPt;
+    AVector rEndPt   = qMesh->_rightEndPt;
+
+    AVector topVec    = lEndPt - lStartPt;   // kite only
+    AVector rightVec  = lEndPt - rEndPt;     // kite only
+    AVector leftVec   = rStartPt - lStartPt;
+    AVector bottomVec = rEndPt - rStartPt;
+
+    AVector vVec = rStartPt - lStartPt;
+    AVector uHVec = (lEndPt - lStartPt);
+    AVector bHVec = (rEndPt - rStartPt);
+
+    AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();
+    AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();
+
+    //int intMeshHeight = 3;
+    //int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
+
+    float meshSize = SystemParams::mesh_size;
+    int intMeshHeight = SystemParams::stroke_width / meshSize;
+    if(intMeshHeight % 2 == 0) { intMeshHeight++; }
+    int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
+
+    // to do: fix this bug
+    if(intMeshWidth == 0) { intMeshWidth = intMeshHeight; }
+
+    if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE) { intMeshWidth = intMeshHeight; }
+
+    int xLoop = intMeshWidth + 1;
+    int yLoop = intMeshHeight + 1;
+
+    for(int xIter = 0; xIter < xLoop; xIter++)
+    {
+        std::vector<PlusSignVertex> columnVertices;
+
+        for(int yIter = 0; yIter < yLoop;  yIter++)
+        {
+            // this code sucks...
+            float xFactor = (float)xIter / (float)intMeshWidth;
+            float yFactor = (float)yIter / (float)intMeshHeight;
+
+            if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+            {
+                AVector pt;
+
+                int sumIdx = xIter + yIter;
+                if(sumIdx <= intMeshHeight)
+                {
+                    pt = lStartPt + leftVec * yFactor;
+                    pt = pt + topVec * xFactor;
+                }
+                else
+                {
+                    pt = rStartPt + bottomVec * xFactor;
+                    pt = pt + rightVec * (1.0 - yFactor);
+                }
+
+                PlusSignVertex psVert = PlusSignVertex(pt, false);
+                columnVertices.push_back(psVert);
+            }
+            else
+            {
+
+                AVector hVec = uHVec * (1.0f - yFactor) + bHVec * yFactor;
+
+                AVector pt = lStartPt + vVec * yFactor;
+                pt = pt + hVec * xFactor;
+
+                PlusSignVertex psVert = PlusSignVertex(pt, false);
+                columnVertices.push_back(psVert);
+            }
+
+        }
+        qMesh->_psVertices.push_back(columnVertices);
+        qMesh->_opsVertices.push_back(columnVertices);
+    }
 }
 
 void StrokePainter::CalculateVertices1(QuadMesh* qMesh)
@@ -434,9 +514,9 @@ void StrokePainter::CalculateVertices1(QuadMesh* qMesh)
 
     if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE) { intMeshWidth = intMeshHeight; }
 
-    int xLoop = intMeshWidth;
+    int xLoop = intMeshWidth + 1;
     int yLoop = intMeshHeight + 1;
-    xLoop++;
+    //xLoop++;
 
     for(int xIter = 0; xIter < xLoop; xIter++)
     {
@@ -575,7 +655,8 @@ void StrokePainter::ConformalMappingOneStepSimple()
 
 void StrokePainter::ConformalMappingOneStep()
 {
-    _cMapping->ConformalMappingOneStep(_quadMeshes);
+    // UNCOMMENT THIS
+    //_cMapping->ConformalMappingOneStep(_quadMeshes);
 
     //_debugLines = _cMapping->_debugLines;
     //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0.25, 0));
@@ -634,7 +715,7 @@ void StrokePainter::mouseMoveEvent(float x, float y)
 
         // Recalculate grids and iterate a step
         CalculateInitialRibbon();
-        CalculateVertices1();
+        CalculateVertices();
         //ConformalMappingOneStep();
 
         _vDataHelper->BuildPointsVertexData(_spineLines, &_selectedPointVbo, &_selectedPointVao, _selectedIndex, _unselectedPointColor, _selectedPointColor);
@@ -668,7 +749,7 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
 
         CalculateSpines(); // I moved CalculateSpines() from CalculateInitialRibbon()
         CalculateInitialRibbon();
-        CalculateVertices1();
+        CalculateVertices();
     }
 }
 

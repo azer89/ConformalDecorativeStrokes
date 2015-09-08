@@ -78,7 +78,7 @@ public:
     {
         _sPainter->CalculateSpines();
         _sPainter->CalculateInitialRibbon();
-        _sPainter->CalculateVertices1();
+        _sPainter->CalculateVertices();
     }
 
 
