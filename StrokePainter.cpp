@@ -433,7 +433,7 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
 
     float meshSize = SystemParams::mesh_size;
     int intMeshHeight = SystemParams::stroke_width / meshSize;
-    if(intMeshHeight % 2 == 0) { intMeshHeight++; }
+    //if(intMeshHeight % 2 == 0) { intMeshHeight++; }
     int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
 
     // to do: fix this bug
@@ -450,7 +450,6 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
 
         for(int yIter = 0; yIter < yLoop;  yIter++)
         {
-            // this code sucks...
             float xFactor = (float)xIter / (float)intMeshWidth;
             float yFactor = (float)yIter / (float)intMeshHeight;
 
@@ -475,6 +474,7 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
             }
             else
             {
+                // this code sucks...
 
                 AVector hVec = uHVec * (1.0f - yFactor) + bHVec * yFactor;
 

@@ -28,9 +28,9 @@ bool SystemParams::show_texture = false;
  * Modify these paths according your own folders
  */
 
-std::string SystemParams::stroke_texture_file = "../ConformalDecorativeStrokes/decorative_strokes/23-01-c_leg1.png";
+std::string SystemParams::stroke_texture_file = "../ConformalDecorativeStrokes/decorative_strokes/23-01_leg.png";
 
-std::string SystemParams::corner_texture_file = "../ConformalDecorativeStrokes/decorative_strokes/23-01-c_kite.png";
+std::string SystemParams::corner_texture_file = "../ConformalDecorativeStrokes/decorative_strokes/23-01_kite.png";
 
 std::string SystemParams::texture_dir = "../ConformalDecorativeStrokes/decorative_strokes";
 
