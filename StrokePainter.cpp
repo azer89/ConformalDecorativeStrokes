@@ -13,11 +13,12 @@ StrokePainter::StrokePainter() :
     _vDataHelper(0),
     _cMapping(new ConformalMapping()),
     _qMeshNumData(0),
-    _masterImages(std::vector<QImage>(2)),              // current only support two textures
-    _masterTextures(std::vector<QOpenGLTexture*>(2)),
-    _qmTexNumbers(std::vector<int>(2)),
-    _qmTexVbos(std::vector<QOpenGLBuffer>(2)),
-    _qmTexVaos(std::vector<QOpenGLVertexArrayObject>(2)),
+    _images(std::vector<QImage>(3)),              // support three textures
+    _oglTextures(std::vector<QOpenGLTexture*>(3)),
+    _vertexNumbers(std::vector<int>(3)),
+    _textureSizes(std::vector<QSize>(3)),
+    _texVbos(std::vector<QOpenGLBuffer>(3)),
+    _texVaos(std::vector<QOpenGLVertexArrayObject>(3)),
     _selectedIndex(-1),
     _maxDist(2.0f)
 {
@@ -45,23 +46,45 @@ void StrokePainter::SetVertexDataHelper(QOpenGLShaderProgram* shaderProgram)
     _vDataHelper = new VertexDataHelper(shaderProgram);
 }
 
-void StrokePainter::SetStrokeTexture(QString img)
+void StrokePainter::SetKiteTexture(QString img)
 {
-    _masterImages[0].load(img);
-    _masterTextures[0] = new QOpenGLTexture(_masterImages[0]);
+    _images[0].load(img);
+    QImage qImg = _images[0];
+    _oglTextures[0] = new QOpenGLTexture(qImg);
+    float length = ((float)qImg.width()) / ((float)qImg.height()) * SystemParams::stroke_width;
+    _textureSizes[0] = QSize(length, SystemParams::stroke_width);
 
-    //QOpenGLTexture* tex = _masterTextures[0];
-    //std::cout << tex->width() << " " << tex->height() << "\n";
+    //std::cout << "kite "
+    //          << length << " " << SystemParams::stroke_width
+    //          << " - " <<  qImg.width() << " " << qImg.height() <<"\n\n";
 }
 
-void StrokePainter::SetCornerTexture(QString img)
+void StrokePainter::SetLegTexture(QString img)
 {
-    _masterImages[1].load(img);
-    _masterTextures[1] = new QOpenGLTexture(_masterImages[1]);
+    _images[1].load(img);
+    QImage qImg = _images[1];
+    _oglTextures[1] = new QOpenGLTexture(qImg);
+    float length = ((float)qImg.width()) / ((float)qImg.height()) * SystemParams::stroke_width;
+    _textureSizes[1] = QSize(length, SystemParams::stroke_width);
 
-    //QOpenGLTexture* tex = _masterTextures[1];
-    //std::cout << tex->width() << " " << tex->height() << "\n";
+    //std::cout << "leg "
+    //          << length << " " << SystemParams::stroke_width
+    //          << " - " <<  qImg.width() << " " << qImg.height() <<"\n\n";
 }
+
+void StrokePainter::SetRectilinearTexture(QString img)
+{
+    _images[2].load(img);
+    QImage qImg = _images[2];
+    _oglTextures[2] = new QOpenGLTexture(qImg);
+    float length = ((float)qImg.width()) / ((float)qImg.height()) * SystemParams::stroke_width;
+    _textureSizes[2] = QSize(length, SystemParams::stroke_width);
+
+    //std::cout << "rectilinear "
+    //          << length << " " << SystemParams::stroke_width
+    //          << " - " <<  qImg.width() << " " << qImg.height() <<"\n\n";
+}
+
 
 void StrokePainter::CalculateLeftRightLines()
 {
@@ -109,7 +132,7 @@ void StrokePainter::CalculateInitialRibbon()
 {
     //CalculateSpines(); // I removed this, but I'm not sure whether I should bring it back...
     CalculateLeftRightLines();
-    CalculateKitesAndRectangles();
+    CalculateSegments();
 
     _vDataHelper->BuildLinesVertexData(_spineLines, &_spineLinesVbo, &_spineLinesVao, _spineLinesColor);
     //_vDataHelper->BuildLinesVertexData(_leftLines, &_leftLinesVbo, &_leftLinesVao, QVector3D(0.5, 0.5, 1));
@@ -139,7 +162,7 @@ void StrokePainter::CalculateSpines()
     }
 }
 
-void StrokePainter::CalculateKitesAndRectangles()
+void StrokePainter::CalculateSegments()
 {
     _quadMeshes.clear();
 
@@ -276,7 +299,7 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
     AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();  // for calculating mesh width
     AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();      // for calculating mesh width
 
-    float meshSize = SystemParams::mesh_size;
+    float meshSize = SystemParams::grid_cell_size;
 
     int intMeshHeight = SystemParams::stroke_width / meshSize;
     int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
@@ -401,8 +424,8 @@ void StrokePainter::CalculateVertices()
     _qMeshNumData = 0;
     _vDataHelper->BuildPointsVertexData(_constrainedPoints, &_constrainedPointsVbo, &_constrainedPointsVao, _constrainedPointColor);
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectangleMeshesColor, _kiteMeshesColor);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[0], &_qmTexVaos[0], _qmTexNumbers[0], QuadMeshType::MESH_RECTANGLE);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[1], &_qmTexVaos[1], _qmTexNumbers[1], QuadMeshType::MESH_KITE);
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[1], &_texVaos[1], _vertexNumbers[1], QuadMeshType::MESH_RECTANGLE);
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[0], &_texVaos[0], _vertexNumbers[0], QuadMeshType::MESH_KITE);
 }
 
 // illustrator-style texture mapping
@@ -431,7 +454,7 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
     //int intMeshHeight = 3;
     //int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
 
-    float meshSize = SystemParams::mesh_size;
+    float meshSize = SystemParams::grid_cell_size;
     int intMeshHeight = SystemParams::stroke_width / meshSize;
     //if(intMeshHeight % 2 == 0) { intMeshHeight++; }
     int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
@@ -510,7 +533,7 @@ void StrokePainter::CalculateVertices1(QuadMesh* qMesh)
     AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();
     AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();
 
-    float meshSize = SystemParams::mesh_size;
+    float meshSize = SystemParams::grid_cell_size;
 
     int intMeshHeight = SystemParams::stroke_width / meshSize;
     int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
@@ -655,8 +678,8 @@ void StrokePainter::ConformalMappingOneStepSimple()
 
     _qMeshNumData = 0;
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectangleMeshesColor, _kiteMeshesColor);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[0], &_qmTexVaos[0], _qmTexNumbers[0], QuadMeshType::MESH_RECTANGLE);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[1], &_qmTexVaos[1], _qmTexNumbers[1], QuadMeshType::MESH_KITE);
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[1], &_texVaos[1], _vertexNumbers[1], QuadMeshType::MESH_RECTANGLE);
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[0], &_texVaos[0], _vertexNumbers[0], QuadMeshType::MESH_KITE);
 }
 
 void StrokePainter::ConformalMappingOneStep()
@@ -670,8 +693,8 @@ void StrokePainter::ConformalMappingOneStep()
 
     _qMeshNumData = 0;
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectangleMeshesColor, _kiteMeshesColor);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[0], &_qmTexVaos[0], _qmTexNumbers[0], QuadMeshType::MESH_RECTANGLE);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[1], &_qmTexVaos[1], _qmTexNumbers[1], QuadMeshType::MESH_KITE);
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[1], &_texVaos[1], _vertexNumbers[1], QuadMeshType::MESH_RECTANGLE);
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[0], &_texVaos[0], _vertexNumbers[0], QuadMeshType::MESH_KITE);
 }
 
 void StrokePainter::MappingInterpolation()
@@ -689,8 +712,8 @@ void StrokePainter::MappingInterpolation()
 
     _qMeshNumData = 0;
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectangleMeshesColor, _kiteMeshesColor);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[0], &_qmTexVaos[0], _qmTexNumbers[0], QuadMeshType::MESH_RECTANGLE);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_qmTexVbos[1], &_qmTexVaos[1], _qmTexNumbers[1], QuadMeshType::MESH_KITE);
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[1], &_texVaos[1], _vertexNumbers[1], QuadMeshType::MESH_RECTANGLE);
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[0], &_texVaos[0], _vertexNumbers[0], QuadMeshType::MESH_KITE);
 }
 
 // mouse press
@@ -829,27 +852,27 @@ void StrokePainter::Draw()
         _quadMeshesVao.release();
     }
 
-    // Texture Rectangle
-    if(SystemParams::show_texture && _qmTexNumbers[0] > 0)
+    // Kite Texture
+    if(SystemParams::show_texture && _vertexNumbers[0] > 0)
     {
         _vDataHelper->NeedToDrawWithColor(0.0);
-
-        if(_masterTextures[0]) { _masterTextures[0]->bind(); }
-        _qmTexVaos[0].bind();
-        glDrawArrays(GL_QUADS, 0, _qmTexNumbers[0]);
-        _qmTexVaos[0].release();
-        if(_masterTextures[0]) { _masterTextures[0]->release(); }
+        if(_oglTextures[0]) { _oglTextures[0]->bind(); }
+        _texVaos[0].bind();
+        glDrawArrays(GL_QUADS, 0, _vertexNumbers[0]);
+        _texVaos[0].release();
+        if(_oglTextures[0]) { _oglTextures[0]->release(); }
     }
 
-    // Texture Kite
-    if(SystemParams::show_texture && _qmTexNumbers[1] > 0)
+    // Leg Texture
+    if(SystemParams::show_texture && _vertexNumbers[1] > 0)
     {
         _vDataHelper->NeedToDrawWithColor(0.0);
-        if(_masterTextures[1]) { _masterTextures[1]->bind(); }
-        _qmTexVaos[1].bind();
-        glDrawArrays(GL_QUADS, 0, _qmTexNumbers[1]);
-        _qmTexVaos[1].release();
-        if(_masterTextures[1]) { _masterTextures[1]->release(); }
+
+        if(_oglTextures[1]) { _oglTextures[1]->bind(); }
+        _texVaos[1].bind();
+        glDrawArrays(GL_QUADS, 0, _vertexNumbers[1]);
+        _texVaos[1].release();
+        if(_oglTextures[1]) { _oglTextures[1]->release(); }
     }
 }
 

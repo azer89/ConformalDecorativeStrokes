@@ -13,7 +13,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->widget->GetGLWidget(),   SIGNAL(CalculateConformalMap()), this, SLOT(AnimationStart()));
 
-
     //connect(ui->conformalMappingCheckBox,SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
     connect(ui->quadSizeSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
     connect(ui->iterThresholdSpinBox,    SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
@@ -25,21 +24,30 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->meshCheckBox,            SIGNAL(stateChanged(int)),       this, SLOT(SetDisplay()));
     connect(ui->textureCheckBox,         SIGNAL(stateChanged(int)),       this, SLOT(SetDisplay()));
 
-    connect(ui->actionSetStrokeTexture,	 SIGNAL(triggered()),             this, SLOT(SetStrokeTexture()));
-    connect(ui->actionSetCornerTexture,	 SIGNAL(triggered()),             this, SLOT(SetCornerTexture()));
-    connect(ui->textureAButton,          SIGNAL(clicked()),               this, SLOT(SetStrokeTexture()));
-    connect(ui->textureBButton,          SIGNAL(clicked()),               this, SLOT(SetCornerTexture()));
+
+    connect(ui->actionSetKiteTexture,	     SIGNAL(triggered()), this, SLOT(SetKiteTexture()));
+    connect(ui->actionSetLegTexture,	     SIGNAL(triggered()), this, SLOT(SetLegTexture()));
+    connect(ui->actionSetRectilinearTexture, SIGNAL(triggered()), this, SLOT(SetRectilinearTexture()));
+
+    connect(ui->legTextureButton,         SIGNAL(clicked()), this, SLOT(SetLegTexture()));
+    connect(ui->kiteTextureButton,        SIGNAL(clicked()), this, SLOT(SetKiteTexture()));
+    connect(ui->rectilinearTextureButton, SIGNAL(clicked()), this, SLOT(SetRectilinearTexture()));
 
     animTimer = new QTimer(this);
     connect(animTimer, SIGNAL(timeout()), this, SLOT(AnimationThread()));
 
-    ui->textureAButton->setIcon(QIcon(SystemParams::stroke_texture_file.c_str()));
-    ui->textureAButton->setIconSize(ui->textureAButton->size());
-    ui->textureAButton->setText("");
 
-    ui->textureBButton->setIcon(QIcon(SystemParams::corner_texture_file.c_str()));
-    ui->textureBButton->setIconSize(ui->textureBButton->size());
-    ui->textureBButton->setText("");
+    ui->kiteTextureButton->setIcon(QIcon(SystemParams::kite_texture_file.c_str()));
+    ui->kiteTextureButton->setIconSize(ui->kiteTextureButton->size());
+    ui->kiteTextureButton->setText("");
+
+    ui->legTextureButton->setIcon(QIcon(SystemParams::leg_texture_file.c_str()));
+    ui->legTextureButton->setIconSize(ui->legTextureButton->size());
+    ui->legTextureButton->setText("");
+
+    ui->rectilinearTextureButton->setIcon(QIcon(SystemParams::rectilinear_texture_file.c_str()));
+    ui->rectilinearTextureButton->setIconSize(ui->rectilinearTextureButton->size());
+    ui->rectilinearTextureButton->setText("");
 }
 
 MainWindow::~MainWindow()
@@ -48,33 +56,75 @@ MainWindow::~MainWindow()
     delete animTimer;
 }
 
-// Stroke Texture
-void MainWindow::SetStrokeTexture()
+// Kite Texture
+void MainWindow::SetKiteTexture()
 {
+    bool isBusy = false;
+    if(animTimer->isActive())
+    {
+       animTimer->stop();
+       isBusy = true;
+    }
+
     QString qFilename = QFileDialog::getOpenFileName(this,
-                                                     "Set Stroke Texture",
+                                                     "Set Kite Texture",
                                                      SystemParams::texture_dir.c_str());
     if(qFilename.isEmpty()) return;
 
-    ui->textureAButton->setIcon(QIcon(qFilename));
-    ui->textureAButton->setIconSize(ui->textureAButton->size());
+    ui->kiteTextureButton->setIcon(QIcon(qFilename));
+    ui->kiteTextureButton->setIconSize(ui->kiteTextureButton->size());
 
-    ui->widget->GetGLWidget()->SetStrokeTexture(qFilename);
+
+    ui->widget->GetGLWidget()->SetKiteTexture(qFilename);
+
+    if(isBusy) { animTimer->start(); }
 }
 
-// Corner Texture
-void MainWindow::SetCornerTexture()
+// Leg Texture
+void MainWindow::SetLegTexture()
 {
+    bool isBusy = false;
+    if(animTimer->isActive())
+    {
+       animTimer->stop();
+       isBusy = true;
+    }
+
     QString qFilename = QFileDialog::getOpenFileName(this,
-                                                     "Set Corner Texture",
+                                                     "Set Leg Texture",
                                                      SystemParams::texture_dir.c_str());
     if(qFilename.isEmpty()) return;
 
-    ui->textureBButton->setIcon(QIcon(qFilename));
-    ui->textureBButton->setIconSize(ui->textureBButton->size());
+    ui->legTextureButton->setIcon(QIcon(qFilename));
+    ui->legTextureButton->setIconSize(ui->legTextureButton->size());
 
+    ui->widget->GetGLWidget()->SetLegTexture(qFilename);
 
-    ui->widget->GetGLWidget()->SetCornerTexture(qFilename);
+    if(isBusy) { animTimer->start(); }
+}
+
+// Rectilinear Texture
+void MainWindow::SetRectilinearTexture()
+{
+    bool isBusy = false;
+    if(animTimer->isActive())
+    {
+       animTimer->stop();
+       isBusy = true;
+    }
+
+    QString qFilename = QFileDialog::getOpenFileName(this,
+                                                     "Set Rectilinear Texture",
+                                                     SystemParams::texture_dir.c_str());
+    if(qFilename.isEmpty()) return;
+
+    ui->rectilinearTextureButton->setIcon(QIcon(qFilename));
+    ui->rectilinearTextureButton->setIconSize(ui->rectilinearTextureButton->size());
+
+    // Implement this
+    //ui->widget->GetGLWidget()->SetRectilinearTexture(qFilename);
+
+    if(isBusy) { animTimer->start(); }
 }
 
 void MainWindow::AnimationThread()
@@ -127,7 +177,7 @@ void MainWindow::SetParams()
     SystemParams::iter_threshold = ui->iterThresholdSpinBox->value();
     SystemParams::enable_conformal_mapping = ui->conformalWarpingRadioButton->isChecked();
 
-    SystemParams::mesh_size = ui->quadSizeSpinBox->value();
+    SystemParams::grid_cell_size = ui->quadSizeSpinBox->value();
 
     SystemParams::kite_leg_length = ui->kiteLegsSpinBox->value();
 

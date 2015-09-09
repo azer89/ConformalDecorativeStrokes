@@ -178,7 +178,11 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuf
     if(isInit) { linesVao->release(); }
 }
 
-void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int& qMeshTexNumData, QuadMeshType qmType)
+void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadMeshes,
+                                                     QOpenGLBuffer* vbo,
+                                                     QOpenGLVertexArrayObject* vao,
+                                                     int& qMeshTexNumData,
+                                                     QuadMeshType qmType)
 {
     bool isInit = false;
     if(!vao->isCreated())

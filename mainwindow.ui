@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Conformal Decorative Strokes</string>
+   <string>Conformal Ornamental Strokes</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -37,8 +37,9 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionSetStrokeTexture"/>
-    <addaction name="actionSetCornerTexture"/>
+    <addaction name="actionSetLegTexture"/>
+    <addaction name="actionSetKiteTexture"/>
+    <addaction name="actionSetRectilinearTexture"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -86,159 +87,8 @@
       <height>16777215</height>
      </size>
     </property>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="8" column="0">
-      <widget class="QLabel" name="label">
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Quad Size</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="2">
-      <widget class="QDoubleSpinBox" name="quadSizeSpinBox">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>80</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-        </font>
-       </property>
-       <property name="minimum">
-        <double>0.050000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>100.000000000000000</double>
-       </property>
-       <property name="singleStep">
-        <double>0.100000000000000</double>
-       </property>
-       <property name="value">
-        <double>1.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Kite Legs</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="2">
-      <widget class="QDoubleSpinBox" name="kiteLegsSpinBox">
-       <property name="maximumSize">
-        <size>
-         <width>80</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-        </font>
-       </property>
-       <property name="maximum">
-        <double>1000.000000000000000</double>
-       </property>
-       <property name="singleStep">
-        <double>0.500000000000000</double>
-       </property>
-       <property name="value">
-        <double>30.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="13" column="0" colspan="3">
-      <widget class="QLabel" name="runningTimeLabel">
-       <property name="minimumSize">
-        <size>
-         <width>200</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Time: 0</string>
-       </property>
-      </widget>
-     </item>
-     <item row="14" column="0" colspan="3">
-      <widget class="QLabel" name="deltaLabel">
-       <property name="minimumSize">
-        <size>
-         <width>200</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Delta: 0</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-       <property name="margin">
-        <number>0</number>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0" colspan="3">
-      <widget class="QPushButton" name="textureAButton">
-       <property name="minimumSize">
-        <size>
-         <width>150</width>
-         <height>150</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>150</width>
-         <height>150</height>
-        </size>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="text">
-        <string>Texture A</string>
-       </property>
-       <property name="default">
-        <bool>false</bool>
-       </property>
-       <property name="flat">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0" colspan="3">
+    <layout class="QFormLayout" name="formLayout_2">
+     <item row="0" column="0" colspan="2">
       <widget class="QGroupBox" name="groupBox">
        <property name="minimumSize">
         <size>
@@ -290,22 +140,20 @@
        </widget>
       </widget>
      </item>
-     <item row="6" column="0" colspan="3">
-      <widget class="QCheckBox" name="textureCheckBox">
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-        </font>
+     <item row="1" column="0">
+      <spacer name="verticalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
        </property>
-       <property name="text">
-        <string>Show Texture</string>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
        </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
+      </spacer>
      </item>
-     <item row="5" column="0" colspan="2">
+     <item row="2" column="0">
       <widget class="QCheckBox" name="meshCheckBox">
        <property name="font">
         <font>
@@ -320,7 +168,22 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="3" column="0" colspan="2">
+      <widget class="QCheckBox" name="textureCheckBox">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Show Texture</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
       <spacer name="verticalSpacer_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -333,29 +196,88 @@
        </property>
       </spacer>
      </item>
-     <item row="1" column="0" colspan="3">
-      <widget class="QPushButton" name="textureBButton">
+     <item row="5" column="0">
+      <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Quad Size</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QDoubleSpinBox" name="quadSizeSpinBox">
        <property name="minimumSize">
         <size>
-         <width>150</width>
-         <height>150</height>
+         <width>0</width>
+         <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>150</width>
-         <height>150</height>
+         <width>80</width>
+         <height>16777215</height>
         </size>
        </property>
-       <property name="text">
-        <string>Texture B</string>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
        </property>
-       <property name="flat">
-        <bool>true</bool>
+       <property name="minimum">
+        <double>0.050000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>1.000000000000000</double>
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Kite Legs</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QDoubleSpinBox" name="kiteLegsSpinBox">
+       <property name="maximumSize">
+        <size>
+         <width>80</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="maximum">
+        <double>1000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.500000000000000</double>
+       </property>
+       <property name="value">
+        <double>30.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -368,7 +290,7 @@
        </property>
       </spacer>
      </item>
-     <item row="11" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="label_3">
        <property name="font">
         <font>
@@ -380,7 +302,7 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="2">
+     <item row="8" column="1">
       <widget class="QDoubleSpinBox" name="iterThresholdSpinBox">
        <property name="maximumSize">
         <size>
@@ -407,43 +329,253 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
+     <item row="9" column="0" colspan="2">
+      <widget class="QLabel" name="runningTimeLabel">
+       <property name="minimumSize">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>200</width>
+         <height>0</height>
         </size>
        </property>
-      </spacer>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Time: 0</string>
+       </property>
+      </widget>
      </item>
-     <item row="4" column="0">
-      <spacer name="verticalSpacer_4">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
+     <item row="10" column="0" colspan="2">
+      <widget class="QLabel" name="deltaLabel">
+       <property name="minimumSize">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>200</width>
+         <height>0</height>
         </size>
        </property>
-      </spacer>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Delta: 0</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
   </widget>
-  <action name="actionSetStrokeTexture">
+  <widget class="QDockWidget" name="dockWidget_2">
+   <property name="minimumSize">
+    <size>
+     <width>225</width>
+     <height>759</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>225</width>
+     <height>524287</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string/>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Kite</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="kiteTextureButton">
+       <property name="minimumSize">
+        <size>
+         <width>175</width>
+         <height>175</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>150</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Kite</string>
+       </property>
+       <property name="default">
+        <bool>false</bool>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Leg</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QPushButton" name="legTextureButton">
+       <property name="minimumSize">
+        <size>
+         <width>175</width>
+         <height>175</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="text">
+        <string>Leg</string>
+       </property>
+       <property name="default">
+        <bool>false</bool>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Rectilinear</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QPushButton" name="rectilinearTextureButton">
+       <property name="minimumSize">
+        <size>
+         <width>175</width>
+         <height>175</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>175</width>
+         <height>175</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Rectilinear</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+       <property name="default">
+        <bool>false</bool>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionSetLegTexture">
    <property name="text">
-    <string>Set Stroke Texture</string>
+    <string>Set Leg Texture</string>
    </property>
   </action>
-  <action name="actionSetCornerTexture">
+  <action name="actionSetKiteTexture">
    <property name="text">
-    <string>Set Corner Texture</string>
+    <string>Set Kite Texture</string>
+   </property>
+   <property name="toolTip">
+    <string>Set Kite Texture</string>
+   </property>
+  </action>
+  <action name="actionSetRectilinearTexture">
+   <property name="text">
+    <string>Set Rectilinear Texture</string>
    </property>
   </action>
  </widget>

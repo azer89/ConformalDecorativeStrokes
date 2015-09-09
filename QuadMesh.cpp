@@ -46,9 +46,8 @@ int QuadMesh::GetHeight() { return this->_psVertices[0].size(); }
 
 std::vector<AVector> QuadMesh::GetABoundary(int index, bool isXUnchanged, bool isOri)
 {
-    // this code looks inefficient
-    std::vector<std::vector<PlusSignVertex>> psVertices = _psVertices;
-    if(isOri) { psVertices =  _opsVertices; }
+    // is this correct ?
+    std::vector<std::vector<PlusSignVertex>> psVertices = (isOri) ? _opsVertices : _psVertices;
 
     std::vector<AVector> vertices;
     if(isXUnchanged) // column
@@ -66,6 +65,7 @@ std::vector<AVector> QuadMesh::GetABoundary(int index, bool isXUnchanged, bool i
     return vertices;
 }
 
+// not compatible with dirichlet boundary condition
 AVector QuadMesh::GetClosestPointFromBorders(AVector pt)
 {
     AVector closestPt = pt;
@@ -86,6 +86,8 @@ AVector QuadMesh::GetClosestPointFromBorders(AVector pt)
     }
     return closestPt;
 }
+
+/*
 AVector QuadMesh::sharpPt() const
 {
     return _innerConcavePt;
@@ -95,4 +97,5 @@ void QuadMesh::setSharpPt(const AVector &sharpPt)
 {
     _innerConcavePt = sharpPt;
 }
+*/
 

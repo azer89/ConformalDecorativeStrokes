@@ -8,9 +8,11 @@
 
 
 enum QuadMeshType
-{
-    MESH_RECTANGLE = 0,
-    MESH_KITE = 1,
+{    
+    MESH_KITE = 0,
+    MESH_RECTANGLE   = 1, // obsolete, temporary ?
+    MESH_LEG         = 2,
+    MESH_RECTILINEAR = 3,
 };
 
 struct QuadMesh
@@ -61,8 +63,8 @@ public:
     std::vector<std::vector<PlusSignVertex>> _opsVertices;
 
     //std::vector<std::vector<PlusSignVertex>> _tempVertices;
-    AVector sharpPt() const;
-    void setSharpPt(const AVector &sharpPt);
+    //AVector sharpPt() const;
+    //void setSharpPt(const AVector &sharpPt);
 };
 
 #endif // QUADMESH_H

@@ -35,8 +35,11 @@ private slots:
 
     void SetParams();
     void SetDisplay();
-    void SetStrokeTexture();
-    void SetCornerTexture();
+
+    void SetKiteTexture();
+    void SetLegTexture();
+    void SetRectilinearTexture();
+
 };
 
 #endif // MAINWINDOW_H

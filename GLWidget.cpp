@@ -61,11 +61,11 @@ void GLWidget::initializeGL()
     _sPainter = new StrokePainter();
     _sPainter->SetVertexDataHelper(_shaderProgram);
 
-    QString qFilenameA(SystemParams::stroke_texture_file.c_str());
-    this->SetStrokeTexture(qFilenameA);
+    QString qFilenameA(SystemParams::leg_texture_file.c_str());
+    this->SetLegTexture(qFilenameA);
 
-    QString qFilenameB(SystemParams::corner_texture_file.c_str());
-    this->SetCornerTexture(qFilenameB);
+    QString qFilenameB(SystemParams::kite_texture_file.c_str());
+    this->SetKiteTexture(qFilenameB);
 }
 
 bool GLWidget::event( QEvent * event )

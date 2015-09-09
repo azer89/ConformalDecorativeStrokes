@@ -69,8 +69,9 @@ public:
     bool ShouldStop() { return _sPainter->ShouldStop(); }
     float IterationDelta() { return _sPainter->IterationDelta(); }
 
-    void SetStrokeTexture(QString img) { _sPainter->SetStrokeTexture(img); }
-    void SetCornerTexture(QString img) { _sPainter->SetCornerTexture(img); }
+    void SetKiteTexture(QString img) { _sPainter->SetKiteTexture(img); }
+    void SetLegTexture(QString img) { _sPainter->SetLegTexture(img); }
+    void SetRectilinearTexture(QString img) { _sPainter->SetRectilinearTexture(img); }
 
     void ConformalMappingOneStep() { _sPainter->ConformalMappingOneStep(); }
     void MappingInterpolation() { _sPainter->MappingInterpolation(); }
