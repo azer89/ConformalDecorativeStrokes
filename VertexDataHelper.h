@@ -36,7 +36,13 @@ public:
     void BuildConstrainedPointsVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int *numConstrainedPoints, int mesh_width, int mesh_height, QVector3D vecCol);
 
     // Quad Mesh
-    void BuildLinesVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, int& qMeshNumData, QVector3D vecCol1, QVector3D vecCol2);
+    void BuildLinesVertexData(std::vector<QuadMesh> quadMeshes,
+                              QOpenGLBuffer* linesVbo,
+                              QOpenGLVertexArrayObject* linesVao,
+                              int& qMeshNumData,
+                              QVector3D vecCol1,
+                              QVector3D vecCol2,
+                              QVector3D vecCol3);
     void BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int& qMeshTexNumData, QuadMeshType qmType);
 
 private:

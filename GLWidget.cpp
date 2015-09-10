@@ -66,6 +66,9 @@ void GLWidget::initializeGL()
 
     QString qFilenameB(SystemParams::kite_texture_file.c_str());
     this->SetKiteTexture(qFilenameB);
+
+    QString qFilenameC(SystemParams::rectilinear_texture_file.c_str());
+    this->SetRectilinearTexture(qFilenameC);
 }
 
 bool GLWidget::event( QEvent * event )

@@ -65,6 +65,14 @@ public:
         return startPt + (endPt - startPt) * 0.5f;
     }
 
+    // factor [0..1]
+    AVector GetPointInBetween(float interpolationFactor)
+    {
+        AVector startPt(XA, YA);
+        AVector endPt(XB, YB);
+        return startPt + (endPt - startPt) * interpolationFactor;
+    }
+
     // Start point
     AVector GetPointA() { return AVector(XA, YA); }
 
@@ -110,6 +118,11 @@ public:
         if(subsValue > -std::numeric_limits<float>::epsilon() && subsValue < std::numeric_limits<float>::epsilon() ) { return 1; }
 
         return 0;
+    }
+
+    void Print()
+    {
+        std::cout << "ALine " << XA << " " << YA << " " << XB << " " << YB << "\n";
     }
 };
 

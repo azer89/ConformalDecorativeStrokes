@@ -31,8 +31,9 @@ public:
     void Draw();
 
     void CalculateInitialRibbon();          // shouln't be public
-    void CalculateLeftRightLines();         // shouln't be public
-    void CalculateSegments();     // shouln't be public
+    void CalculateInitialLeftRightLines();         // shouln't be public
+    void CalculateInitialSegments();     // shouln't be public
+    void DecomposeSegments();
     void CalculateSpines();                 // shouln't be public
 
     void ConformalMappingOneStepSimple();
@@ -72,16 +73,17 @@ private:
     int                         _qMeshNumData;
     QOpenGLBuffer               _quadMeshesVbo;
     QOpenGLVertexArrayObject    _quadMeshesVao;
-    QVector3D                   _rectangleMeshesColor;
+    QVector3D                   _rectMeshesColor;
+    QVector3D                   _legMeshesColor;
     QVector3D                   _kiteMeshesColor;
 
     // textures
-    std::vector<QImage>                    _images;         // texture images
-    std::vector<QOpenGLTexture*>           _oglTextures;    // OpenGL textures
-    std::vector<int>                       _vertexNumbers;  // number of vertices which use a certain texture
-    std::vector<QSize>                     _textureSizes;   // (length, width) should be scaled to SystemParams::stroke_width
-    std::vector<QOpenGLBuffer>             _texVbos;        // VBOs of textures
-    std::vector<QOpenGLVertexArrayObject>  _texVaos;        // VAOs of textures
+    std::vector<QImage>                    _images;          // texture images
+    std::vector<QOpenGLTexture*>           _oglTextures;     // OpenGL textures
+    std::vector<int>                       _vertexNumbers;   // number of vertices which use a certain texture
+    std::vector<QSizeF>                     _textureSizes;   // (width = length, height = width) should be scaled to SystemParams::stroke_width
+    std::vector<QOpenGLBuffer>             _texVbos;         // VBOs of textures
+    std::vector<QOpenGLVertexArrayObject>  _texVaos;         // VAOs of textures
 
     // interactive editing
     int _selectedIndex;
@@ -105,13 +107,13 @@ private:
 
     // left lines of the strokes. I need these lines to calculate closest points on the borders
     std::vector<AVector>        _leftLines;
-    //QOpenGLBuffer             _leftLinesVbo;
-    //QOpenGLVertexArrayObject  _leftLinesVao;
+    QOpenGLBuffer             _leftLinesVbo;
+    QOpenGLVertexArrayObject  _leftLinesVao;
 
     // right lines of the stroke. I need these lines to calculate closest points on the borders
     std::vector<AVector>        _rightLines;
-    //QOpenGLBuffer             _rightLinesVbo;
-    //QOpenGLVertexArrayObject  _rightLinesVao;
+    QOpenGLBuffer             _rightLinesVbo;
+    QOpenGLVertexArrayObject  _rightLinesVao;
 
     // constrained points
     std::vector<AVector>        _constrainedPoints;

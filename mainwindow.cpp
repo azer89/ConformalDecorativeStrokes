@@ -121,8 +121,7 @@ void MainWindow::SetRectilinearTexture()
     ui->rectilinearTextureButton->setIcon(QIcon(qFilename));
     ui->rectilinearTextureButton->setIconSize(ui->rectilinearTextureButton->size());
 
-    // Implement this
-    //ui->widget->GetGLWidget()->SetRectilinearTexture(qFilename);
+    ui->widget->GetGLWidget()->SetRectilinearTexture(qFilename);
 
     if(isBusy) { animTimer->start(); }
 }

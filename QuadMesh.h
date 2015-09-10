@@ -10,7 +10,7 @@
 enum QuadMeshType
 {    
     MESH_KITE = 0,
-    MESH_RECTANGLE   = 1, // obsolete, temporary ?
+    MESH_RECTANGLE   = 1, // obsolete
     MESH_LEG         = 2,
     MESH_RECTILINEAR = 3,
 };
@@ -43,6 +43,11 @@ public:
 
     AVector GetClosestPointFromBorders(AVector pt);
 
+    ALine GetTopLine()    { return ALine(_leftStartPt,  _leftEndPt); }
+    ALine GetBottomLine() { return ALine(_rightStartPt, _rightEndPt); }
+    ALine GetLeftLine()   { return ALine(_leftStartPt,  _rightStartPt); }
+    ALine GetRightLine()  { return ALine(_leftEndPt,    _rightEndPt); }
+
 public:
 
     // the shape of the mesh is quadrilateral,
@@ -61,10 +66,6 @@ public:
 
     // original vertices (we do not apply any conformal mapping)
     std::vector<std::vector<PlusSignVertex>> _opsVertices;
-
-    //std::vector<std::vector<PlusSignVertex>> _tempVertices;
-    //AVector sharpPt() const;
-    //void setSharpPt(const AVector &sharpPt);
 };
 
 #endif // QUADMESH_H

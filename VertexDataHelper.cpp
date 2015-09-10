@@ -317,7 +317,13 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
     if(isInit) { vao->release(); }
 }
 
-void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, int &qMeshNumData, QVector3D vecCol1, QVector3D vecCol2)
+void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes,
+                                            QOpenGLBuffer* linesVbo,
+                                            QOpenGLVertexArrayObject* linesVao,
+                                            int &qMeshNumData,
+                                            QVector3D vecCol1,
+                                            QVector3D vecCol2,
+                                            QVector3D vecCol3)
 {
     qMeshNumData = 0;
     if(quadMeshes.size() == 0) { return; }
@@ -337,6 +343,8 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes, QO
         QVector3D vecCol = vecCol1;
         if(qMesh._quadMeshType == QuadMeshType::MESH_KITE)
             { vecCol = vecCol2; }
+        else if(qMesh._quadMeshType == QuadMeshType::MESH_LEG)
+            { vecCol = vecCol3; }
 
         int mesh_width = qMesh._psVertices.size();
         int mesh_height = qMesh._psVertices[0].size();
