@@ -292,9 +292,9 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
     AVector rStartPt = curQMesh->_rightStartPt;
     AVector rEndPt   = curQMesh->_rightEndPt;
 
-    AVector vVec = rStartPt - lStartPt;  // a vertical vector (pointing downward)
-    AVector uHVec = (lEndPt - lStartPt); // an upper horizontal vector from start to end
-    AVector bHVec = (rEndPt - rStartPt); // a lower horizontal vector from start to end
+    AVector vVec  = rStartPt - lStartPt;  // a vertical vector (pointing downward)
+    AVector uHVec = lEndPt - lStartPt; // an upper horizontal vector from start to end
+    AVector bHVec = rEndPt - rStartPt; // a lower horizontal vector from start to end
 
     AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();  // for calculating mesh width
     AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();      // for calculating mesh width
