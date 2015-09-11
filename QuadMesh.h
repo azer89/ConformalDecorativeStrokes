@@ -50,7 +50,8 @@ public:
 
 public:
 
-    int _textureNum;
+    //int _textureNum;
+    float _textureLength;
 
     // the shape of the mesh is quadrilateral,
     // so we can define it with four corner positions

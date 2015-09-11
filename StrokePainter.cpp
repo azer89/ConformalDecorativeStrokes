@@ -451,20 +451,23 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
 
     float meshSize = SystemParams::grid_cell_size;
 
-    float segmentLength = SystemParams::stroke_width; // KITE
+    float textureLength = SystemParams::stroke_width; // KITE
     if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG)
-        { segmentLength = _textureSizes[1].width(); }
+        { textureLength = _textureSizes[1].width(); }
     else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
-        { segmentLength = _textureSizes[2].width(); }
+        { textureLength = _textureSizes[2].width(); }
 
-    curQMesh->_textureNum = (int)std::round(mStartPt.Distance(mEndPt) / segmentLength);
-    if(curQMesh->_textureNum == 0) curQMesh->_textureNum = 1;
+    curQMesh->_textureLength = textureLength;
+
+    int textureNum = (int)std::round(mStartPt.Distance(mEndPt) / textureLength);
+
+    //curQMesh->_textureNum = (int)std::round(mStartPt.Distance(mEndPt) / segmentLength);
+    //if(curQMesh->_textureNum == 0) curQMesh->_textureNum = 1;
 
     int intMeshHeight = SystemParams::stroke_width / meshSize;
-    int intMeshWidth =  curQMesh->_textureNum * (int)(segmentLength / meshSize);
+    int intMeshWidth =  textureNum * (int)(textureLength / meshSize);
     //int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / segmentLength) * intMeshHeight;
     //int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / meshSize);
-
 
 
     // to do: fix this bug

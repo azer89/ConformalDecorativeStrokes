@@ -2,6 +2,7 @@
 #include "VertexDataHelper.h"
 
 #include "UtilityFunctions.h"
+#include "SystemParams.h"
 //#include <utility>
 
 VertexDataHelper::VertexDataHelper(QOpenGLShaderProgram* shaderProgram)
@@ -213,10 +214,11 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
 
         //int textureWidth =  heightMinOne;
 
+        int textureWidth = (int)(curQMesh->_textureLength / SystemParams::grid_cell_size);
 
-        int textureWidth = (mesh_width / curQMesh->_textureNum) - 1;
-        if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
-            textureWidth =  heightMinOne;
+        //int textureWidth = (mesh_width / curQMesh->_textureNum) - 1;
+        //if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+        //    textureWidth =  heightMinOne;
 
         //if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
         //    textureWidth++;
