@@ -5,6 +5,7 @@
 
 QuadMesh::QuadMesh()
 {
+    this->_textureNum = 1;
 }
 
 QuadMesh::QuadMesh(AVector      leftStartPt,
@@ -22,6 +23,8 @@ QuadMesh::QuadMesh(AVector      leftStartPt,
     this->_innerConcavePt      = sharpPt;
     this->_isRightKite  = isRightKite;
     this->_quadMeshType = quadMeshType;
+
+    this->_textureNum = 1;
 }
 
 QuadMesh::QuadMesh(AVector      leftStartPt,
@@ -35,6 +38,8 @@ QuadMesh::QuadMesh(AVector      leftStartPt,
     this->_rightStartPt = rightStartPt;
     this->_rightEndPt   = rightEndPt;
     this->_quadMeshType = quadMeshType;
+
+    this->_textureNum = 1;
 }
 
 QuadMesh::~QuadMesh()

@@ -74,7 +74,6 @@ void MainWindow::SetKiteTexture()
     ui->kiteTextureButton->setIcon(QIcon(qFilename));
     ui->kiteTextureButton->setIconSize(ui->kiteTextureButton->size());
 
-
     ui->widget->GetGLWidget()->SetKiteTexture(qFilename);
 
     if(isBusy) { animTimer->start(); }

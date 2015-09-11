@@ -50,6 +50,8 @@ public:
 
 public:
 
+    int _textureNum;
+
     // the shape of the mesh is quadrilateral,
     // so we can define it with four corner positions
     AVector _leftStartPt;
