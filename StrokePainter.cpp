@@ -53,12 +53,6 @@ void StrokePainter::SetKiteTexture(QString img)
     _oglTextures[0] = new QOpenGLTexture(qImg);
     float length = ((float)qImg.width()) / ((float)qImg.height()) * SystemParams::stroke_width;
     _textureSizes[0] = QSizeF(length, SystemParams::stroke_width);
-
-
-    std::cout << "The kite texture is set.\n";
-    //std::cout << "kite "
-    //          << length << " " << SystemParams::stroke_width
-    //          << " - " <<  qImg.width() << " " << qImg.height() <<"\n\n";
 }
 
 void StrokePainter::SetLegTexture(QString img)
@@ -68,11 +62,6 @@ void StrokePainter::SetLegTexture(QString img)
     _oglTextures[1] = new QOpenGLTexture(qImg);
     float length = ((float)qImg.width()) / ((float)qImg.height()) * SystemParams::stroke_width;
     _textureSizes[1] = QSizeF(length, SystemParams::stroke_width);
-
-    std::cout << "The leg texture is set.\n";
-    //std::cout << "leg "
-    //          << length << " " << SystemParams::stroke_width
-    //          << " - " <<  qImg.width() << " " << qImg.height() <<"\n\n";
 }
 
 void StrokePainter::SetRectilinearTexture(QString img)
@@ -82,11 +71,6 @@ void StrokePainter::SetRectilinearTexture(QString img)
     _oglTextures[2] = new QOpenGLTexture(qImg);
     float length = ((float)qImg.width()) / ((float)qImg.height()) * SystemParams::stroke_width;
     _textureSizes[2] = QSizeF(length, SystemParams::stroke_width);
-
-    std::cout << "The rectilinear texture is set.\n";
-    //std::cout << "rectilinear "
-    //          << length << " " << SystemParams::stroke_width
-    //          << " - " <<  qImg.width() << " " << qImg.height() <<"\n\n";
 }
 
 
@@ -187,7 +171,7 @@ void StrokePainter::DecomposeSegments()
     _rightLines.clear();
 
     //_debugPoints.clear(); // delete this
-    _debugLines.clear();
+    //_debugLines.clear();
 
     float legLength = _textureSizes[1].width();
     float rectilinearLength = _textureSizes[2].width();
@@ -449,26 +433,19 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
     AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();  // for calculating mesh width
     AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();      // for calculating mesh width
 
-    float meshSize = SystemParams::grid_cell_size;
-
     float textureLength = SystemParams::stroke_width; // KITE
     if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG)
         { textureLength = _textureSizes[1].width(); }
     else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
         { textureLength = _textureSizes[2].width(); }
 
+    // store this value
     curQMesh->_textureLength = textureLength;
 
     int textureNum = (int)std::round(mStartPt.Distance(mEndPt) / textureLength);
 
-    //curQMesh->_textureNum = (int)std::round(mStartPt.Distance(mEndPt) / segmentLength);
-    //if(curQMesh->_textureNum == 0) curQMesh->_textureNum = 1;
-
-    int intMeshHeight = SystemParams::stroke_width / meshSize;
-    int intMeshWidth =  textureNum * (int)(textureLength / meshSize);
-    //int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / segmentLength) * intMeshHeight;
-    //int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / meshSize);
-
+    int intMeshHeight = SystemParams::stroke_width / SystemParams::grid_cell_size;
+    int intMeshWidth =  textureNum * (int)(textureLength / SystemParams::grid_cell_size);
 
     // to do: fix this bug
     if(intMeshWidth == 0) { intMeshWidth = intMeshHeight; }
@@ -498,92 +475,36 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
             {
                 // no prev
                 if(!prevQMesh && ( (xIter == 0 && yIter == 0) || (xIter == 0 && yIter == yLoop - 1) ))
-                {
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }
+                    { _constrainedPoints.push_back(pt);  shouldMove = false; }
                 else if(!prevQMesh && xIter == 0)
-                {
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }
+                    { _constrainedPoints.push_back(pt); shouldMove = false; }
 
                 // no next
                 if(!nextQMesh && ( (xIter == xLoop - 1 && yIter == 0)  || (xIter == xLoop - 1 && yIter == yLoop - 1)  ))
-                {
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }
+                    { _constrainedPoints.push_back(pt);  shouldMove = false; }
                 else if(!nextQMesh && xIter == xLoop - 1)
-                {
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }
+                    { _constrainedPoints.push_back(pt); shouldMove = false; }
             }
-            else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG) // RECTANGLE
+            else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG)
             {
-                // conditional left (prev)
-                /*if(!prevQMesh && ( (xIter == 0 && yIter == 0) || (xIter == 0 && yIter == yLoop - 1) ))
-                {
-                    // no prev
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }
-                else*/ if(prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
-                          prevQMesh->_isRightKite && (xIter == 0 && yIter == yLoop - 1))
-                {
-                    // prev is right kite, mark downleft
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }
-                else if(prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
-                        !prevQMesh->_isRightKite && (xIter == 0 && yIter == 0))
-                {
-                    // prev is left kite, mark upright
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }
-                /*else if(!prevQMesh && xIter == 0)
-                {
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }*/
+                // prev is right kite, mark downleft
+                if(prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE && prevQMesh->_isRightKite && (xIter == 0 && yIter == yLoop - 1))
+                    { _constrainedPoints.push_back(pt); shouldMove = false; }
+                // prev is left kite, mark upright
+                else if(prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE && !prevQMesh->_isRightKite && (xIter == 0 && yIter == 0))
+                    { _constrainedPoints.push_back(pt);  shouldMove = false; }
 
-                // conditional right (next)
-                /*if(!nextQMesh && ( (xIter == xLoop - 1 && yIter == 0)  || (xIter == xLoop - 1 && yIter == yLoop - 1)  ))
-                {
-                    // no next
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }
-                else*/ if(nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
-                          nextQMesh->_isRightKite && (xIter == xLoop - 1 && yIter == yLoop - 1))
-                {
-                    // next is right kite, mark downright
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }
-                else if(nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
-                        !nextQMesh->_isRightKite && (xIter == xLoop - 1 && yIter == 0))
-                {
-                    // next is left kite, mark upright
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }
-                /*else if(!nextQMesh && xIter == xLoop - 1)
-                {
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }*/
+                // next is right kite, mark downright
+                if(nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE && nextQMesh->_isRightKite && (xIter == xLoop - 1 && yIter == yLoop - 1))
+                    { _constrainedPoints.push_back(pt);  shouldMove = false; }
+                // next is left kite, mark upright
+                else if(nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE && !nextQMesh->_isRightKite && (xIter == xLoop - 1 && yIter == 0))
+                    { _constrainedPoints.push_back(pt);  shouldMove = false; }
             }
             else if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
             {
-                if( (xIter == 0 && yIter == yLoop - 1) ||
-                    (xIter == xLoop - 1 && yIter == 0))
-                {
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }
+                if( (xIter == 0 && yIter == yLoop - 1) || (xIter == xLoop - 1 && yIter == 0))
+                    { _constrainedPoints.push_back(pt);  shouldMove = false; }
             }
 
             PlusSignVertex psVert = PlusSignVertex(pt, shouldMove);
@@ -635,24 +556,21 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
     AVector rStartPt = qMesh->_rightStartPt;
     AVector rEndPt   = qMesh->_rightEndPt;
 
-    AVector topVec    = lEndPt - lStartPt;   // kite only
-    AVector rightVec  = lEndPt - rEndPt;     // kite only
+    AVector topVec    = lEndPt   - lStartPt;   // kite only
+    AVector rightVec  = lEndPt   - rEndPt;     // kite only
     AVector leftVec   = rStartPt - lStartPt;
-    AVector bottomVec = rEndPt - rStartPt;
+    AVector bottomVec = rEndPt   - rStartPt;
 
-    AVector vVec = rStartPt - lStartPt;
-    AVector uHVec = (lEndPt - lStartPt);
-    AVector bHVec = (rEndPt - rStartPt);
+    AVector vVec  = rStartPt - lStartPt;
+    AVector uHVec = (lEndPt  - lStartPt);
+    AVector bHVec = (rEndPt  - rStartPt);
 
     AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();
     AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();
 
-    //int intMeshHeight = 3;
-    //int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
-
     float meshSize = SystemParams::grid_cell_size;
     int intMeshHeight = SystemParams::stroke_width / meshSize;
-    //if(intMeshHeight % 2 == 0) { intMeshHeight++; }
+
     int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
 
     // to do: fix this bug
@@ -703,7 +621,6 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
                 PlusSignVertex psVert = PlusSignVertex(pt, false);
                 columnVertices.push_back(psVert);
             }
-
         }
         qMesh->_psVertices.push_back(columnVertices);
         qMesh->_opsVertices.push_back(columnVertices);

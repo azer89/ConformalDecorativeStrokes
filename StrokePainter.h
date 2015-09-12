@@ -31,8 +31,8 @@ public:
     void Draw();
 
     void CalculateInitialRibbon();          // shouln't be public
-    void CalculateInitialLeftRightLines();         // shouln't be public
-    void CalculateInitialSegments();     // shouln't be public
+    void CalculateInitialLeftRightLines();  // shouln't be public
+    void CalculateInitialSegments();        // shouln't be public
     void DecomposeSegments();
     void CalculateSpines();                 // shouln't be public
 
@@ -81,7 +81,7 @@ private:
     std::vector<QImage>                    _images;          // texture images
     std::vector<QOpenGLTexture*>           _oglTextures;     // OpenGL textures
     std::vector<int>                       _vertexNumbers;   // number of vertices which use a certain texture
-    std::vector<QSizeF>                     _textureSizes;   // (width = length, height = width) should be scaled to SystemParams::stroke_width
+    std::vector<QSizeF>                    _textureSizes;   // (width = length, height = width) should be scaled to SystemParams::stroke_width
     std::vector<QOpenGLBuffer>             _texVbos;         // VBOs of textures
     std::vector<QOpenGLVertexArrayObject>  _texVaos;         // VAOs of textures
 

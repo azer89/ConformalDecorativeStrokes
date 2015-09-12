@@ -210,38 +210,20 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
         int mesh_width = plusSignVertices.size();
         int mesh_height = plusSignVertices[0].size();
 
-        int heightMinOne = mesh_height - 1;
-
-        //int textureWidth =  heightMinOne;
-
+        int textureHeight = mesh_height - 1;
         int textureWidth = (int)(curQMesh->_textureLength / SystemParams::grid_cell_size);
-
-        //int textureWidth = (mesh_width / curQMesh->_textureNum) - 1;
-        //if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
-        //    textureWidth =  heightMinOne;
-
-        //if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
-        //    textureWidth++;
 
         for(int a = 0; a < mesh_width - 1; a++)
         {
-            //float aNumerator = a % heightMinOne;
             float aNumerator = a % textureWidth;
 
-            //float xCoord1 = (aNumerator) / (float)heightMinOne;
-            //float xCoord2 = (aNumerator + 1.0f) / (float)heightMinOne;
             float xCoord1 = (aNumerator) / (float)textureWidth;
             float xCoord2 = (aNumerator + 1.0f) / (float)textureWidth;
 
             for(int b = 0; b < mesh_height - 1; b++)
             {
-                float yCoord1 = (float)b / (float)heightMinOne;
-                float yCoord2 = (float)(b + 1) / (float)heightMinOne;
-
-                AVector aVec = plusSignVertices[a][b].position;
-                AVector bVec = plusSignVertices[a+1][b].position;
-                AVector cVec = plusSignVertices[a+1][b+1].position;
-                AVector dVec = plusSignVertices[a][b+1].position;
+                float yCoord1 = (float)b / (float)textureHeight;
+                float yCoord2 = (float)(b + 1) / (float)textureHeight;
 
                 QVector2D uv1;
                 QVector2D uv2;
@@ -264,7 +246,7 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                     uv3 = QVector2D(1.0f - xCoord2, yCoord2);
                     uv4 = QVector2D(1.0f - xCoord1, yCoord2);
                 }
-                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG /*QuadMeshType::MESH_RECTANGLE*/ &&
+                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG &&
                         prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
                         prevQMesh->_isRightKite)
                 {
@@ -274,7 +256,7 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                     uv3 = QVector2D(xCoord2, yCoord2);
                     uv4 = QVector2D(xCoord1, yCoord2);
                 }
-                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG /*QuadMeshType::MESH_RECTANGLE*/ &&
+                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG &&
                         prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
                         !prevQMesh->_isRightKite)
                 {
@@ -284,7 +266,7 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                     uv3 = QVector2D(xCoord2, 1.0f - yCoord2);
                     uv4 = QVector2D(xCoord1, 1.0f - yCoord2);
                 }
-                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG /*QuadMeshType::MESH_RECTANGLE*/ &&
+                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG &&
                         nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
                         nextQMesh->_isRightKite)
                 {
@@ -294,7 +276,7 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                     uv3 = QVector2D(1.0f - xCoord2, yCoord2);
                     uv4 = QVector2D(1.0f - xCoord1, yCoord2);
                 }
-                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG /*QuadMeshType::MESH_RECTANGLE*/ &&
+                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG &&
                         nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
                         !nextQMesh->_isRightKite)
                 {
@@ -304,13 +286,18 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                     uv3 = QVector2D(1.0f - xCoord2, 1.0f - yCoord2);
                     uv4 = QVector2D(1.0f - xCoord1, 1.0f - yCoord2);
                 }
-                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTILINEAR) /*QuadMeshType::MESH_RECTILINEAR*/
+                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
                 {
                     uv1 = QVector2D(xCoord1, yCoord1);
                     uv2 = QVector2D(xCoord2, yCoord1);
                     uv3 = QVector2D(xCoord2, yCoord2);
                     uv4 = QVector2D(xCoord1, yCoord2);
                 }
+
+                AVector aVec = plusSignVertices[a][b].position;
+                AVector bVec = plusSignVertices[a+1][b].position;
+                AVector cVec = plusSignVertices[a+1][b+1].position;
+                AVector dVec = plusSignVertices[a][b+1].position;
 
                 data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), uv1));
                 data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), uv2));
@@ -321,11 +308,6 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
     }
 
     qMeshTexNumData = data.size();
-
-    //if(qmType == QuadMeshType::MESH_RECTILINEAR)
-    //{
-    //    std::cout << qMeshTexNumData << "...\n";
-    //}
 
     if(!vbo->isCreated()) { vbo->create(); }
     vbo->bind();
