@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //connect(ui->conformalMappingCheckBox,SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
     connect(ui->quadSizeSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
     connect(ui->iterThresholdSpinBox,    SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
-    connect(ui->kiteLegsSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
+    //connect(ui->kiteLegsSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
 
     connect(ui->linearWarpingRadioButton,    SIGNAL(clicked(bool)),    this, SLOT(SetParams()));
     connect(ui->conformalWarpingRadioButton, SIGNAL(clicked(bool)),    this, SLOT(SetParams()));
@@ -177,7 +177,7 @@ void MainWindow::SetParams()
 
     SystemParams::grid_cell_size = ui->quadSizeSpinBox->value();
 
-    SystemParams::kite_leg_length = ui->kiteLegsSpinBox->value();
+    //SystemParams::kite_leg_length = ui->kiteLegsSpinBox->value();
 
     ui->runningTimeLabel->setText("Time: 0");
     ui->deltaLabel->setText("Delta: 0");
