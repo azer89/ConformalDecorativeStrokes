@@ -171,12 +171,10 @@ void GLWidget::mouseReleaseEvent(int x, int y)
 
 void GLWidget::keyboardPressEvent(Qt::Key key)
 {
-
 }
 
 void GLWidget::keyboardReleaseEvent(Qt::Key key)
 {
-
 }
 
 void GLWidget::mouseDoubleClick(int x, int y)

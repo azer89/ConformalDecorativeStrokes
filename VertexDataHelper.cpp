@@ -119,8 +119,8 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<std::vector<Plu
     vbo->bind();
     vbo->allocate(data.data(), data.size() * sizeof(VertexData));
 
-    //BuildVboWithColor(data, vbo);
     quintptr offset = 0;
+
     // vertex
     _shaderProgram->enableAttributeArray(_vertexLocation);
     _shaderProgram->setAttributeBuffer(_vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
@@ -441,7 +441,6 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<std::vector<PlusSignVert
     if(isInit) { linesVao->release(); }
 }
 
-
 void VertexDataHelper::BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, int selectedIndex, QVector3D selectedCol, QVector3D unselectedCol)
 {
     bool isInit = false;
@@ -468,8 +467,6 @@ void VertexDataHelper::BuildPointsVertexData(std::vector<AVector> points, QOpenG
     if(isInit) { ptsVao->release(); }
 }
 
-
-
 void VertexDataHelper::BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol)
 {
     bool isInit = false;
@@ -488,8 +485,6 @@ void VertexDataHelper::BuildPointsVertexData(std::vector<AVector> points, QOpenG
 
     if(isInit) { ptsVao->release(); }
 }
-
-
 
 void VertexDataHelper::BuildVboWithColor(QVector<VertexData> data, QOpenGLBuffer* vbo)
 {

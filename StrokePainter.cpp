@@ -140,24 +140,6 @@ void StrokePainter::CalculateSpines()
     std::vector<AVector> tempLine;
     CurveRDP::SimplifyRDP(_oriStrokeLines, tempLine, SystemParams::rdp_epsilon);
     _spineLines = std::vector<AVector>(tempLine);
-
-    /*
-    // delete this
-    if(_spineLines.size() == 3)
-    {
-        float length = SystemParams::kite_leg_length;
-
-        AVector pt1 = _spineLines[0];
-        AVector pt2 = _spineLines[1];
-        AVector pt3 = _spineLines[2];
-
-        AVector dirA = pt2.DirectionTo(pt1).Norm();
-        AVector dirB = pt2.DirectionTo(pt3).Norm();
-
-        _spineLines[0] = pt2 + dirA * length;
-        _spineLines[2] = pt2 + dirB * length;
-    }
-    */
 }
 
 void StrokePainter::DecomposeSegments()
@@ -581,8 +563,9 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
 
     int textureNum = (int)std::round(mStartPt.Distance(mEndPt) / textureLength);
 
-    int intMeshHeight = SystemParams::stroke_width / SystemParams::grid_cell_size;
-    int intMeshWidth =  textureNum * (int)(textureLength / SystemParams::grid_cell_size);
+    //float gridCellFactor = 0.25f;
+    int intMeshHeight = SystemParams::stroke_width / (SystemParams::grid_cell_size);
+    int intMeshWidth =  textureNum * textureLength / (SystemParams::grid_cell_size);
 
     // to do: fix this bug
     if(intMeshWidth == 0) { intMeshWidth = intMeshHeight; }
@@ -638,6 +621,7 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
     }
 }
 
+// to do: this function needs to be fixed since the code is obsolete
 void StrokePainter::CalculateVertices1(QuadMesh* qMesh)
 {
     qMesh->_psVertices.clear();
@@ -657,8 +641,8 @@ void StrokePainter::CalculateVertices1(QuadMesh* qMesh)
     AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();
     AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();
 
+    // this part is obsolete
     float meshSize = SystemParams::grid_cell_size;
-
     int intMeshHeight = SystemParams::stroke_width / meshSize;
     int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
 
@@ -686,21 +670,7 @@ void StrokePainter::CalculateVertices1(QuadMesh* qMesh)
 
             bool shouldMove = true;
 
-            /*
-            // Fix this part !
-            if(qMesh->_quadMeshType == QuadMeshType::MESH_RECTANGLE) // RECTANGLE
-            {
-                if((xIter == 0         && yIter == 0) ||
-                   (xIter == xLoop - 1 && yIter == 0) ||
-                   (xIter == 0         && yIter == yLoop - 1) ||
-                   (xIter == xLoop - 1 && yIter == yLoop - 1))
-                {
-                    _constrainedPoints.push_back(pt);
-                    shouldMove = false;
-                }
-            }
-
-            else*/ if(/*!SystemParams::fixed_separation_constraint &&*/ qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+            if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
             {
                 if( (xIter == 0 && yIter == 0) ||
                     (xIter == xLoop - 1 && yIter == yLoop - 1) ||
@@ -712,7 +682,7 @@ void StrokePainter::CalculateVertices1(QuadMesh* qMesh)
                 }
             }
 
-            PlusSignVertex psVert = PlusSignVertex(pt, shouldMove/*, junctionRibsConstrained, spinesConstrained*/);
+            PlusSignVertex psVert = PlusSignVertex(pt, shouldMove);
             columnVertices.push_back(psVert);
         }
         qMesh->_psVertices.push_back(columnVertices);
@@ -848,10 +818,8 @@ void StrokePainter::mouseMoveEvent(float x, float y)
         // Recalculate grids and iterate a step
         CalculateInitialRibbon();
         CalculateVertices();
-        //ConformalMappingOneStep();
 
         _vDataHelper->BuildPointsVertexData(_spineLines, &_selectedPointVbo, &_selectedPointVao, _selectedIndex, _unselectedPointColor, _selectedPointColor);
-
     }
     else
     {
@@ -867,7 +835,6 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
     _isMouseDown = false;
 
     _oriStrokeLines.push_back(AVector(x, y));
-
     float curveLength = UtilityFunctions::CurveLength(_oriStrokeLines);
 
     // Ugly conditional !
@@ -879,7 +846,7 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
         _rightLines.clear();
         _spineLines.clear();
 
-        CalculateSpines(); // I moved CalculateSpines() from CalculateInitialRibbon()
+        CalculateSpines(); // I moved CalculateSpines() from CalculateInitialRibbon() to here
         CalculateInitialRibbon();
         CalculateVertices();
     }
@@ -975,7 +942,6 @@ void StrokePainter::Draw()
         _quadMeshesVao.release();
     }
 
-
     // Rect Texture
     if(SystemParams::show_texture && _vertexNumbers[2] > 0)
     {
@@ -1010,7 +976,6 @@ void StrokePainter::Draw()
         _texVaos[0].release();
         if(_oglTextures[0]) { _oglTextures[0]->release(); }
     }
-
 }
 
 

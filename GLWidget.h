@@ -77,7 +77,7 @@ public:
     void MappingInterpolation() { _sPainter->MappingInterpolation(); }
     void CalculateVertices()
     {
-        _sPainter->CalculateSpines();
+        //_sPainter->CalculateSpines();
         _sPainter->CalculateInitialRibbon();
         _sPainter->CalculateVertices();
     }
