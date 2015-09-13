@@ -433,6 +433,7 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
     AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();  // for calculating mesh width
     AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();      // for calculating mesh width
 
+    // texture length
     float textureLength = SystemParams::stroke_width; // KITE
     if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG)
         { textureLength = _textureSizes[1].width(); }
@@ -568,10 +569,20 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
     AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();
     AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();
 
-    float meshSize = SystemParams::grid_cell_size;
-    int intMeshHeight = SystemParams::stroke_width / meshSize;
+    // texture length
+    float textureLength = SystemParams::stroke_width; // KITE
+    if(qMesh->_quadMeshType == QuadMeshType::MESH_LEG)
+        { textureLength = _textureSizes[1].width(); }
+    else if(qMesh->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
+        { textureLength = _textureSizes[2].width(); }
 
-    int intMeshWidth =  (int)(mStartPt.Distance(mEndPt) / SystemParams::stroke_width) * intMeshHeight;
+    // store this value
+    qMesh->_textureLength = textureLength;
+
+    int textureNum = (int)std::round(mStartPt.Distance(mEndPt) / textureLength);
+
+    int intMeshHeight = SystemParams::stroke_width / SystemParams::grid_cell_size;
+    int intMeshWidth =  textureNum * (int)(textureLength / SystemParams::grid_cell_size);
 
     // to do: fix this bug
     if(intMeshWidth == 0) { intMeshWidth = intMeshHeight; }
