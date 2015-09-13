@@ -177,8 +177,6 @@ void MainWindow::SetParams()
 
     SystemParams::grid_cell_size = ui->quadSizeSpinBox->value();
 
-    //SystemParams::kite_leg_length = ui->kiteLegsSpinBox->value();
-
     ui->runningTimeLabel->setText("Time: 0");
     ui->deltaLabel->setText("Delta: 0");
 

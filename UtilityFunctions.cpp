@@ -131,12 +131,6 @@ void UtilityFunctions::GetMiterJoints(ALine prevLine,
                                       AVector* pA,
                                       AVector* pB)
 {
-    //prevLine.Print();
-    //curLine.Print();
-
-    //AVector pDir  = prevLine.Direction().Norm();
-    //AVector cDir  = curLine.Direction().Norm();
-
     AVector pDir  = prevLine.Direction();
     AVector cDir  = curLine.Direction();
 

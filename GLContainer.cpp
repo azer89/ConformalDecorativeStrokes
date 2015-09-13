@@ -277,15 +277,6 @@ void GLContainer::mouseReleaseEvent(QMouseEvent *event)
     }
 
     _doubleClickTimer->start(_doubleClickTimeout);
-
-    /*
-    QSize meshSize = _glWidget->GetMeshSize();
-    if(meshSize.width() >= 0 && meshSize.height() > 0)
-    {
-        //std::cout << "mesh are created\n";
-        emit CalculateConformalMap();
-    }
-    */
 }
 
 void GLContainer::wheelEvent(QWheelEvent* event)

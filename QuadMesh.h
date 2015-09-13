@@ -50,7 +50,6 @@ public:
 
 public:
 
-    //int _textureNum;
     float _textureLength;
 
     // the shape of the mesh is quadrilateral,
