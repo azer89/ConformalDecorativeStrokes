@@ -52,6 +52,8 @@ public:
 
     float _textureLength;
 
+    // to do: should add the entire borders (take from left and right lines...)
+
     // the shape of the mesh is quadrilateral,
     // so we can define it with four corner positions
     AVector _leftStartPt;
