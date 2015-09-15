@@ -4,7 +4,6 @@ SystemParams::SystemParams()
 {
 }
 
-
 float SystemParams::stroke_width = 10.0f;
 
 float SystemParams::grid_cell_size = 1.0f;

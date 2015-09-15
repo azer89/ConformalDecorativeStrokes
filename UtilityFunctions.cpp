@@ -66,9 +66,7 @@ bool UtilityFunctions::CheckCollinearCase(ALine ray1, ALine ray2)
     float v2 = (midPoint.y - ray2.GetPointA().y) / ray2.GetPointB().y;
 
     if(abs(u1 - u2) < eps_val && abs(v1 - v2) < eps_val && u1 > 0 && u2 > 0 && v1 > 0 && v2 > 0)
-    {
-        return true;
-    }
+        { return true; }
 
     return false;
 }

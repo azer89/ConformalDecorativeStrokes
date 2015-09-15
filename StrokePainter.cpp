@@ -152,9 +152,6 @@ void StrokePainter::DecomposeSegments()
     _leftLines.clear();
     _rightLines.clear();
 
-    //_debugPoints.clear(); // delete this
-    //_debugLines.clear();
-
     float legLength = _textureSizes[1].width();
     float rectilinearLength = _textureSizes[2].width();
 
@@ -178,69 +175,46 @@ void StrokePainter::DecomposeSegments()
         float spineLength = qMesh._leftStartPt.Distance(qMesh._leftEndPt);
         if(a == 0)
         {
+            // to do: if(spineLength < legLength + (rectilinearLength * rectFactor)) --> leg leg
+
             AVector left2 = topLine.GetPointInBetween((spineLength - legLength) / spineLength);
             AVector right2 = bottomLine.GetPointInBetween((spineLength - legLength) / spineLength);
 
+            // rect
             QuadMesh qMesh1(qMesh._leftStartPt,  left2, qMesh._rightStartPt, right2, QuadMeshType::MESH_RECTILINEAR);
             _quadMeshes.push_back(qMesh1);
 
+            // leg
             QuadMesh qMesh2(left2,  qMesh._leftEndPt, right2, qMesh._rightEndPt, QuadMeshType::MESH_LEG);
             _quadMeshes.push_back(qMesh2);
-
-            /*
-            _debugLines.push_back(qMesh1.GetTopLine());
-            _debugLines.push_back(qMesh1.GetBottomLine());
-            _debugLines.push_back(qMesh1.GetLeftLine());
-            _debugLines.push_back(qMesh1.GetRightLine());
-
-            _debugLines.push_back(qMesh2.GetTopLine());
-            _debugLines.push_back(qMesh2.GetBottomLine());
-            _debugLines.push_back(qMesh2.GetLeftLine());
-            _debugLines.push_back(qMesh2.GetRightLine());*/
         }
         else if(a == tempQuadMeshes.size() - 1)
         {
+            // to do: if(spineLength < legLength + (rectilinearLength * rectFactor)) --> leg leg
+
             AVector left1 = topLine.GetPointInBetween(legLength / spineLength);
             AVector right1 = bottomLine.GetPointInBetween(legLength / spineLength);
 
+            // leg
             QuadMesh qMesh1(qMesh._leftStartPt,  left1, qMesh._rightStartPt, right1, QuadMeshType::MESH_LEG);
             _quadMeshes.push_back(qMesh1);
 
+            // rect
             QuadMesh qMesh2(left1,  qMesh._leftEndPt, right1, qMesh._rightEndPt, QuadMeshType::MESH_RECTILINEAR);
             _quadMeshes.push_back(qMesh2);
-
-            /*
-            _debugLines.push_back(qMesh1.GetTopLine());
-            _debugLines.push_back(qMesh1.GetBottomLine());
-            _debugLines.push_back(qMesh1.GetLeftLine());
-            _debugLines.push_back(qMesh1.GetRightLine());
-
-            _debugLines.push_back(qMesh2.GetTopLine());
-            _debugLines.push_back(qMesh2.GetBottomLine());
-            _debugLines.push_back(qMesh2.GetLeftLine());
-            _debugLines.push_back(qMesh2.GetRightLine());*/
         }
         else if(spineLength < ((legLength * 2.0f) + (rectilinearLength * rectFactor)))
         {
             AVector leftMid  = topLine.GetMiddlePoint();
             AVector rightMid = bottomLine.GetMiddlePoint();
 
+            // leg
             QuadMesh qMesh1(qMesh._leftStartPt,  leftMid, qMesh._rightStartPt, rightMid, QuadMeshType::MESH_LEG);
             _quadMeshes.push_back(qMesh1);
 
+            // leg
             QuadMesh qMesh2(leftMid, qMesh._leftEndPt, rightMid, qMesh._rightEndPt, QuadMeshType::MESH_LEG);
             _quadMeshes.push_back(qMesh2);
-
-            /*
-            _debugLines.push_back(qMesh1.GetTopLine());
-            _debugLines.push_back(qMesh1.GetBottomLine());
-            _debugLines.push_back(qMesh1.GetLeftLine());
-            _debugLines.push_back(qMesh1.GetRightLine());
-
-            _debugLines.push_back(qMesh2.GetTopLine());
-            _debugLines.push_back(qMesh2.GetBottomLine());
-            _debugLines.push_back(qMesh2.GetLeftLine());
-            _debugLines.push_back(qMesh2.GetRightLine());*/
         }
         else
         {
@@ -250,34 +224,19 @@ void StrokePainter::DecomposeSegments()
             AVector left2 = topLine.GetPointInBetween((spineLength - legLength) / spineLength);
             AVector right2 = bottomLine.GetPointInBetween((spineLength - legLength) / spineLength);
 
+            // leg
             QuadMesh qMesh1(qMesh._leftStartPt,  left1, qMesh._rightStartPt, right1, QuadMeshType::MESH_LEG);
             _quadMeshes.push_back(qMesh1);
 
+            // rect
             QuadMesh qMesh2(left1,  left2, right1, right2, QuadMeshType::MESH_RECTILINEAR);
             _quadMeshes.push_back(qMesh2);
 
+            // leg
             QuadMesh qMesh3(left2,  qMesh._leftEndPt, right2, qMesh._rightEndPt, QuadMeshType::MESH_LEG);
             _quadMeshes.push_back(qMesh3);
-
-            /*
-            _debugLines.push_back(qMesh1.GetTopLine());
-            _debugLines.push_back(qMesh1.GetBottomLine());
-            _debugLines.push_back(qMesh1.GetLeftLine());
-            _debugLines.push_back(qMesh1.GetRightLine());
-
-            _debugLines.push_back(qMesh2.GetTopLine());
-            _debugLines.push_back(qMesh2.GetBottomLine());
-            _debugLines.push_back(qMesh2.GetLeftLine());
-            _debugLines.push_back(qMesh2.GetRightLine());
-
-            _debugLines.push_back(qMesh3.GetTopLine());
-            _debugLines.push_back(qMesh3.GetBottomLine());
-            _debugLines.push_back(qMesh3.GetLeftLine());
-            _debugLines.push_back(qMesh3.GetRightLine());
-            */
         }
     }
-    //std::cout << _textureSizes[0].width() << " " << legLength << " " << rectilinearLength << "\n";
 }
 
 void StrokePainter::CalculateInitialSegments()
@@ -563,7 +522,6 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
 
     int textureNum = (int)std::round(mStartPt.Distance(mEndPt) / textureLength);
 
-    //float gridCellFactor = 0.25f;
     int intMeshHeight = SystemParams::stroke_width / (SystemParams::grid_cell_size);
     int intMeshWidth =  textureNum * textureLength / (SystemParams::grid_cell_size);
 
@@ -744,7 +702,7 @@ AVector StrokePainter::GetClosestPointFromSpineLines(AVector pt)
 
 void StrokePainter::ConformalMappingOneStepSimple()
 {
-    // Fix this function
+    // to do: I will revive this function later...
 
     /*_cMapping->ConformalMappingOneStepSimple(_quadMeshes);
 
