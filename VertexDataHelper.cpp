@@ -347,10 +347,25 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes,
     }
 
     QVector<VertexData> data;
-    for(uint iter = 0; iter < quadMeshes.size(); iter++)
+
+    QVector<VertexData> kiteData = SpecificTypeOfMesh(quadMeshes, QuadMeshType::MESH_KITE, vecCol2);
+    QVector<VertexData> legData = SpecificTypeOfMesh(quadMeshes,  QuadMeshType::MESH_LEG, vecCol3);
+    QVector<VertexData> rectData = SpecificTypeOfMesh(quadMeshes, QuadMeshType::MESH_RECTILINEAR, vecCol1);
+
+    //data.insert(data.end(), rectData.size(), rectData.begin);
+    //data.insert(data.end(), legData.begin(), legData.end());
+    //data.insert(data.end(), kiteData.begin(), kiteData.end());
+    ConcatQVector(data, kiteData);
+    ConcatQVector(data, legData);
+    ConcatQVector(data, rectData);
+
+
+
+
+    /*for(uint iter = 0; iter < quadMeshes.size(); iter++)
     {
         QuadMesh qMesh = quadMeshes[iter];
-        QVector3D vecCol = vecCol1;
+        QVector3D vecCol = vecCol1; // RECT
         if(qMesh._quadMeshType == QuadMeshType::MESH_KITE)
             { vecCol = vecCol2; }
         else if(qMesh._quadMeshType == QuadMeshType::MESH_LEG)
@@ -389,9 +404,65 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes,
             }
         }
     }
+    */
     qMeshNumData = data.size();
     BuildVboWithColor(data, linesVbo);
     if(isInit) { linesVao->release(); }
+}
+
+void VertexDataHelper::ConcatQVector(QVector<VertexData>& destData, QVector<VertexData>& sourceData)
+{
+    for(uint a = 0; a < sourceData.size(); a++)
+    {
+        destData.append(sourceData[a]);
+    }
+}
+
+QVector<VertexData> VertexDataHelper::SpecificTypeOfMesh(std::vector<QuadMesh> quadMeshes, QuadMeshType qType, QVector3D vecCol)
+{
+     QVector<VertexData> data;
+
+     for(uint iter = 0; iter < quadMeshes.size(); iter++)
+     {
+         QuadMesh qMesh = quadMeshes[iter];
+
+         if(qMesh._quadMeshType != qType)
+             { continue; }
+
+         int mesh_width = qMesh._psVertices.size();
+         int mesh_height = qMesh._psVertices[0].size();
+         std::vector<std::vector<PlusSignVertex>> plusSignVertices = qMesh._psVertices;
+
+         for(int a = 0; a < mesh_width - 1; a++)
+         {
+             for(int b = 0; b < mesh_height - 1; b++)
+             {
+                 AVector aVec = plusSignVertices[a][b].position;
+                 AVector bVec = plusSignVertices[a+1][b].position;
+                 AVector cVec = plusSignVertices[a+1][b+1].position;
+                 AVector dVec = plusSignVertices[a][b+1].position;
+
+                 data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(), vecCol));
+                 data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(), vecCol));
+
+                 data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(), vecCol));
+                 data.append(VertexData(QVector3D(aVec.x, aVec.y,  0), QVector2D(), vecCol));
+
+                 if(a == mesh_width - 2)
+                 {
+                     data.append(VertexData(QVector3D(bVec.x, bVec.y,  0), QVector2D(), vecCol));
+                     data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(), vecCol));
+                 }
+
+                 if(b == mesh_height - 2)
+                 {
+                     data.append(VertexData(QVector3D(cVec.x, cVec.y,  0), QVector2D(), vecCol));
+                     data.append(VertexData(QVector3D(dVec.x, dVec.y,  0), QVector2D(), vecCol));
+                 }
+             }
+         }
+     }
+     return data;
 }
 
 void VertexDataHelper::BuildLinesVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, int mesh_width, int mesh_height, QVector3D vecCol)

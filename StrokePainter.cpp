@@ -22,14 +22,20 @@ StrokePainter::StrokePainter() :
     _selectedIndex(-1),
     _maxDist(2.0f)
 {
+    /*
     _rectMeshesColor = QVector3D(0, 0, 0);
     _legMeshesColor      = QVector3D(0.25, 0.75, 0.25);
     _kiteMeshesColor      = QVector3D(0, 0, 1);
+    */
 
-    _selectedPointColor   = QVector3D(0.5, 0.5, 1);
-    _unselectedPointColor = QVector3D(0, 0, 0);
+    _rectMeshesColor = QVector3D(1, 1, 1);
+    _legMeshesColor      = QVector3D(0.5, 0.75, 0.5);
+    _kiteMeshesColor      = QVector3D(0.5, 0.5, 1.0);
 
-    _oriStrokeColor  = QVector3D(0, 0, 0);
+    _selectedPointColor   = QVector3D(0.5, 0.5, 1.0);
+    _unselectedPointColor = QVector3D(1, 1, 1);
+
+    _oriStrokeColor  = QVector3D(1, 1, 1);
     _spineLinesColor = QVector3D(0.5, 0.5, 1);
 
     _constrainedPointColor = QVector3D(1, 0, 0);
@@ -882,14 +888,15 @@ void StrokePainter::Draw()
     }
 
     // Spine lines
-    if(SystemParams::show_mesh && _spineLinesVao.isCreated())
+    /*if(SystemParams::show_mesh && _spineLinesVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glLineWidth(2.0f);
         _spineLinesVao.bind();
         glDrawArrays(GL_LINES, 0, _spineLines.size() * 2);
         _spineLinesVao.release();
-    }  
+    }
+    */
 
     // Quad mesh
     if(SystemParams::show_mesh && _quadMeshesVao.isCreated())

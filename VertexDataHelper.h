@@ -46,6 +46,11 @@ public:
     void BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int& qMeshTexNumData, QuadMeshType qmType);
 
 private:
+    // to do: the function name is ugly
+    QVector<VertexData> SpecificTypeOfMesh(std::vector<QuadMesh> quadMeshes, QuadMeshType qType, QVector3D vecCol);
+    void ConcatQVector(QVector<VertexData>& destData, QVector<VertexData>& sourceData);
+
+private:
     QOpenGLShaderProgram* _shaderProgram;
     int                   _colorLocation;
     int                   _vertexLocation;

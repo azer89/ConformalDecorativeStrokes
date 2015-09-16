@@ -39,7 +39,10 @@ void GLWidget::initializeGL()
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glClearColor( 1.0, 1.0, 1.0, 1.0 );
+    //glClearColor( 1.0, 1.0, 1.0, 1.0 );
+
+    float clearCol = 33.0f / 255.0f;
+    glClearColor( clearCol, clearCol, clearCol, 1.0 );
     glEnable(GL_DEPTH_TEST);
 
     _shaderProgram = new QOpenGLShaderProgram();

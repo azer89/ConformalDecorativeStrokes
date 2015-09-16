@@ -30,7 +30,7 @@
      <x>0</x>
      <y>0</y>
      <width>1400</width>
-     <height>25</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -61,13 +61,13 @@
   <widget class="QDockWidget" name="dockWidget">
    <property name="minimumSize">
     <size>
-     <width>225</width>
+     <width>200</width>
      <height>766</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>225</width>
+     <width>200</width>
      <height>524287</height>
     </size>
    </property>
@@ -121,6 +121,11 @@
           <height>28</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Linear</string>
         </property>
@@ -133,6 +138,11 @@
           <width>137</width>
           <height>28</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
         </property>
         <property name="text">
          <string>Conformal</string>
@@ -344,13 +354,13 @@
   <widget class="QDockWidget" name="dockWidget_2">
    <property name="minimumSize">
     <size>
-     <width>225</width>
+     <width>150</width>
      <height>759</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>225</width>
+     <width>150</width>
      <height>524287</height>
     </size>
    </property>
@@ -393,14 +403,14 @@
       <widget class="QPushButton" name="kiteTextureButton">
        <property name="minimumSize">
         <size>
-         <width>175</width>
-         <height>175</height>
+         <width>100</width>
+         <height>100</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>150</width>
-         <height>150</height>
+         <width>100</width>
+         <height>100</height>
         </size>
        </property>
        <property name="text">
@@ -445,8 +455,8 @@
       <widget class="QPushButton" name="legTextureButton">
        <property name="minimumSize">
         <size>
-         <width>175</width>
-         <height>175</height>
+         <width>100</width>
+         <height>100</height>
         </size>
        </property>
        <property name="maximumSize">
@@ -500,14 +510,14 @@
       <widget class="QPushButton" name="rectilinearTextureButton">
        <property name="minimumSize">
         <size>
-         <width>175</width>
-         <height>175</height>
+         <width>100</width>
+         <height>100</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>175</width>
-         <height>175</height>
+         <width>100</width>
+         <height>100</height>
         </size>
        </property>
        <property name="text">
