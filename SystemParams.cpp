@@ -24,9 +24,9 @@ bool SystemParams::show_texture = false;
  * Modify these paths according your own folders
  */
 
-std::string SystemParams::kite_texture_file        = "../ConformalDecorativeStrokes/decorative_strokes/23-06_kite.png";
-std::string SystemParams::leg_texture_file         = "../ConformalDecorativeStrokes/decorative_strokes/23-06_leg.png";
-std::string SystemParams::rectilinear_texture_file = "../ConformalDecorativeStrokes/decorative_strokes/23-06_straight.png";
+std::string SystemParams::kite_texture_file        = "../ConformalDecorativeStrokes/textures_02/25-15_kite.png";
+std::string SystemParams::leg_texture_file         = "../ConformalDecorativeStrokes/textures_02/25-15_leg.png";
+std::string SystemParams::rectilinear_texture_file = "../ConformalDecorativeStrokes/textures_02/25-15_straight.png";
 
 std::string SystemParams::texture_dir   = "../ConformalDecorativeStrokes/decorative_strokes";
 
