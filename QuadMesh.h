@@ -65,7 +65,9 @@ public:
     AVector _innerConcavePt; // for kite only
     bool _isRightKite; // a stroke which turns right
 
-    bool _isBoundaryRibConstrained;
+
+
+
 
     // movable vertices
     std::vector<std::vector<PlusSignVertex>> _psVertices;

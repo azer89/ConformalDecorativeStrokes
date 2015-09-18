@@ -39,6 +39,8 @@ StrokePainter::StrokePainter() :
     _spineLinesColor = QVector3D(0.5, 0.5, 1);
 
     _constrainedPointColor = QVector3D(1, 0, 0);
+
+    _debugPointsColor = QVector3D(1, 0, 0);
 }
 
 StrokePainter::~StrokePainter()
@@ -132,7 +134,7 @@ void StrokePainter::CalculateInitialRibbon()
     DecomposeSegments();
 
     // delete this
-    //_vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.25, 0));
+    //_vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, _debugPointsColor);
     //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0.25, 0));
 
     _vDataHelper->BuildLinesVertexData(_spineLines, &_spineLinesVbo, &_spineLinesVao, _spineLinesColor);
@@ -362,7 +364,7 @@ void StrokePainter::CalculateInitialSegments()
 
 
 
-void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, QuadMesh *nextQMesh)
+void StrokePainter::CalculateVertices(QuadMesh *prevQMesh, QuadMesh *curQMesh, QuadMesh *nextQMesh)
 {
     curQMesh->_psVertices.clear();  // for conformal mapping
     curQMesh->_opsVertices.clear(); // initial vertices (should not be modified)
@@ -418,9 +420,11 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
             pt = pt + hVec * xFactor;
 
             bool shouldMove = true;
+            bool ribConstraint = false;
 
             if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
             {
+                // SHOULD_MOVE CHECK
                 // no prev
                 if(!prevQMesh && ( (xIter == 0 && yIter == 0) || (xIter == 0 && yIter == yLoop - 1) ))
                     { _constrainedPoints.push_back(pt);  shouldMove = false; }
@@ -432,9 +436,17 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
                     { _constrainedPoints.push_back(pt);  shouldMove = false; }
                 else if(!nextQMesh && xIter == xLoop - 1)
                     { _constrainedPoints.push_back(pt); shouldMove = false; }
+
+                // RIB CONSTRAINT CHECK
+                if(xIter == 0 || xIter == xLoop - 1)
+                {
+                    ribConstraint = true;
+                    //_debugPoints.push_back(pt);
+                }
             }
             else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG)
             {
+                // SHOULD_MOVE CHECK
                 // prev is right kite, mark downleft
                 if(prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE && prevQMesh->_isRightKite && (xIter == 0 && yIter == yLoop - 1))
                     { _constrainedPoints.push_back(pt); shouldMove = false; }
@@ -448,14 +460,37 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
                 // next is left kite, mark upright
                 else if(nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE && !nextQMesh->_isRightKite && (xIter == xLoop - 1 && yIter == 0))
                     { _constrainedPoints.push_back(pt);  shouldMove = false; }
+
+                // RIB CONSTRAINT CHECK
+                if(xIter == 0 || xIter == xLoop - 1)
+                {
+                    ribConstraint = true;
+                    //_debugPoints.push_back(pt);
+                }
             }
             else if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
             {
+                // SHOULD_MOVE CHECK
                 if( (xIter == 0 && yIter == yLoop - 1) || (xIter == xLoop - 1 && yIter == 0))
                     { _constrainedPoints.push_back(pt);  shouldMove = false; }
+
+                // RIB CONSTRAINT CHECK
+                // left, bottom
+                if(curQMesh->_isRightKite && (xIter == 0 || yIter == yLoop - 1))
+                {
+                    ribConstraint = true;
+                    //_debugPoints.push_back(pt);
+                }
+                // top bottom
+                else if(!curQMesh->_isRightKite && (xIter == xLoop - 1 || yIter == 0))
+                {
+                    ribConstraint = true;
+                    //_debugPoints.push_back(pt);
+                }
             }
 
             PlusSignVertex psVert = PlusSignVertex(pt, shouldMove);
+            psVert._isBoundaryRibConstrained = ribConstraint;
             columnVertices.push_back(psVert);
         }
         curQMesh->_psVertices.push_back(columnVertices);
@@ -465,6 +500,8 @@ void StrokePainter::CalculateVertices2(QuadMesh *prevQMesh, QuadMesh *curQMesh, 
 
 void StrokePainter::CalculateVertices()
 {
+    _debugPoints.clear();
+
     _constrainedPoints.clear();
     for(uint a = 0; a < _quadMeshes.size(); a++)        
     {
@@ -477,7 +514,7 @@ void StrokePainter::CalculateVertices()
 
         if(SystemParams::enable_conformal_mapping)
         {
-            CalculateVertices2(prevQMesh, curQMesh, nextQMesh);
+            CalculateVertices(prevQMesh, curQMesh, nextQMesh);
             //CalculateVertices1(curQMesh);
         }
         else
@@ -485,6 +522,10 @@ void StrokePainter::CalculateVertices()
             CalculateLinearVertices(curQMesh);
         }
     }
+
+    // delete this
+    _vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, _debugPointsColor);
+
     _qMeshNumData = 0;
     _vDataHelper->BuildPointsVertexData(_constrainedPoints, &_constrainedPointsVbo, &_constrainedPointsVao, _constrainedPointColor);
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectMeshesColor, _kiteMeshesColor, _legMeshesColor);
@@ -723,10 +764,12 @@ void StrokePainter::ConformalMappingOneStep()
 {
     _cMapping->ConformalMappingOneStep(_quadMeshes);
 
-    //_debugLines = _cMapping->_debugLines;
-    //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0.25, 0));
+    /*
+    _debugLines = _cMapping->_debugLines;
+    _vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0.25, 0));
     _debugPoints = _cMapping->_debugPoints;
     _vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0, 0.25, 0));
+    */
 
     _qMeshNumData = 0;
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectMeshesColor, _kiteMeshesColor, _legMeshesColor);

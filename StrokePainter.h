@@ -49,7 +49,7 @@ public:
     //void CalculateVertices1(QuadMesh *qMesh);
 
     // meshes are connected during a conformal mapping computation
-    void CalculateVertices2(QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh);
+    void CalculateVertices(QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh);
 
     int   QuadMeshSize()   { return _quadMeshes.size(); }
     float IterationDelta() { return _cMapping->GetIterDist(); }
@@ -81,7 +81,7 @@ private:
     std::vector<QImage>                    _images;          // texture images
     std::vector<QOpenGLTexture*>           _oglTextures;     // OpenGL textures
     std::vector<int>                       _vertexNumbers;   // number of vertices which use a certain texture
-    std::vector<QSizeF>                    _textureSizes;   // (width = length, height = width) should be scaled to SystemParams::stroke_width
+    std::vector<QSizeF>                    _textureSizes;    // (width = length, height = width) should be scaled to SystemParams::stroke_width
     std::vector<QOpenGLBuffer>             _texVbos;         // VBOs of textures
     std::vector<QOpenGLVertexArrayObject>  _texVaos;         // VAOs of textures
 
@@ -125,6 +125,7 @@ private:
     std::vector<AVector>        _debugPoints;
     QOpenGLBuffer               _debugPointsVbo;
     QOpenGLVertexArrayObject    _debugPointsVao;
+    QVector3D                   _debugPointsColor;
 
     // debug lines
     std::vector<ALine>          _debugLines;

@@ -28,6 +28,8 @@ public:
     //static bool fixed_separation_constraint;
     static bool enable_conformal_mapping;
 
+    static bool segment_constraint;
+
     // display
     static bool show_mesh;
 

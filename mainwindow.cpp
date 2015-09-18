@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->linearWarpingRadioButton,    SIGNAL(clicked(bool)),    this, SLOT(SetParams()));
     connect(ui->conformalWarpingRadioButton, SIGNAL(clicked(bool)),    this, SLOT(SetParams()));
 
+    connect(ui->segmentConstraintCheckBox,            SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
+
     connect(ui->meshCheckBox,            SIGNAL(stateChanged(int)),       this, SLOT(SetDisplay()));
     connect(ui->textureCheckBox,         SIGNAL(stateChanged(int)),       this, SLOT(SetDisplay()));
 
@@ -188,6 +190,8 @@ void MainWindow::SetParams()
 {
     SystemParams::iter_threshold = ui->iterThresholdSpinBox->value();
     SystemParams::enable_conformal_mapping = ui->conformalWarpingRadioButton->isChecked();
+
+    SystemParams::segment_constraint = ui->segmentConstraintCheckBox->isChecked();
 
     SystemParams::grid_cell_size = ui->quadSizeSpinBox->value();
 

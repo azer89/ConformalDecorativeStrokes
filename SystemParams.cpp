@@ -16,6 +16,8 @@ float SystemParams::iter_threshold = 0.001f;
 
 bool SystemParams::enable_conformal_mapping = true;
 
+bool SystemParams::segment_constraint = false;
+
 bool SystemParams::show_mesh = true;
 
 bool SystemParams::show_texture = false;
@@ -28,7 +30,7 @@ std::string SystemParams::kite_texture_file        = "../ConformalDecorativeStro
 std::string SystemParams::leg_texture_file         = "../ConformalDecorativeStrokes/textures_02/25-15_leg.png";
 std::string SystemParams::rectilinear_texture_file = "../ConformalDecorativeStrokes/textures_02/25-15_straight.png";
 
-std::string SystemParams::texture_dir   = "../ConformalDecorativeStrokes/decorative_strokes";
+std::string SystemParams::texture_dir   = "../ConformalDecorativeStrokes/textures_02";
 
 std::string SystemParams::v_shader_file = "../ConformalDecorativeStrokes/shader.vert";
 std::string SystemParams::f_shader_file = "../ConformalDecorativeStrokes/shader.frag";

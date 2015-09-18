@@ -23,7 +23,7 @@ QuadMesh::QuadMesh(AVector      leftStartPt,
     this->_isRightKite  = isRightKite;
     this->_quadMeshType = quadMeshType;
 
-    this->_isBoundaryRibConstrained = false;
+    //this->_isBoundaryRibConstrained = false;
 }
 
 QuadMesh::QuadMesh(AVector      leftStartPt,
@@ -38,7 +38,7 @@ QuadMesh::QuadMesh(AVector      leftStartPt,
     this->_rightEndPt   = rightEndPt;
     this->_quadMeshType = quadMeshType;
 
-    this->_isBoundaryRibConstrained = false;
+    //this->_isBoundaryRibConstrained = false;
 }
 
 QuadMesh::~QuadMesh()

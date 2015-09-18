@@ -4,6 +4,7 @@
 #include "ALine.h"
 #include "PlusSignVertex.h"
 
+#include "SystemParams.h"
 #include "UtilityFunctions.h"
 
 ConformalMapping::ConformalMapping() :
@@ -103,6 +104,47 @@ void ConformalMapping::MappingInterpolation(std::vector<QuadMesh>& quadMeshes)
             MappingInterpolation(&quadMeshes[a]);
         }
     }
+}
+
+AVector ConformalMapping::GetClosestPointFromRibs(int x, int y, AVector pt, QuadMesh* curQMesh)
+{
+    std::vector<ALine> borderLines;
+
+    if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && curQMesh->_isRightKite)
+    {
+        // left, bottom
+        borderLines.push_back(ALine(curQMesh->_leftStartPt, curQMesh->_rightStartPt));
+        borderLines.push_back(ALine(curQMesh->_rightStartPt, curQMesh->_rightEndPt));
+    }
+    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && !curQMesh->_isRightKite)
+    {
+        // top, right
+        borderLines.push_back(ALine(curQMesh->_leftStartPt, curQMesh->_leftEndPt));
+        borderLines.push_back(ALine(curQMesh->_leftEndPt, curQMesh->_rightEndPt));
+    }
+    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG)
+    {
+        borderLines.push_back(ALine(curQMesh->_leftStartPt, curQMesh->_rightStartPt));
+        borderLines.push_back(ALine(curQMesh->_leftEndPt, curQMesh->_rightEndPt));
+    }
+    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
+    {
+        borderLines.push_back(ALine(curQMesh->_leftStartPt, curQMesh->_rightStartPt));
+        borderLines.push_back(ALine(curQMesh->_leftEndPt, curQMesh->_rightEndPt));
+    }
+
+    AVector closestPt = pt;
+    float dist = std::numeric_limits<float>::max();
+    for(uint a = 0; a < borderLines.size(); a++)
+    {
+        AVector cPt = UtilityFunctions::GetClosestPoint(borderLines[a].GetPointA(), borderLines[a].GetPointB(), pt);
+        if(pt.Distance(cPt) < dist)
+        {
+            dist = pt.Distance(cPt);
+            closestPt = cPt;
+        }
+    }
+    return closestPt;
 }
 
 /**
@@ -219,7 +261,7 @@ AVector ConformalMapping::GetClosestPointFromBorders(int x, int y, AVector pt, Q
                 borderLines.push_back(ALine(nextQMesh->_rightStartPt, nextQMesh->_rightEndPt));
             }
         }
-}
+    }
 
     AVector closestPt = pt;
     float dist = std::numeric_limits<float>::max();
@@ -523,7 +565,12 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh* prevQMesh, QuadMesh* cu
             cTempVertices[a][b].armLength = sumArmLengths;
             cTempVertices[a][b].angle = sumArmAngles;
 
-            if(numNeighbor < 4)
+
+            if(SystemParams::segment_constraint && cTempVertices[a][b]._isBoundaryRibConstrained)
+            {
+                cTempVertices[a][b].position = GetClosestPointFromRibs(a, b, sumPositions, curQMesh);
+            }
+            else if(numNeighbor < 4)
                 { cTempVertices[a][b].position = GetClosestPointFromBorders(a, b, sumPositions,  prevQMesh, curQMesh, nextQMesh); }
             else
                 { cTempVertices[a][b].position = sumPositions; }

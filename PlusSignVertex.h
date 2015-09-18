@@ -16,6 +16,8 @@ struct PlusSignVertex
     float angle;
     bool shouldMove;    // cannot move at all
 
+    bool _isBoundaryRibConstrained;
+
     bool isValid;
 
 public:
@@ -29,6 +31,8 @@ public:
         this->shouldMove = true;
 
         this->isValid = true;
+
+        this->_isBoundaryRibConstrained = false;
     }
 
     PlusSignVertex(AVector position, bool shouldMove)
@@ -40,6 +44,8 @@ public:
         this->shouldMove = shouldMove;
 
         this->isValid = true;
+
+        this->_isBoundaryRibConstrained = false;
     }
 
     PlusSignVertex()
@@ -51,6 +57,8 @@ public:
         this->shouldMove = true;
 
         this->isValid = false;
+
+        this->_isBoundaryRibConstrained = false;
     }
 
     bool IsValid()

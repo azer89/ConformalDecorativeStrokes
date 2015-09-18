@@ -65,6 +65,8 @@ private:
 
     AVector GetClosestPointFromBorders(int x, int y, AVector pt, QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh);
 
+    AVector GetClosestPointFromRibs(int x, int y, AVector pt, QuadMesh* curQMesh);
+
     void GetClosestIndicesAndRatios(std::vector<AVector> boundary1,
                            std::vector<AVector> boundary2,
                            std::vector<std::pair<int, int>>& pairIndices,
