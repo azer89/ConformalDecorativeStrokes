@@ -36,6 +36,9 @@ private slots:
     void SetParams();
     void SetDisplay();
 
+    void ShowParamsDockWidget();
+    void ShowTexturesDockWidget();
+
     void SetKiteTexture();
     void SetLegTexture();
     void SetRectilinearTexture();

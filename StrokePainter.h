@@ -46,7 +46,7 @@ public:
     void CalculateLinearVertices(QuadMesh *qMesh);
 
     // meshes are separated to each other    
-    void CalculateVertices1(QuadMesh *qMesh);
+    //void CalculateVertices1(QuadMesh *qMesh);
 
     // meshes are connected during a conformal mapping computation
     void CalculateVertices2(QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh);

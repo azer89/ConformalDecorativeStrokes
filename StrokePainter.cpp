@@ -585,6 +585,7 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
     }
 }
 
+/*
 // to do: this function needs to be fixed since the code is obsolete
 void StrokePainter::CalculateVertices1(QuadMesh* qMesh)
 {
@@ -652,7 +653,7 @@ void StrokePainter::CalculateVertices1(QuadMesh* qMesh)
         qMesh->_psVertices.push_back(columnVertices);
         qMesh->_opsVertices.push_back(columnVertices);
     }
-}
+}*/
 
 int StrokePainter::GetClosestIndexFromSpinePoints(AVector pt, float maxDist)
 {

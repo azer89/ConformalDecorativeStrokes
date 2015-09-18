@@ -25,9 +25,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->textureCheckBox,         SIGNAL(stateChanged(int)),       this, SLOT(SetDisplay()));
 
 
+    connect(ui->actionParameters,	         SIGNAL(triggered()), this, SLOT(ShowParamsDockWidget()));
+    connect(ui->actionTextures,	             SIGNAL(triggered()), this, SLOT(ShowTexturesDockWidget()));
     connect(ui->actionSetKiteTexture,	     SIGNAL(triggered()), this, SLOT(SetKiteTexture()));
     connect(ui->actionSetLegTexture,	     SIGNAL(triggered()), this, SLOT(SetLegTexture()));
     connect(ui->actionSetRectilinearTexture, SIGNAL(triggered()), this, SLOT(SetRectilinearTexture()));
+
+
 
     connect(ui->legTextureButton,         SIGNAL(clicked()), this, SLOT(SetLegTexture()));
     connect(ui->kiteTextureButton,        SIGNAL(clicked()), this, SLOT(SetKiteTexture()));
@@ -54,6 +58,16 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete animTimer;
+}
+
+void MainWindow::ShowParamsDockWidget()
+{
+    ui->paramsDockWidget->show();
+}
+
+void MainWindow::ShowTexturesDockWidget()
+{
+    ui->texturesDockWidget->show();
 }
 
 // Kite Texture
