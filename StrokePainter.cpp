@@ -127,6 +127,13 @@ void StrokePainter::CalculateInitialLeftRightLines()
 
 void StrokePainter::CalculateInitialRibbon()
 {
+    // to do: weird error checking
+    if(_spineLines.size() == 0)
+    {
+        std::cout << "you need to draw something\n";
+        return;
+    }
+
     //CalculateSpines(); // I removed this, but I'm not sure whether I should bring it back...
 
     CalculateInitialLeftRightLines();
@@ -500,6 +507,13 @@ void StrokePainter::CalculateVertices(QuadMesh *prevQMesh, QuadMesh *curQMesh, Q
 
 void StrokePainter::CalculateVertices()
 {
+    // to do: weird error checking
+    if(_quadMeshes.size() == 0)
+    {
+        std::cout << "you need to draw something\n";
+        return;
+    }
+
     _debugPoints.clear();
 
     _constrainedPoints.clear();
