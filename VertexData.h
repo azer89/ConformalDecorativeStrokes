@@ -7,9 +7,9 @@
 // VertexData
 struct VertexData
 {
-    QVector3D position;
-    QVector2D texCoord;
-    QVector3D color;
+    QVector3D position; // vertex position
+    QVector2D texCoord; // uv coordinate
+    QVector3D color;    // color
 
 public:
 

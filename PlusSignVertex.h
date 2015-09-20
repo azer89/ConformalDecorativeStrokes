@@ -16,7 +16,7 @@ struct PlusSignVertex
     float angle;
     bool shouldMove;    // cannot move at all
 
-    bool _isBoundaryRibConstrained;
+    bool _isBoundaryRibConstrained; // maintain perpendicular segment boundary
 
     bool isValid;
 

@@ -66,7 +66,7 @@ public:
 
     bool IsMouseDown() { return _isMouseDown; }
 
-    bool ShouldStop() { return _sPainter->ShouldStop(); }
+    bool  ShouldStop() { return _sPainter->ShouldStop(); }
     float IterationDelta() { return _sPainter->IterationDelta(); }
 
     void SetKiteTexture(QString img) { _sPainter->SetKiteTexture(img); }
