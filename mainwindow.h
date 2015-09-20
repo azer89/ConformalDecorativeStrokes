@@ -28,7 +28,7 @@ private:
 private slots:
     /**
      * Pay attention to this function since this is where I implement
-     * an iteration approach of COnformal Mapping
+     * an iteration approach of Conformal Mapping
      */
     void AnimationThread();
     void AnimationStart();

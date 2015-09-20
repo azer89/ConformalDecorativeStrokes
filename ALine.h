@@ -79,7 +79,7 @@ public:
     // End point
     AVector GetPointB() { return AVector(XB, YB); }
 
-    // Direction of the vector
+    // Direction of the vector (not normalized)
     AVector Direction() { return AVector(XB - XA, YB - YA);}
 
     float Magnitude()
