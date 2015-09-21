@@ -535,6 +535,12 @@ void StrokePainter::CalculateVertices()
         {
             CalculateLinearVertices(curQMesh);
         }
+
+        // lower side boundary: curQMesh->GetHeight() - 2
+
+        std::vector<AVector> sideBoundary = curQMesh->GetSideBoundary(curQMesh->GetHeight() - 2);
+        //std::cout << sideBoundary.size() << "\n";
+        _debugPoints.insert(_debugPoints.end(), sideBoundary.begin(), sideBoundary.end());
     }
 
     // delete this
@@ -776,7 +782,7 @@ void StrokePainter::ConformalMappingOneStepSimple()
 
 void StrokePainter::ConformalMappingOneStep()
 {
-    _cMapping->ConformalMappingOneStep(_quadMeshes);
+    //_cMapping->ConformalMappingOneStep(_quadMeshes);
 
     /*
     _debugLines = _cMapping->_debugLines;

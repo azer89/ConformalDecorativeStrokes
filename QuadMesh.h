@@ -41,6 +41,8 @@ public:
 
     std::vector<AVector> GetABoundary(int index, bool isXUnchanged, bool isOri);
 
+    std::vector<AVector> GetSideBoundary(int index);
+
     AVector GetClosestPointFromBorders(AVector pt);
 
     ALine GetTopLine()    { return ALine(_leftStartPt,  _leftEndPt); }
