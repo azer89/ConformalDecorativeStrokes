@@ -386,6 +386,11 @@ void StrokePainter::CalculateVertices(QuadMesh *prevQMesh, QuadMesh *curQMesh, Q
     AVector uHVec = lEndPt - lStartPt; // an upper horizontal vector from start to end
     AVector bHVec = rEndPt - rStartPt; // a lower horizontal vector from start to end
 
+    AVector topVec    = lEndPt   - lStartPt;   // kite only
+    AVector rightVec  = lEndPt   - rEndPt;     // kite only
+    AVector leftVec   = rStartPt - lStartPt;
+    AVector bottomVec = rEndPt   - rStartPt;
+
     AVector mStartPt = ALine(lStartPt, rStartPt).GetMiddlePoint();  // for calculating mesh width
     AVector mEndPt   = ALine(lEndPt, rEndPt).GetMiddlePoint();      // for calculating mesh width
 
@@ -418,6 +423,7 @@ void StrokePainter::CalculateVertices(QuadMesh *prevQMesh, QuadMesh *curQMesh, Q
 
         for(int yIter = 0; yIter < yLoop;  yIter++)
         {
+            /*
             float xFactor = (float)xIter / (float)intMeshWidth;
             float yFactor = (float)yIter / (float)intMeshHeight;
 
@@ -425,6 +431,31 @@ void StrokePainter::CalculateVertices(QuadMesh *prevQMesh, QuadMesh *curQMesh, Q
 
             AVector pt = lStartPt + vVec * yFactor;
             pt = pt + hVec * xFactor;
+            */
+            float xFactor = (float)xIter / (float)intMeshWidth;
+            float yFactor = (float)yIter / (float)intMeshHeight;
+
+            AVector pt;
+            if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE)
+            {
+                int sumIdx = xIter + yIter;
+                if(sumIdx <= intMeshHeight)
+                {
+                    pt = lStartPt + leftVec * yFactor;
+                    pt = pt + topVec * xFactor;
+                }
+                else
+                {
+                    pt = rStartPt + bottomVec * xFactor;
+                    pt = pt + rightVec * (1.0 - yFactor);
+                }
+            }
+            else
+            {
+                AVector hVec = uHVec * (1.0f - yFactor) + bHVec * yFactor;
+                pt = lStartPt + vVec * yFactor;
+                pt = pt + hVec * xFactor;
+            }
 
             bool shouldMove = true;
             bool ribConstraint = false;
@@ -609,10 +640,9 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
             float xFactor = (float)xIter / (float)intMeshWidth;
             float yFactor = (float)yIter / (float)intMeshHeight;
 
+            AVector pt;
             if(qMesh->_quadMeshType == QuadMeshType::MESH_KITE)
             {
-                AVector pt;
-
                 int sumIdx = xIter + yIter;
                 if(sumIdx <= intMeshHeight)
                 {
@@ -624,22 +654,15 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
                     pt = rStartPt + bottomVec * xFactor;
                     pt = pt + rightVec * (1.0 - yFactor);
                 }
-
-                PlusSignVertex psVert = PlusSignVertex(pt, false);
-                columnVertices.push_back(psVert);
             }
             else
             {
-                // this code sucks...
-
                 AVector hVec = uHVec * (1.0f - yFactor) + bHVec * yFactor;
-
-                AVector pt = lStartPt + vVec * yFactor;
+                pt = lStartPt + vVec * yFactor;
                 pt = pt + hVec * xFactor;
-
-                PlusSignVertex psVert = PlusSignVertex(pt, false);
-                columnVertices.push_back(psVert);
             }
+            PlusSignVertex psVert = PlusSignVertex(pt, false);
+            columnVertices.push_back(psVert);
         }
         qMesh->_psVertices.push_back(columnVertices);
         qMesh->_opsVertices.push_back(columnVertices);
@@ -782,7 +805,8 @@ void StrokePainter::ConformalMappingOneStepSimple()
 
 void StrokePainter::ConformalMappingOneStep()
 {
-    //_cMapping->ConformalMappingOneStep(_quadMeshes);
+    // Uncomment this
+    _cMapping->ConformalMappingOneStep(_quadMeshes);
 
     /*
     _debugLines = _cMapping->_debugLines;
