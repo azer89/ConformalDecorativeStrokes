@@ -263,6 +263,7 @@ AVector ConformalMapping::GetClosestPointFromBorders(int x, int y, AVector pt, Q
         }
     }
 
+    /*
     AVector closestPt = pt;
     float dist = std::numeric_limits<float>::max();
     for(uint a = 0; a < borderLines.size(); a++)
@@ -275,6 +276,9 @@ AVector ConformalMapping::GetClosestPointFromBorders(int x, int y, AVector pt, Q
         }
     }
     return closestPt;
+    */
+
+    return UtilityFunctions::GetClosestPoint(borderLines, pt);
 }
 
 void ConformalMapping::UpdateNeighbor(int x, int y,

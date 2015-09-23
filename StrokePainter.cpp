@@ -775,7 +775,9 @@ AVector StrokePainter::GetClosestPointFromSpinePoints(AVector pt)
 
 AVector StrokePainter::GetClosestPointFromSpineLines(AVector pt)
 {
-    AVector closestPt = pt;
+    return UtilityFunctions::GetClosestPoint(_spineLines, pt);
+
+    /*AVector closestPt = pt;
     float dist = std::numeric_limits<float>::max();
     for(uint a = 0; a < _spineLines.size() - 1; a++)
     {
@@ -788,7 +790,7 @@ AVector StrokePainter::GetClosestPointFromSpineLines(AVector pt)
             closestPt = cPt;
         }
     }
-    return closestPt;
+    return closestPt;*/
 }
 
 void StrokePainter::ConformalMappingOneStepSimple()

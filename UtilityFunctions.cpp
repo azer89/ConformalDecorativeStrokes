@@ -278,12 +278,46 @@ double UtilityFunctions::CurveLength(std::vector<AVector> curves)
     return length;
 }
 
-AVector UtilityFunctions::GetClosestPoint(AVector v, AVector w, AVector p)
+AVector UtilityFunctions::GetClosestPoint(std::vector<AVector> lines, AVector pt)
+{
+    AVector closestPt = pt;
+    float dist = std::numeric_limits<float>::max();
+    for(uint a = 0; a < lines.size() - 1; a++)
+    {
+        AVector pt1 = lines[a];
+        AVector pt2 = lines[a+1];
+        AVector cPt = UtilityFunctions::GetClosestPoint(pt1, pt2, pt);
+        if(pt.Distance(cPt) < dist)
+        {
+            dist = pt.Distance(cPt);
+            closestPt = cPt;
+        }
+    }
+    return closestPt;
+}
+
+AVector UtilityFunctions::GetClosestPoint(std::vector<ALine> lines, AVector pt)
+{
+    AVector closestPt = pt;
+    float dist = std::numeric_limits<float>::max();
+    for(uint a = 0; a < lines.size(); a++)
+    {
+        AVector cPt = UtilityFunctions::GetClosestPoint(lines[a].GetPointA(), lines[a].GetPointB(), pt);
+        if(pt.Distance(cPt) < dist)
+        {
+            dist = pt.Distance(cPt);
+            closestPt = cPt;
+        }
+    }
+    return closestPt;
+}
+
+AVector UtilityFunctions::GetClosestPoint(AVector v, AVector w, AVector pt)
 {
     float eps_float = std::numeric_limits<float>::epsilon();
     float l2 = v.DistanceSquared(w);
     if (l2 > -eps_float && l2 < eps_float) return v;
-    float t = (p - v).Dot(w - v) / l2;
+    float t = (pt - v).Dot(w - v) / l2;
     if (t < 0.0)	  { return  v; }
     else if (t > 1.0) { return  w; }
     return v + (w - v) * t;

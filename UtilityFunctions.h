@@ -23,10 +23,13 @@ public:
     static void GetMiterJoints(ALine prevLine, ALine curLine, double t0, double t1, AVector* pA, AVector* pB);
 
     static bool CheckCollinearCase(ALine ray1, ALine ray2);
-    static AVector GetFiniteIntersection(ALine rayA, ALine rayB);
-    static AVector GetClosestPoint(AVector v, AVector w, AVector p);
+    static AVector GetFiniteIntersection(ALine rayA, ALine rayB);    
     static float GetRotation(AVector pt1, AVector pt2);
     static bool CheckHorizontalVerticalCase(ALine ray1, ALine ray2);
+
+    static AVector GetClosestPoint(AVector v, AVector w, AVector pt);
+    static AVector GetClosestPoint(std::vector<ALine> lines, AVector pt);
+    static AVector GetClosestPoint(std::vector<AVector> lines, AVector pt);
 
     static bool DoesAPointLieOnALine(AVector pt, ALine ln);
 
