@@ -568,11 +568,12 @@ void StrokePainter::CalculateVertices()
         }
 
         // lower side boundary: curQMesh->GetHeight() - 2
-
-        std::vector<AVector> sideBoundary = curQMesh->GetSideBoundary(curQMesh->GetHeight() - 2);
-        //std::cout << sideBoundary.size() << "\n";
-        _debugPoints.insert(_debugPoints.end(), sideBoundary.begin(), sideBoundary.end());
+        //std::vector<AVector> sideBoundary = curQMesh->GetSideBoundary(curQMesh->GetHeight() - 2);
+        //_debugPoints.insert(_debugPoints.end(), sideBoundary.begin(), sideBoundary.end());
     }
+
+    // new !!!
+    GenerateSlidingConstraintCandidates();
 
     // delete this
     _vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, _debugPointsColor);
@@ -667,6 +668,28 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
         qMesh->_psVertices.push_back(columnVertices);
         qMesh->_opsVertices.push_back(columnVertices);
     }
+}
+
+void StrokePainter::GenerateSlidingConstraintCandidates()
+{
+    _sConstraintCandidates.clear();
+
+    int intMeshHeight = SystemParams::stroke_width / (SystemParams::grid_cell_size);
+    //int yLoop = intMeshHeight + 1;
+
+    for(uint iter = 1; iter <= intMeshHeight - 1; iter++)
+    {
+        std::vector<AVector> sConstCandidate;
+
+        for(uint a = 0; a < _quadMeshes.size(); a++)
+        {
+            std::vector<AVector> sideBoundary = _quadMeshes[a].GetSideBoundary(iter);
+            sConstCandidate.insert(sConstCandidate.end(), sideBoundary.begin(), sideBoundary.end());
+        }
+        _sConstraintCandidates.push_back(sConstCandidate);
+    }
+
+    _vDataHelper->BuildLinesVertexData(_sConstraintCandidates, &_sConstraintCandVbo, &_sConstraintCandVao, _sConstraintCandNumData);
 }
 
 /*
@@ -908,6 +931,16 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
 
 void StrokePainter::Draw()
 {
+    if(_sConstraintCandVao.isCreated())
+    {
+        _vDataHelper->NeedToDrawWithColor(1.0);
+        glLineWidth(4.0f);
+        _sConstraintCandVao.bind();
+        glDrawArrays(GL_LINES, 0, _sConstraintCandNumData);
+        _sConstraintCandVao.release();
+    }
+
+
     // Left lines
     if(SystemParams::show_mesh && _leftLinesVao.isCreated())
     {
@@ -988,6 +1021,8 @@ void StrokePainter::Draw()
     }
     */
 
+    // to do: uncomment this
+    /*
     // Quad mesh
     if(SystemParams::show_mesh && _quadMeshesVao.isCreated())
     {
@@ -996,6 +1031,7 @@ void StrokePainter::Draw()
         glDrawArrays(GL_LINES, 0, _qMeshNumData);
         _quadMeshesVao.release();
     }
+    */
 
     // Rect Texture
     if(SystemParams::show_texture && _vertexNumbers[2] > 0)

@@ -20,8 +20,9 @@ public:
     // this function is awkward, should not be put in this class...
     void NeedToDrawWithColor(GLfloat num) { _shaderProgram->setUniformValue(_useColorLocation, num); }
 
-    // these functions below are pretty staandard
+    // these functions below are pretty standard
     void BuildLinesVertexData(std::vector<AVector> points, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
+    void BuildLinesVertexData(std::vector<std::vector<AVector>> lines, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int &numData);
     void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol);
     void BuildLinesVertexData(std::vector<ALine> lines, QOpenGLBuffer* linesVbo, QOpenGLVertexArrayObject* linesVao, QVector3D vecCol1, QVector3D vecCol2);
     void BuildPointsVertexData(std::vector<AVector> points, QOpenGLBuffer* ptsVbo, QOpenGLVertexArrayObject* ptsVao, QVector3D vecCol);

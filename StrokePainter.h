@@ -85,6 +85,12 @@ private:
     std::vector<QOpenGLBuffer>             _texVbos;         // VBOs of textures
     std::vector<QOpenGLVertexArrayObject>  _texVaos;         // VAOs of textures
 
+    // sliding line constraints
+    std::vector<std::vector<AVector>> _sConstraintCandidates;
+    QOpenGLBuffer               _sConstraintCandVbo;
+    QOpenGLVertexArrayObject    _sConstraintCandVao;
+    int _sConstraintCandNumData;
+
     // interactive editing
     int _selectedIndex;
     float _maxDist;
@@ -133,6 +139,8 @@ private:
     QOpenGLVertexArrayObject    _debugLinesVao;
 
 private:
+    void GenerateSlidingConstraintCandidates();
+
     AVector GetClosestPointFromLeftRightLines(AVector pt);
     AVector GetClosestPointFromSpineLines(AVector pt);
     AVector GetClosestPointFromSpinePoints(AVector pt);
