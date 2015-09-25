@@ -69,12 +69,24 @@ public:
     bool  ShouldStop() { return _sPainter->ShouldStop(); }
     float IterationDelta() { return _sPainter->IterationDelta(); }
 
+    /**
+     * Stroke Painter
+     */
     void SetKiteTexture(QString img) { _sPainter->SetKiteTexture(img); }
     void SetLegTexture(QString img) { _sPainter->SetLegTexture(img); }
     void SetRectilinearTexture(QString img) { _sPainter->SetRectilinearTexture(img); }
-
     void ConformalMappingOneStep() { _sPainter->ConformalMappingOneStep(); }
     void MappingInterpolation() { _sPainter->MappingInterpolation(); }
+    void SelectSlidingConstraints(int x, int y)
+    {
+        float dx = x + _scrollOffset.x();
+        dx /= _zoomFactor;
+
+        float dy = y + _scrollOffset.y();
+        dy /= _zoomFactor;
+
+        _sPainter->SelectSlidingConstraints(dx, dy);
+    }
     void CalculateVertices()
     {
         //_sPainter->CalculateSpines();

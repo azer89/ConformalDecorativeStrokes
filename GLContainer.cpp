@@ -244,6 +244,12 @@ void GLContainer::mousePressEvent(QMouseEvent *event)
         _glWidget->mousePressEvent(event->x(), event->y());
     }
 
+    if(event->buttons() == Qt::RightButton)
+    {
+        //std::cout << "right click\n";
+        _glWidget->SelectSlidingConstraints(event->x(), event->y());
+    }
+
     if(this->_ctrlPressed)
     {
         this->_prevMousePos = _mousePos;

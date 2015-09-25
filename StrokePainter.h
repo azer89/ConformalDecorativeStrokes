@@ -24,45 +24,83 @@ public:
     StrokePainter();
     ~StrokePainter();
 
+    /**
+     * Mouse events
+     */
     void mousePressEvent(float x, float y);
     void mouseMoveEvent(float x, float y);
     void mouseReleaseEvent(float x, float y);
 
     void Draw();
 
-    void CalculateInitialRibbon();          // shouln't be public
-    void CalculateInitialLeftRightLines();  // shouln't be public
-    void CalculateInitialSegments();        // shouln't be public
+    void CalculateInitialRibbon();          // shouldn't be public
+    void CalculateInitialLeftRightLines();  // shouldn't be public
+    void CalculateInitialSegments();        // shouldn't be public
     void DecomposeSegments();
-    void CalculateSpines();                 // shouln't be public
+    void CalculateSpines();                 // shouldn't be public
 
+    /**
+     * Conformal mapping iteration
+     */
     void ConformalMappingOneStepSimple();
     void ConformalMappingOneStep();
     void MappingInterpolation();
 
+    /**
+     * Calculate initial vertices before warping
+     */
     void CalculateVertices();
 
-    // illustrator style
+    /**
+     * Illustrator's linear warping
+     */
     void CalculateLinearVertices(QuadMesh *qMesh);
 
-    // meshes are separated to each other    
+    // Meshes are separated to each other
     //void CalculateVertices1(QuadMesh *qMesh);
 
-    // meshes are connected during a conformal mapping computation
+    /**
+     * Meshes are connected during a conformal mapping computation
+     */
     void CalculateVertices(QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh);
 
+    /**
+     * Info
+     */
     int   QuadMeshSize()   { return _quadMeshes.size(); }
     float IterationDelta() { return _cMapping->GetIterDist(); }
     bool  ShouldStop()     { return _cMapping->GetIterDist() < SystemParams::iter_threshold /*std::numeric_limits<float>::epsilon()*/; }
 
+    /**
+     * Textures
+     */
     void SetLegTexture(QString img);
     void SetKiteTexture(QString img);
     void SetRectilinearTexture(QString img);
 
+    /**
+     * VBO and VAO
+     */
     void SetVertexDataHelper(QOpenGLShaderProgram* shaderProgram);
 
-private:
+    /**
+     * Sliding Constraints near the boundaries
+     */
+    void SelectSlidingConstraints(float x, float y);
 
+private:
+    /**
+     * Sliding Constraints
+     */
+    void GenerateSlidingConstraintCandidates();
+
+    AVector GetClosestPointFromLeftRightLines(AVector pt);
+    AVector GetClosestPointFromSpineLines(AVector pt);
+    AVector GetClosestPointFromSpinePoints(AVector pt);
+    int     GetClosestIndexFromSpinePoints(AVector pt, float maxDist);
+
+
+private:
     bool _isMouseDown;
 
     VertexDataHelper* _vDataHelper;
@@ -85,11 +123,17 @@ private:
     std::vector<QOpenGLBuffer>             _texVbos;         // VBOs of textures
     std::vector<QOpenGLVertexArrayObject>  _texVaos;         // VAOs of textures
 
-    // sliding line constraints
+    // sliding constraint candidates
     std::vector<std::vector<AVector>> _sConstraintCandidates;
-    QOpenGLBuffer               _sConstraintCandVbo;
-    QOpenGLVertexArrayObject    _sConstraintCandVao;
-    int _sConstraintCandNumData;
+    QOpenGLBuffer                     _sConstraintCandVbo;
+    QOpenGLVertexArrayObject          _sConstraintCandVao;
+    int                               _sConstraintCandNumData;
+
+    // sliding constraints
+    std::vector<std::vector<AVector>> _sConstraints;
+    QOpenGLBuffer                     _sConstraintVbo;
+    QOpenGLVertexArrayObject          _sConstraintVao;
+    int                               _sConstraintNumData;
 
     // interactive editing
     int _selectedIndex;
@@ -118,8 +162,8 @@ private:
 
     // right lines of the stroke. I need these lines to calculate closest points on the borders
     std::vector<AVector>        _rightLines;
-    QOpenGLBuffer             _rightLinesVbo;
-    QOpenGLVertexArrayObject  _rightLinesVao;
+    QOpenGLBuffer               _rightLinesVbo;
+    QOpenGLVertexArrayObject    _rightLinesVao;
 
     // constrained points
     std::vector<AVector>        _constrainedPoints;
@@ -138,13 +182,6 @@ private:
     QOpenGLBuffer               _debugLinesVbo;
     QOpenGLVertexArrayObject    _debugLinesVao;
 
-private:
-    void GenerateSlidingConstraintCandidates();
-
-    AVector GetClosestPointFromLeftRightLines(AVector pt);
-    AVector GetClosestPointFromSpineLines(AVector pt);
-    AVector GetClosestPointFromSpinePoints(AVector pt);
-    int     GetClosestIndexFromSpinePoints(AVector pt, float maxDist);
 };
 
 #endif // STROKEPAINTER_H

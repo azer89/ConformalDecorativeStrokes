@@ -278,6 +278,24 @@ double UtilityFunctions::CurveLength(std::vector<AVector> curves)
     return length;
 }
 
+// return the index of the closest line
+int UtilityFunctions::GetClosestIndex(std::vector<std::vector<AVector>> lines, AVector pt)
+{
+    int index = -1;
+    float dist = std::numeric_limits<float>::max();
+    for(uint a = 0; a < lines.size(); a++)
+    {
+        AVector cPt = GetClosestPoint(lines[a], pt);
+        if(pt.Distance(cPt) < dist)
+        {
+            dist = pt.Distance(cPt);
+            index = a;
+        }
+    }
+    return index;
+}
+
+// return a point on the closest line
 AVector UtilityFunctions::GetClosestPoint(std::vector<AVector> lines, AVector pt)
 {
     AVector closestPt = pt;
