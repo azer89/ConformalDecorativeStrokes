@@ -61,6 +61,8 @@ void StrokePainter::SetKiteTexture(QString img)
     _oglTextures[0] = new QOpenGLTexture(qImg);
     float length = ((float)qImg.width()) / ((float)qImg.height()) * SystemParams::stroke_width;
     _textureSizes[0] = QSizeF(length, SystemParams::stroke_width);
+
+    std::cout << "SetKiteTexture" << "\n";
 }
 
 void StrokePainter::SetLegTexture(QString img)
@@ -70,6 +72,8 @@ void StrokePainter::SetLegTexture(QString img)
     _oglTextures[1] = new QOpenGLTexture(qImg);
     float length = ((float)qImg.width()) / ((float)qImg.height()) * SystemParams::stroke_width;
     _textureSizes[1] = QSizeF(length, SystemParams::stroke_width);
+
+    std::cout << "SetLegTexture" << "\n";
 }
 
 void StrokePainter::SetRectilinearTexture(QString img)
@@ -79,19 +83,20 @@ void StrokePainter::SetRectilinearTexture(QString img)
     _oglTextures[2] = new QOpenGLTexture(qImg);
     float length = ((float)qImg.width()) / ((float)qImg.height()) * SystemParams::stroke_width;
     _textureSizes[2] = QSizeF(length, SystemParams::stroke_width);
+
+    std::cout << "SetRectilinearTexture" << "\n";
 }
 
 void StrokePainter::SelectSlidingConstraints(float x, float y)
 {
     AVector mousePt(x, y);
 
-
     int index = UtilityFunctions::GetClosestIndex(_sConstraintCandidates, mousePt);
-
+    _sConstraintMask[index] = !_sConstraintMask[index];
     std::cout << index << "\n";
 
-    _sConstraints.push_back(_sConstraintCandidates[index]);
-    _vDataHelper->BuildLinesVertexData(_sConstraints, &_sConstraintVbo, &_sConstraintVao, _sConstraintNumData);
+    //_sConstraints.push_back(_sConstraintCandidates[index]);
+    _vDataHelper->BuildLinesVertexData(_sConstraintCandidates, _sConstraintMask, &_sConstraintVbo, &_sConstraintVao, _sConstraintNumData);
 }
 
 
@@ -689,7 +694,8 @@ void StrokePainter::GenerateSlidingConstraintCandidates()
     _sConstraintCandidates.clear();
 
     // clear the constraints
-    _sConstraints.clear();
+    _sConstraintMask.clear();
+    //_sConstraints.clear();
 
     int intMeshHeight = SystemParams::stroke_width / (SystemParams::grid_cell_size);
     for(int iter = 1; iter <= intMeshHeight - 1; iter++)
@@ -700,6 +706,7 @@ void StrokePainter::GenerateSlidingConstraintCandidates()
             std::vector<AVector> sideBoundary = _quadMeshes[a].GetSideBoundary(iter);
             sConstCandidate.insert(sConstCandidate.end(), sideBoundary.begin(), sideBoundary.end());
         }
+        _sConstraintMask.push_back(false);
         _sConstraintCandidates.push_back(sConstCandidate);
     }
     _vDataHelper->BuildLinesVertexData(_sConstraintCandidates, &_sConstraintCandVbo, &_sConstraintCandVao, _sConstraintCandNumData);
@@ -944,6 +951,7 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
 
 void StrokePainter::Draw()
 {
+
     if(_sConstraintVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
@@ -953,14 +961,15 @@ void StrokePainter::Draw()
         _sConstraintVao.release();
     }
 
-    if(_sConstraintCandVao.isCreated())
+
+    /*if(_sConstraintCandVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glLineWidth(1.0f);
         _sConstraintCandVao.bind();
         glDrawArrays(GL_LINES, 0, _sConstraintCandNumData);
         _sConstraintCandVao.release();
-    }
+    }*/
 
     // Left lines
     if(SystemParams::show_mesh && _leftLinesVao.isCreated())
@@ -1055,6 +1064,8 @@ void StrokePainter::Draw()
     // Rect Texture
     if(SystemParams::show_texture && _vertexNumbers[2] > 0)
     {
+        //std::cout << "Rect Texture" << "\n";
+
         _vDataHelper->NeedToDrawWithColor(0.0);
 
         if(_oglTextures[2]) { _oglTextures[2]->bind(); }
@@ -1067,6 +1078,8 @@ void StrokePainter::Draw()
     // Leg Texture
     if(SystemParams::show_texture && _vertexNumbers[1] > 0)
     {
+         //std::cout << " Leg Texture" << "\n";
+
         _vDataHelper->NeedToDrawWithColor(0.0);
 
         if(_oglTextures[1]) { _oglTextures[1]->bind(); }
@@ -1079,6 +1092,8 @@ void StrokePainter::Draw()
     // Kite Texture
     if(SystemParams::show_texture && _vertexNumbers[0] > 0)
     {
+        //std::cout << " Kite Texture" << "\n";
+
         _vDataHelper->NeedToDrawWithColor(0.0);
         if(_oglTextures[0]) { _oglTextures[0]->bind(); }
         _texVaos[0].bind();

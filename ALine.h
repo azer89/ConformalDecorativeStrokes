@@ -37,7 +37,6 @@ public:
         this->XB = v2.x;	this->YB = v2.y;
     }
 
-
     ALine Resize(float val)
     {
         ALine newL;

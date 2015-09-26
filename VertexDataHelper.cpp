@@ -18,6 +18,43 @@ VertexDataHelper::~VertexDataHelper()
 {
 }
 
+void VertexDataHelper::BuildLinesVertexData(std::vector<std::vector<AVector>> lines, std::vector<bool> constraintMask, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int &numData)
+{
+    if(lines.size() == 0) return;
+
+    bool isInit = false;
+    if(!vao->isCreated())
+    {
+        vao->create();
+        vao->bind();
+        isInit = true;
+    }
+
+    QVector<VertexData> data;
+    for(uint a = 0; a < lines.size(); a++)
+    {
+        if(!constraintMask[a]) { continue; }
+
+        QVector3D rCol((float)(rand() % 255) / 255.0,
+                       (float)(rand() % 255) / 255.0,
+                       (float)(rand() % 255) / 255.0);
+        std::vector<AVector> line = lines[a];
+        for(uint b = 0; b < line.size() - 1; b++)
+        {
+            data.append(VertexData(QVector3D(line[b].x, line[b].y,  0),       QVector2D(), rCol));
+            data.append(VertexData(QVector3D(line[b+1].x, line[b + 1].y,  0), QVector2D(), rCol));
+        }
+
+    }
+    numData = data.size();
+
+    std::cout << numData << "\n";
+
+    BuildVboWithColor(data, vbo);
+
+    if(isInit) { vao->release(); }
+}
+
 void VertexDataHelper::BuildLinesVertexData(std::vector<std::vector<AVector>> lines, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int& numData)
 {
     if(lines.size() == 0) return;

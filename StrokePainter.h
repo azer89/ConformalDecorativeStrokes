@@ -130,10 +130,12 @@ private:
     int                               _sConstraintCandNumData;
 
     // sliding constraints
-    std::vector<std::vector<AVector>> _sConstraints;
-    QOpenGLBuffer                     _sConstraintVbo;
-    QOpenGLVertexArrayObject          _sConstraintVao;
-    int                               _sConstraintNumData;
+    // to do: change to std::vector<bool>
+    //std::vector<std::vector<AVector>> _sConstraints;
+    std::vector<bool>        _sConstraintMask;
+    QOpenGLBuffer            _sConstraintVbo;
+    QOpenGLVertexArrayObject _sConstraintVao;
+    int                      _sConstraintNumData;
 
     // interactive editing
     int _selectedIndex;
