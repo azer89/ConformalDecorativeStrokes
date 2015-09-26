@@ -569,6 +569,10 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh* prevQMesh, QuadMesh* cu
             cTempVertices[a][b].armLength = sumArmLengths;
             cTempVertices[a][b].angle = sumArmAngles;
 
+            // ???
+            //if(cTempVertices[a][b])
+            //{
+            //}
 
             if(SystemParams::segment_constraint && cTempVertices[a][b]._isBoundaryRibConstrained)
             {

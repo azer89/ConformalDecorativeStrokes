@@ -94,6 +94,8 @@ private:
      */
     void GenerateSlidingConstraintCandidates();
 
+    std::vector<std::vector<AVector>> GetFilteredList(std::vector<std::vector<AVector>> candidates, std::vector<bool> mask);
+
     AVector GetClosestPointFromLeftRightLines(AVector pt);
     AVector GetClosestPointFromSpineLines(AVector pt);
     AVector GetClosestPointFromSpinePoints(AVector pt);

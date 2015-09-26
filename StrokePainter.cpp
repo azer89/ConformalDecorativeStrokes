@@ -93,9 +93,6 @@ void StrokePainter::SelectSlidingConstraints(float x, float y)
 
     int index = UtilityFunctions::GetClosestIndex(_sConstraintCandidates, mousePt);
     _sConstraintMask[index] = !_sConstraintMask[index];
-    std::cout << index << "\n";
-
-    //_sConstraints.push_back(_sConstraintCandidates[index]);
     _vDataHelper->BuildLinesVertexData(_sConstraintCandidates, _sConstraintMask, &_sConstraintVbo, &_sConstraintVao, _sConstraintNumData);
 }
 
@@ -688,6 +685,16 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
     }
 }
 
+std::vector<std::vector<AVector>> StrokePainter::GetFilteredList(std::vector<std::vector<AVector>> candidates, std::vector<bool> mask)
+{
+    std::vector<std::vector<AVector>> newList;
+    for(uint a = 0; a < candidates.size(); a++)
+    {
+        if(mask[a]) { newList.push_back(candidates[a]); }
+    }
+    return newList;
+}
+
 void StrokePainter::GenerateSlidingConstraintCandidates()
 {
     // clear the candidates
@@ -851,6 +858,8 @@ void StrokePainter::ConformalMappingOneStepSimple()
 void StrokePainter::ConformalMappingOneStep()
 {
     // Uncomment this
+    std::vector<std::vector<AVector>> filteredConstraints = GetFilteredList(_sConstraintCandidates, _sConstraintMask);
+    _cMapping->SetSlidingConstraint(filteredConstraints);
     _cMapping->ConformalMappingOneStep(_quadMeshes);
 
     /*
