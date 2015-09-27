@@ -17,6 +17,7 @@ struct PlusSignVertex
     bool shouldMove;    // cannot move at all
 
     bool _isBoundaryRibConstrained; // maintain perpendicular segment boundary
+    bool _isSlideConstrained;
 
     bool isValid;
 
@@ -31,8 +32,8 @@ public:
         this->shouldMove = true;
 
         this->isValid = true;
-
         this->_isBoundaryRibConstrained = false;
+        this->_isSlideConstrained = false;
     }
 
     PlusSignVertex(AVector position, bool shouldMove)
@@ -44,8 +45,8 @@ public:
         this->shouldMove = shouldMove;
 
         this->isValid = true;
-
         this->_isBoundaryRibConstrained = false;
+        this->_isSlideConstrained = false;
     }
 
     PlusSignVertex()
@@ -57,8 +58,8 @@ public:
         this->shouldMove = true;
 
         this->isValid = false;
-
         this->_isBoundaryRibConstrained = false;
+        this->_isSlideConstrained = false;
     }
 
     bool IsValid()

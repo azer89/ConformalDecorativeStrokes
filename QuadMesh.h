@@ -42,6 +42,7 @@ public:
     std::vector<AVector> GetABoundary(int index, bool isXUnchanged, bool isOri);
 
     std::vector<AVector> GetSideBoundary(int index);
+    void SetSlidingConstraintFlag(int index, bool boolValue, std::vector<AVector> &debugPoints);
 
     AVector GetClosestPointFromBorders(AVector pt);
 

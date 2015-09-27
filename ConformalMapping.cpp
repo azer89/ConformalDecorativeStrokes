@@ -450,6 +450,8 @@ PlusSignVertex ConformalMapping::GetNeighbor(int x, int y,
 
 void ConformalMapping::ConformalMappingOneStep(QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh)
 {
+    //std::cout << _slidingConstraints.size() << "~\n";
+
     // to do:
     // copying arrays == slow
     std::vector<std::vector<PlusSignVertex>> pTempVertices;
