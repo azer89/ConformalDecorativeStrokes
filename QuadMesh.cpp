@@ -69,7 +69,7 @@ std::vector<AVector> QuadMesh::GetABoundary(int index, bool isXUnchanged, bool i
     return vertices;
 }
 
-void QuadMesh::SetSlidingConstraintFlag(int index, bool boolValue, std::vector<AVector>& debugPoints)
+void QuadMesh::SetSlidingConstraintFlag(int index, bool boolValue, std::vector<AVector> &debugPoints)
 {
     int w = this->GetWidth();
     int h = this->GetHeight();
@@ -80,7 +80,13 @@ void QuadMesh::SetSlidingConstraintFlag(int index, bool boolValue, std::vector<A
         {
             //vertices.push_back(_psVertices[xIter][index].position);
             _psVertices[xIter][index]._isSlideConstrained = boolValue;
-            if(boolValue) debugPoints.push_back(_psVertices[xIter][index].position);
+            //if(boolValue) debugPoints.push_back(_psVertices[xIter][index].position);
+
+            if((xIter + index) == h - 1)
+            {
+                if(boolValue)  debugPoints.push_back(_psVertices[xIter][index].position);
+                _psVertices[xIter][index].shouldMove = !boolValue;
+            }
         }
 
         for(int yIter = (index + 1); yIter < h; yIter++)
@@ -88,7 +94,13 @@ void QuadMesh::SetSlidingConstraintFlag(int index, bool boolValue, std::vector<A
             int xIndex = w - (index + 1);
             //vertices.push_back(_psVertices[xIndex][yIter].position);
             _psVertices[xIndex][yIter]._isSlideConstrained = boolValue;
-            if(boolValue) debugPoints.push_back(_psVertices[xIndex][yIter].position);
+            //if(boolValue) debugPoints.push_back(_psVertices[xIndex][yIter].position);
+
+            /*if((xIndex + yIter) == h - 1)
+            {
+                if(boolValue) debugPoints.push_back(_psVertices[xIndex][yIter].position);
+                _psVertices[xIndex][yIter].shouldMove = boolValue;
+            }*/
         }
     }
     else if(this->_quadMeshType == QuadMeshType::MESH_KITE && !this->_isRightKite)
@@ -100,7 +112,13 @@ void QuadMesh::SetSlidingConstraintFlag(int index, bool boolValue, std::vector<A
         {
             //vertices.push_back(_psVertices[index][yIter].position);
             _psVertices[index][yIter]._isSlideConstrained = boolValue;
-            if(boolValue) debugPoints.push_back(_psVertices[index][yIter].position);
+            //if(boolValue) debugPoints.push_back(_psVertices[index][yIter].position);
+
+            if((index + yIter) == h - 1)
+            {
+                if(boolValue)  debugPoints.push_back(_psVertices[index][yIter].position);
+                _psVertices[index][yIter].shouldMove = !boolValue;
+            }
         }
 
         for(int xIter = (index + 1); xIter < w; xIter++)
@@ -108,7 +126,7 @@ void QuadMesh::SetSlidingConstraintFlag(int index, bool boolValue, std::vector<A
             int yIndex = h - (index + 1);
             //vertices.push_back(_psVertices[xIter][yIndex].position);
             _psVertices[xIter][yIndex]._isSlideConstrained = boolValue;
-            if(boolValue) debugPoints.push_back(_psVertices[xIter][yIndex].position);
+            //if(boolValue) debugPoints.push_back(_psVertices[xIter][yIndex].position);
         }
     }
     else if(this->_quadMeshType == QuadMeshType::MESH_LEG)
@@ -117,7 +135,7 @@ void QuadMesh::SetSlidingConstraintFlag(int index, bool boolValue, std::vector<A
         {
             //vertices.push_back(_psVertices[xIter][index].position);
             _psVertices[xIter][index]._isSlideConstrained = boolValue;
-            if(boolValue) debugPoints.push_back(_psVertices[xIter][index].position);
+            //if(boolValue) debugPoints.push_back(_psVertices[xIter][index].position);
         }
     }
     else if(this->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
@@ -126,9 +144,31 @@ void QuadMesh::SetSlidingConstraintFlag(int index, bool boolValue, std::vector<A
         {
             //vertices.push_back(_psVertices[xIter][index].position);
             _psVertices[xIter][index]._isSlideConstrained = boolValue;
-            if(boolValue) debugPoints.push_back(_psVertices[xIter][index].position);
+            //if(boolValue) debugPoints.push_back(_psVertices[xIter][index].position);
         }
     }
+
+
+    // fixed constraints
+    /*if(this->_quadMeshType == QuadMeshType::MESH_KITE)
+    {
+        uint w = GetWidth();
+        uint h = GetHeight();
+
+        for(uint a = 0; a < w; a++)
+        {
+            for(uint b = 0; b < h; b++)
+            {
+                int sumIdx = a + b;
+                if(_psVertices[a][b]._isSlideConstrained && sumIdx == w)
+                {
+                    _psVertices[a][b].shouldMove = boolValue;
+                }
+            }
+        }
+    }
+    */
+
 }
 
 std::vector<AVector> QuadMesh::GetSideBoundary(int index)

@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->widget->GetGLWidget(),   SIGNAL(CalculateConformalMap()), this, SLOT(AnimationStart()));
+    connect(ui->widget,   SIGNAL(ResetTime()), this, SLOT(ResetTime()));
 
     //connect(ui->conformalMappingCheckBox,SIGNAL(stateChanged(int)),       this, SLOT(SetParams()));
     connect(ui->quadSizeSpinBox,         SIGNAL(valueChanged(double)),    this, SLOT(SetParams()));
@@ -139,6 +140,11 @@ void MainWindow::SetRectilinearTexture()
     ui->widget->GetGLWidget()->SetRectilinearTexture(qFilename);
 
     if(isBusy) { animTimer->start(); }
+}
+
+void MainWindow::ResetTime()
+{
+    startTime = std::clock();
 }
 
 void MainWindow::AnimationThread()

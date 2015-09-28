@@ -46,6 +46,20 @@ public:
 
     AVector GetClosestPointFromBorders(AVector pt);
 
+    void ResetVertices()
+    {
+        uint w = GetWidth();
+        uint h = GetHeight();
+
+        for(uint a = 0; a < w; a++)
+        {
+            for(uint b = 0; b < h; b++)
+            {
+                _psVertices[a][b].position = _opsVertices[a][b].position;
+            }
+        }
+    }
+
     ALine GetTopLine()    { return ALine(_leftStartPt,  _leftEndPt); }
     ALine GetBottomLine() { return ALine(_rightStartPt, _rightEndPt); }
     ALine GetLeftLine()   { return ALine(_leftStartPt,  _rightStartPt); }

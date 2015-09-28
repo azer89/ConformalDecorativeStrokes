@@ -248,6 +248,7 @@ void GLContainer::mousePressEvent(QMouseEvent *event)
     {
         //std::cout << "right click\n";
         _glWidget->SelectSlidingConstraints(event->x(), event->y());
+        emit ResetTime();
     }
 
     if(this->_ctrlPressed)

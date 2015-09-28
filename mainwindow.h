@@ -43,6 +43,8 @@ private slots:
     void SetLegTexture();
     void SetRectilinearTexture();
 
+    void ResetTime();
+
 };
 
 #endif // MAINWINDOW_H

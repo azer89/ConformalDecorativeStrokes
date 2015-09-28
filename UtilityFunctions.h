@@ -30,6 +30,7 @@ public:
     static AVector GetClosestPoint(AVector v, AVector w, AVector pt);
     static AVector GetClosestPoint(std::vector<ALine> lines, AVector pt);
     static AVector GetClosestPoint(std::vector<AVector> lines, AVector pt);
+    static AVector GetClosestPoint(std::vector<std::vector<AVector> > lines, AVector pt);
     static int     GetClosestIndex(std::vector<std::vector<AVector> > lines, AVector pt);
 
     static bool DoesAPointLieOnALine(AVector pt, ALine ln);

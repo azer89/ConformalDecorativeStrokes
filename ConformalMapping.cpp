@@ -572,11 +572,11 @@ void ConformalMapping::ConformalMappingOneStep(QuadMesh* prevQMesh, QuadMesh* cu
             cTempVertices[a][b].angle = sumArmAngles;
 
             // ???
-            //if(cTempVertices[a][b])
-            //{
-            //}
-
-            if(SystemParams::segment_constraint && cTempVertices[a][b]._isBoundaryRibConstrained)
+            if(cTempVertices[a][b]._isSlideConstrained)
+            {
+                cTempVertices[a][b].position = UtilityFunctions::GetClosestPoint(_slidingConstraints, sumPositions);
+            }
+            else if(SystemParams::segment_constraint && cTempVertices[a][b]._isBoundaryRibConstrained)
             {
                 cTempVertices[a][b].position = GetClosestPointFromRibs(a, b, sumPositions, curQMesh);
             }

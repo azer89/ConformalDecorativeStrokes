@@ -98,7 +98,9 @@ void StrokePainter::SelectSlidingConstraints(float x, float y)
     for(uint a = 0; a < _quadMeshes.size(); a++)
     {
         // index + 1 because only inner lines
+        _quadMeshes[a].ResetVertices();
         _quadMeshes[a].SetSlidingConstraintFlag(index + 1, _sConstraintMask[index], _debugPoints);
+
     }
     _vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0.5, 0.25, 0.5));
 

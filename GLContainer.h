@@ -100,6 +100,7 @@ private:
     void UpdateViewport(bool putInMiddle = false);
 
 signals:
+    void ResetTime();
     //void CalculateConformalMap();
 
 private slots:
