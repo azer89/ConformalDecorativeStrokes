@@ -128,8 +128,8 @@ private:
     // sliding constraint candidates
     std::vector<std::vector<AVector>> _sConstraintCandidates;
     QOpenGLBuffer                     _sConstraintCandVbo;
-    QOpenGLVertexArrayObject          _sConstraintCandVao;
-    int                               _sConstraintCandNumData;
+    //QOpenGLVertexArrayObject        _sConstraintCandVao;
+    //int                             _sConstraintCandNumData;
 
     // sliding constraints
     // to do: change to std::vector<bool>

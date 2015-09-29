@@ -94,7 +94,7 @@ void StrokePainter::SelectSlidingConstraints(float x, float y)
     int index = UtilityFunctions::GetClosestIndex(_sConstraintCandidates, mousePt);
     _sConstraintMask[index] = !_sConstraintMask[index];
 
-    _debugPoints.clear();
+    //_debugPoints.clear();
     for(uint a = 0; a < _quadMeshes.size(); a++)
     {
         // index + 1 because only inner lines
@@ -102,7 +102,7 @@ void StrokePainter::SelectSlidingConstraints(float x, float y)
         _quadMeshes[a].SetSlidingConstraintFlag(index + 1, _sConstraintMask[index], _debugPoints);
 
     }
-    _vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0.5, 0.25, 0.5));
+    //_vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, QVector3D(0.5, 0.25, 0.5));
 
     _vDataHelper->BuildLinesVertexData(_sConstraintCandidates, _sConstraintMask, &_sConstraintVbo, &_sConstraintVao, _sConstraintNumData);
 }
@@ -727,7 +727,7 @@ void StrokePainter::GenerateSlidingConstraintCandidates()
         _sConstraintMask.push_back(false);
         _sConstraintCandidates.push_back(sConstCandidate);
     }
-    _vDataHelper->BuildLinesVertexData(_sConstraintCandidates, &_sConstraintCandVbo, &_sConstraintCandVao, _sConstraintCandNumData);
+    //_vDataHelper->BuildLinesVertexData(_sConstraintCandidates, &_sConstraintCandVbo, &_sConstraintCandVao, _sConstraintCandNumData);
 }
 
 /*
@@ -971,15 +971,14 @@ void StrokePainter::mouseReleaseEvent(float x, float y)
 
 void StrokePainter::Draw()
 {
-    /*
-    if(_sConstraintVao.isCreated())
+    if(SystemParams::show_mesh && _sConstraintVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glLineWidth(4.0f);
         _sConstraintVao.bind();
         glDrawArrays(GL_LINES, 0, _sConstraintNumData);
         _sConstraintVao.release();
-    }*/
+    }
 
 
     /*if(_sConstraintCandVao.isCreated())
