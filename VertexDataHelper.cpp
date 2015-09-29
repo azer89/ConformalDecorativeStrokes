@@ -5,6 +5,13 @@
 #include "SystemParams.h"
 //#include <utility>
 
+// Clamping
+// shamelessly taken from http://stackoverflow.com/questions/9323903/most-efficient-elegant-way-to-clip-a-number
+template <typename T>
+T clip(const T& n, const T& lower, const T& upper) {
+  return std::max(lower, std::min(n, upper));
+}
+
 VertexDataHelper::VertexDataHelper(QOpenGLShaderProgram* shaderProgram)
 {
     this->_shaderProgram    = shaderProgram;
@@ -48,7 +55,7 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<std::vector<AVector>> li
     }
     numData = data.size();
 
-    std::cout << numData << "\n";
+    //std::cout << numData << "\n";
 
     BuildVboWithColor(data, vbo);
 
@@ -287,13 +294,13 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
         {
             float aNumerator = a % textureWidth;
 
-            float xCoord1 = (aNumerator) / (float)textureWidth;
-            float xCoord2 = (aNumerator + 1.0f) / (float)textureWidth;
+            float xCoord1 = clip((aNumerator) / (float)textureWidth, 0.0f, 1.0f);
+            float xCoord2 = clip((aNumerator + 1.0f) / (float)textureWidth, 0.0f, 1.0f);
 
             for(int b = 0; b < mesh_height - 1; b++)
             {
-                float yCoord1 = (float)b / (float)textureHeight;
-                float yCoord2 = (float)(b + 1) / (float)textureHeight;
+                float yCoord1 = clip((float)b / (float)textureHeight, 0.0f, 1.0f);
+                float yCoord2 = clip((float)(b + 1) / (float)textureHeight, 0.0f, 1.0f);
 
                 QVector2D uv1;
                 QVector2D uv2;
@@ -303,18 +310,18 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                 if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && !curQMesh->_isRightKite)
                 {
                     // a left kite
-                    uv1 = QVector2D(xCoord1, 1.0f - yCoord1);
-                    uv2 = QVector2D(xCoord2, 1.0f - yCoord1);
-                    uv3 = QVector2D(xCoord2, 1.0f - yCoord2);
-                    uv4 = QVector2D(xCoord1, 1.0f - yCoord2);
+                    uv1 = QVector2D(xCoord1, clip(1.0f - yCoord1, 0.0f, 1.0f));
+                    uv2 = QVector2D(xCoord2, clip(1.0f - yCoord1, 0.0f, 1.0f));
+                    uv3 = QVector2D(xCoord2, clip(1.0f - yCoord2, 0.0f, 1.0f));
+                    uv4 = QVector2D(xCoord1, clip(1.0f - yCoord2, 0.0f, 1.0f));
                 }
                 else if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && curQMesh->_isRightKite)
                 {
                     // a right kite
-                    uv1 = QVector2D(1.0f - xCoord1, yCoord1);
-                    uv2 = QVector2D(1.0f - xCoord2, yCoord1);
-                    uv3 = QVector2D(1.0f - xCoord2, yCoord2);
-                    uv4 = QVector2D(1.0f - xCoord1, yCoord2);
+                    uv1 = QVector2D(clip(1.0f - xCoord1, 0.0f, 1.0f), yCoord1);
+                    uv2 = QVector2D(clip(1.0f - xCoord2, 0.0f, 1.0f), yCoord1);
+                    uv3 = QVector2D(clip(1.0f - xCoord2, 0.0f, 1.0f), yCoord2);
+                    uv4 = QVector2D(clip(1.0f - xCoord1, 0.0f, 1.0f), yCoord2);
                 }
                 else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG &&
                         prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
@@ -331,30 +338,30 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                         !prevQMesh->_isRightKite)
                 {
                     // previous neighbor is a left kite
-                    uv1 = QVector2D(xCoord1, 1.0f - yCoord1);
-                    uv2 = QVector2D(xCoord2, 1.0f - yCoord1);
-                    uv3 = QVector2D(xCoord2, 1.0f - yCoord2);
-                    uv4 = QVector2D(xCoord1, 1.0f - yCoord2);
+                    uv1 = QVector2D(xCoord1, clip(1.0f - yCoord1, 0.0f, 1.0f));
+                    uv2 = QVector2D(xCoord2, clip(1.0f - yCoord1, 0.0f, 1.0f));
+                    uv3 = QVector2D(xCoord2, clip(1.0f - yCoord2, 0.0f, 1.0f));
+                    uv4 = QVector2D(xCoord1, clip(1.0f - yCoord2, 0.0f, 1.0f));
                 }
                 else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG &&
                         nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
                         nextQMesh->_isRightKite)
                 {
                     // next neighbor is a right kite
-                    uv1 = QVector2D(1.0f - xCoord1, yCoord1);
-                    uv2 = QVector2D(1.0f - xCoord2, yCoord1);
-                    uv3 = QVector2D(1.0f - xCoord2, yCoord2);
-                    uv4 = QVector2D(1.0f - xCoord1, yCoord2);
+                    uv1 = QVector2D(clip(1.0f - xCoord1, 0.0f, 1.0f), yCoord1);
+                    uv2 = QVector2D(clip(1.0f - xCoord2, 0.0f, 1.0f), yCoord1);
+                    uv3 = QVector2D(clip(1.0f - xCoord2, 0.0f, 1.0f), yCoord2);
+                    uv4 = QVector2D(clip(1.0f - xCoord1, 0.0f, 1.0f), yCoord2);
                 }
                 else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG &&
                         nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
                         !nextQMesh->_isRightKite)
                 {
                     // next neightbor is a left kite
-                    uv1 = QVector2D(1.0f - xCoord1, 1.0f - yCoord1);
-                    uv2 = QVector2D(1.0f - xCoord2, 1.0f - yCoord1);
-                    uv3 = QVector2D(1.0f - xCoord2, 1.0f - yCoord2);
-                    uv4 = QVector2D(1.0f - xCoord1, 1.0f - yCoord2);
+                    uv1 = QVector2D(clip(1.0f - xCoord1, 0.0f, 1.0f), clip(1.0f - yCoord1, 0.0f, 1.0f));
+                    uv2 = QVector2D(clip(1.0f - xCoord2, 0.0f, 1.0f), clip(1.0f - yCoord1, 0.0f, 1.0f));
+                    uv3 = QVector2D(clip(1.0f - xCoord2, 0.0f, 1.0f), clip(1.0f - yCoord2, 0.0f, 1.0f));
+                    uv4 = QVector2D(clip(1.0f - xCoord1, 0.0f, 1.0f), clip(1.0f - yCoord2, 0.0f, 1.0f));
                 }
                 else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
                 {
