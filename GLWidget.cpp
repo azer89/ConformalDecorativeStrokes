@@ -127,7 +127,6 @@ void GLWidget::mousePressEvent(int x, int y)
 
     _sPainter->mousePressEvent(dx, dy);
 
-
     this->repaint();
 }
 

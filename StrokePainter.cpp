@@ -569,16 +569,11 @@ void StrokePainter::CalculateVertices()
         if(SystemParams::enable_conformal_mapping)
         {
             CalculateVertices(prevQMesh, curQMesh, nextQMesh);
-            //CalculateVertices1(curQMesh);
         }
         else
         {
             CalculateLinearVertices(curQMesh);
         }
-
-        // lower side boundary: curQMesh->GetHeight() - 2
-        //std::vector<AVector> sideBoundary = curQMesh->GetSideBoundary(curQMesh->GetHeight() - 2);
-        //_debugPoints.insert(_debugPoints.end(), sideBoundary.begin(), sideBoundary.end());
     }
 
     // new !!!
@@ -820,21 +815,6 @@ AVector StrokePainter::GetClosestPointFromSpinePoints(AVector pt)
 AVector StrokePainter::GetClosestPointFromSpineLines(AVector pt)
 {
     return UtilityFunctions::GetClosestPoint(_spineLines, pt);
-
-    /*AVector closestPt = pt;
-    float dist = std::numeric_limits<float>::max();
-    for(uint a = 0; a < _spineLines.size() - 1; a++)
-    {
-        AVector pt1 = _spineLines[a];
-        AVector pt2 = _spineLines[a+1];
-        AVector cPt = UtilityFunctions::GetClosestPoint(pt1, pt2, pt);
-        if(pt.Distance(cPt) < dist)
-        {
-            dist = pt.Distance(cPt);
-            closestPt = cPt;
-        }
-    }
-    return closestPt;*/
 }
 
 void StrokePainter::ConformalMappingOneStepSimple()
@@ -1066,8 +1046,6 @@ void StrokePainter::Draw()
     // Rect Texture
     if(SystemParams::show_texture && _vertexNumbers[2] > 0)
     {
-        //std::cout << "Rect Texture" << "\n";
-
         _vDataHelper->NeedToDrawWithColor(0.0);
 
         if(_oglTextures[2]) { _oglTextures[2]->bind(); }
@@ -1080,8 +1058,6 @@ void StrokePainter::Draw()
     // Leg Texture
     if(SystemParams::show_texture && _vertexNumbers[1] > 0)
     {
-         //std::cout << " Leg Texture" << "\n";
-
         _vDataHelper->NeedToDrawWithColor(0.0);
 
         if(_oglTextures[1]) { _oglTextures[1]->bind(); }
@@ -1094,8 +1070,6 @@ void StrokePainter::Draw()
     // Kite Texture
     if(SystemParams::show_texture && _vertexNumbers[0] > 0)
     {
-        //std::cout << " Kite Texture" << "\n";
-
         _vDataHelper->NeedToDrawWithColor(0.0);
         if(_oglTextures[0]) { _oglTextures[0]->bind(); }
         _texVaos[0].bind();

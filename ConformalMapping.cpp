@@ -263,21 +263,6 @@ AVector ConformalMapping::GetClosestPointFromBorders(int x, int y, AVector pt, Q
         }
     }
 
-    /*
-    AVector closestPt = pt;
-    float dist = std::numeric_limits<float>::max();
-    for(uint a = 0; a < borderLines.size(); a++)
-    {
-        AVector cPt = UtilityFunctions::GetClosestPoint(borderLines[a].GetPointA(), borderLines[a].GetPointB(), pt);
-        if(pt.Distance(cPt) < dist)
-        {
-            dist = pt.Distance(cPt);
-            closestPt = cPt;
-        }
-    }
-    return closestPt;
-    */
-
     return UtilityFunctions::GetClosestPoint(borderLines, pt);
 }
 
@@ -450,8 +435,6 @@ PlusSignVertex ConformalMapping::GetNeighbor(int x, int y,
 
 void ConformalMapping::ConformalMappingOneStep(QuadMesh* prevQMesh, QuadMesh* curQMesh, QuadMesh* nextQMesh)
 {
-    //std::cout << _slidingConstraints.size() << "~\n";
-
     // to do:
     // copying arrays == slow
     std::vector<std::vector<PlusSignVertex>> pTempVertices;
