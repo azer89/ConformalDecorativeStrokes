@@ -101,7 +101,6 @@ private:
 
 signals:
     void ResetTime();
-    //void CalculateConformalMap();
 
 private slots:
     /**

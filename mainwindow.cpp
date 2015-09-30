@@ -182,7 +182,6 @@ void MainWindow::AnimationStart()
         startTime = std::clock();
         animTimer->start();
     }
-
 }
 
 void MainWindow::SetDisplay()

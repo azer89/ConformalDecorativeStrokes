@@ -8,8 +8,9 @@
 // Clamping
 // shamelessly taken from http://stackoverflow.com/questions/9323903/most-efficient-elegant-way-to-clip-a-number
 template <typename T>
-T clip(const T& n, const T& lower, const T& upper) {
-  return std::max(lower, std::min(n, upper));
+T clip(const T& n, const T& lower, const T& upper)
+{
+    return std::max(lower, std::min(n, upper));
 }
 
 VertexDataHelper::VertexDataHelper(QOpenGLShaderProgram* shaderProgram)
@@ -55,8 +56,6 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<std::vector<AVector>> li
     }
     numData = data.size();
 
-    //std::cout << numData << "\n";
-
     BuildVboWithColor(data, vbo);
 
     if(isInit) { vao->release(); }
@@ -86,7 +85,6 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<std::vector<AVector>> li
             data.append(VertexData(QVector3D(line[b].x, line[b].y,  0),       QVector2D(), rCol));
             data.append(VertexData(QVector3D(line[b+1].x, line[b + 1].y,  0), QVector2D(), rCol));
         }
-
     }
     numData = data.size();
 
@@ -119,7 +117,7 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<AVector> points, QOpenGL
     if(isInit) { linesVao->release(); }
 }
 
-// is this function wrong on pass by reference
+// is this function wrong on pass by reference ?
 void VertexDataHelper::BuildConstrainedPointsVertexData(std::vector<std::vector<PlusSignVertex>> plusSignVertices, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int *numConstrainedPoints, int mesh_width, int mesh_height, QVector3D vecCol)
 {
     if(plusSignVertices.size() == 0) return;
@@ -307,6 +305,8 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                 QVector2D uv3;
                 QVector2D uv4;
 
+                // to do: clipping doesn't work !
+
                 if(curQMesh->_quadMeshType == QuadMeshType::MESH_KITE && !curQMesh->_isRightKite)
                 {
                     // a left kite
@@ -425,8 +425,8 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes,
 
     QVector<VertexData> data;
 
-    QVector<VertexData> kiteData = SpecificTypeOfMesh(quadMeshes, QuadMeshType::MESH_KITE, vecCol2);
-    QVector<VertexData> legData = SpecificTypeOfMesh(quadMeshes,  QuadMeshType::MESH_LEG, vecCol3);
+    QVector<VertexData> kiteData = SpecificTypeOfMesh(quadMeshes, QuadMeshType::MESH_KITE,        vecCol2);
+    QVector<VertexData> legData =  SpecificTypeOfMesh(quadMeshes, QuadMeshType::MESH_LEG,         vecCol3);
     QVector<VertexData> rectData = SpecificTypeOfMesh(quadMeshes, QuadMeshType::MESH_RECTILINEAR, vecCol1);
 
     ConcatQVector(data, kiteData);

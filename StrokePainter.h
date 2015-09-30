@@ -125,19 +125,13 @@ private:
     std::vector<QOpenGLBuffer>             _texVbos;         // VBOs of textures
     std::vector<QOpenGLVertexArrayObject>  _texVaos;         // VAOs of textures
 
-    // sliding constraint candidates
+    // sliding constraints
     std::vector<std::vector<AVector>> _sConstraintCandidates;
     QOpenGLBuffer                     _sConstraintCandVbo;
-    //QOpenGLVertexArrayObject        _sConstraintCandVao;
-    //int                             _sConstraintCandNumData;
-
-    // sliding constraints
-    // to do: change to std::vector<bool>
-    //std::vector<std::vector<AVector>> _sConstraints;
-    std::vector<bool>        _sConstraintMask;
-    QOpenGLBuffer            _sConstraintVbo;
-    QOpenGLVertexArrayObject _sConstraintVao;
-    int                      _sConstraintNumData;
+    std::vector<bool>                 _sConstraintMask;
+    QOpenGLBuffer                     _sConstraintVbo;
+    QOpenGLVertexArrayObject          _sConstraintVao;
+    int                               _sConstraintNumData;
 
     // interactive editing
     int _selectedIndex;
