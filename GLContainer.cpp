@@ -12,6 +12,12 @@
 #include <QScrollBar>
 #include <QTimer>
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 GLContainer::GLContainer(QWidget *parent) :
     QAbstractScrollArea (parent),
     _ctrlPressed(false),

@@ -17,6 +17,12 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 
 class StrokePainter
 {

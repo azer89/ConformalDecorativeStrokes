@@ -13,6 +13,12 @@
 #include "VertexData.h"
 #include "SystemParams.h"
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 GLWidget::GLWidget(QGLFormat format, QWidget *parent) :
     QGLWidget(format, parent),
     _sPainter(0),

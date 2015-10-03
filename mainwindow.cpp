@@ -5,6 +5,12 @@
 
 #include "SystemParams.h"
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)

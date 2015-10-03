@@ -6,6 +6,12 @@
 
 #include <ctime>
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 namespace Ui {
 class MainWindow;
 }

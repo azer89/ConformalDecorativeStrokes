@@ -11,6 +11,12 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 class VertexDataHelper
 {
 public:

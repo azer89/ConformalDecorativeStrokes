@@ -6,6 +6,12 @@
 
 #include <vector>
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 class UtilityFunctions
 {
 public:

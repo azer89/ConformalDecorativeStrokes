@@ -14,6 +14,12 @@
 
 #include <vector>
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 class GLWidget : public QGLWidget
 {
     Q_OBJECT

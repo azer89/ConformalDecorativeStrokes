@@ -3,6 +3,12 @@
 
 #include "UtilityFunctions.h"
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 QuadMesh::QuadMesh()
 {
 }

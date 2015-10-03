@@ -4,6 +4,12 @@
 #include <iostream>
 //#include <cstring>
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 class SystemParams
 {
 public:

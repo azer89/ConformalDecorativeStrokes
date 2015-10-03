@@ -6,6 +6,12 @@
 #include <QVector3D>
 
 /**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
+/**
  * See a related paper: "Warping Pictures Nicely"
  */
 struct PlusSignVertex

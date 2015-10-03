@@ -3,6 +3,12 @@
 
 #include "QuadMesh.h"
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 
 enum NeighborDirection
 {

@@ -10,6 +10,12 @@
 
 #include <limits>
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 CurveRDP::CurveRDP()
 {
 }

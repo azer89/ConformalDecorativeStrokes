@@ -7,6 +7,12 @@
 #include "SystemParams.h"
 #include "UtilityFunctions.h"
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 ConformalMapping::ConformalMapping() :
     _iterDist(std::numeric_limits<float>::max())
 {

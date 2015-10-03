@@ -8,6 +8,12 @@
 #include <stdlib.h>
 #include <iostream>
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 StrokePainter::StrokePainter() :
     _isMouseDown(false),
     _vDataHelper(0),

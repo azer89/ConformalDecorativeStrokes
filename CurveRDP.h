@@ -5,6 +5,12 @@
 
 #include <vector>
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 class CurveRDP
 {
 public:

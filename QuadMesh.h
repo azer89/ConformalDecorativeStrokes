@@ -5,6 +5,10 @@
 #include "ALine.h"
 #include "PlusSignVertex.h"
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
 
 
 enum QuadMeshType

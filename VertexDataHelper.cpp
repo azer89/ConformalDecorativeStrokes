@@ -5,6 +5,12 @@
 #include "SystemParams.h"
 //#include <utility>
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 // Clamping
 // shamelessly taken from http://stackoverflow.com/questions/9323903/most-efficient-elegant-way-to-clip-a-number
 template <typename T>

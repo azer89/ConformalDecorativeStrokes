@@ -2,6 +2,12 @@
 #include <QApplication>
 #include <QStyleFactory>
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

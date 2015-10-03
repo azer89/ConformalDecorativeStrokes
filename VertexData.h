@@ -4,6 +4,12 @@
 #include <QVector2D>
 #include <QVector3D>
 
+/**
+  * Reza Adhitya Saputra
+  * radhitya@uwaterloo.ca
+  */
+
+
 // VertexData
 struct VertexData
 {
