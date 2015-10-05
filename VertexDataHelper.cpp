@@ -19,6 +19,12 @@ T clip(const T& n, const T& lower, const T& upper)
     return std::max(lower, std::min(n, upper));
 }
 
+void VertexDataHelper::ConcatQVector(QVector<VertexData>& destData, QVector<VertexData>& sourceData)
+{
+    for(uint a = 0; a < sourceData.size(); a++)
+        { destData.append(sourceData[a]); }
+}
+
 VertexDataHelper::VertexDataHelper(QOpenGLShaderProgram* shaderProgram)
 {
     this->_shaderProgram    = shaderProgram;
@@ -444,13 +450,7 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes,
     if(isInit) { linesVao->release(); }
 }
 
-void VertexDataHelper::ConcatQVector(QVector<VertexData>& destData, QVector<VertexData>& sourceData)
-{
-    for(uint a = 0; a < sourceData.size(); a++)
-    {
-        destData.append(sourceData[a]);
-    }
-}
+
 
 QVector<VertexData> VertexDataHelper::SpecificTypeOfMesh(std::vector<QuadMesh> quadMeshes, QuadMeshType qType, QVector3D vecCol)
 {
@@ -561,9 +561,7 @@ void VertexDataHelper::BuildPointsVertexData(std::vector<AVector> points, QOpenG
     {
         QVector3D vecCol = unselectedCol;
         if(a == selectedIndex)
-        {
-            vecCol = selectedCol;
-        }
+            { vecCol = selectedCol; }
         data.append(VertexData(QVector3D(points[a].x, points[a].y,  0), QVector2D(), vecCol));
     }
 

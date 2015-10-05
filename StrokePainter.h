@@ -22,8 +22,6 @@
   * radhitya@uwaterloo.ca
   */
 
-
-
 class StrokePainter
 {
 public:
