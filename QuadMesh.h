@@ -15,8 +15,10 @@ enum QuadMeshType
 {    
     MESH_KITE = 0,
     MESH_RECTANGLE   = 1, // obsolete
-    MESH_LEG         = 2,
-    MESH_RECTILINEAR = 3,
+    //MESH_LEG         = 2, // todo: I need this to be obsolete
+    MESH_LEFT_LEG    = 2,
+    MESH_RIGHT_LEG   = 3,
+    MESH_RECTILINEAR = 4,
 };
 
 struct QuadMesh

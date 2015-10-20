@@ -95,7 +95,6 @@ void QuadMesh::SetSlidingConstraintFlag(int index, bool boolValue, std::vector<A
         for(int yIter = (index + 1); yIter < h; yIter++)
         {
             int xIndex = w - (index + 1);
-
             _psVertices[xIndex][yIter]._isSlideConstrained = boolValue;
         }
     }
@@ -121,7 +120,8 @@ void QuadMesh::SetSlidingConstraintFlag(int index, bool boolValue, std::vector<A
             _psVertices[xIter][yIndex]._isSlideConstrained = boolValue;
         }
     }
-    else if(this->_quadMeshType == QuadMeshType::MESH_LEG)
+    // edited
+    else if(this->_quadMeshType == QuadMeshType::MESH_LEFT_LEG || this->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG)
     {
         for(int xIter = 0; xIter < w; xIter++)
         {
@@ -172,7 +172,8 @@ std::vector<AVector> QuadMesh::GetSideBoundary(int index)
             vertices.push_back(_psVertices[xIter][yIndex].position);
         }
     }
-    else if(this->_quadMeshType == QuadMeshType::MESH_LEG)
+    // edited
+    else if(this->_quadMeshType == QuadMeshType::MESH_LEFT_LEG || this->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG)
     {
         for(int xIter = 0; xIter < w; xIter++)
         {

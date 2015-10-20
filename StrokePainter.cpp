@@ -34,9 +34,10 @@ StrokePainter::StrokePainter() :
     _kiteMeshesColor      = QVector3D(0, 0, 1);
     */
 
-    _rectMeshesColor = QVector3D(1, 1, 1);
-    _legMeshesColor      = QVector3D(0.5, 0.75, 0.5);
-    _kiteMeshesColor      = QVector3D(0.5, 0.5, 1.0);
+    _rectMeshColor = QVector3D(1, 1, 1);
+    _lLegMeshColor      = QVector3D(0.5, 0.75, 0.5);
+    _rLegMeshColor      = QVector3D(1.0, 0.5, 0.0);
+    _kiteMeshColor      = QVector3D(0.5, 0.5, 1.0);
 
     _selectedPointColor   = QVector3D(0.5, 0.5, 1.0);
     _unselectedPointColor = QVector3D(1, 1, 1);
@@ -203,20 +204,30 @@ void StrokePainter::DecomposeSegments()
 
     for(uint a = 0; a < tempQuadMeshes.size(); a++)
     {
-        QuadMesh qMesh = tempQuadMeshes[a];
-        if(qMesh._quadMeshType == QuadMeshType::MESH_KITE)
+        QuadMesh prevQMesh;
+        QuadMesh curQMesh = tempQuadMeshes[a];
+        QuadMesh nextQMesh;
+
+        // edited
+        if(a > 0) prevQMesh = tempQuadMeshes[a - 1];
+        if(a < tempQuadMeshes.size() - 1) nextQMesh = tempQuadMeshes[a + 1];
+
+        // a kite mesh needs no decomposition
+        if(curQMesh._quadMeshType == QuadMeshType::MESH_KITE)
         {
-            _quadMeshes.push_back(qMesh);
+            _quadMeshes.push_back(curQMesh);
             _leftLines.push_back(tempLeftLines[a]);
             _rightLines.push_back(tempRightLines[a]);
 
             continue;
         }
 
-        ALine topLine(qMesh._leftStartPt,   qMesh._leftEndPt);
-        ALine bottomLine(qMesh._rightStartPt, qMesh._rightEndPt);
+        ALine topLine(curQMesh._leftStartPt,   curQMesh._leftEndPt);
+        ALine bottomLine(curQMesh._rightStartPt, curQMesh._rightEndPt);
 
-        float spineLength = qMesh._leftStartPt.Distance(qMesh._leftEndPt);
+        float spineLength = curQMesh._leftStartPt.Distance(curQMesh._leftEndPt);
+
+        // the first quad mes, it must be a rectangle
         if(a == 0)
         {
             // to do: if(spineLength < legLength + (rectilinearLength * rectFactor)) --> leg leg
@@ -225,13 +236,16 @@ void StrokePainter::DecomposeSegments()
             AVector right2 = bottomLine.GetPointInBetween((spineLength - legLength) / spineLength);
 
             // rect
-            QuadMesh qMesh1(qMesh._leftStartPt,  left2, qMesh._rightStartPt, right2, QuadMeshType::MESH_RECTILINEAR);
+            QuadMesh qMesh1(curQMesh._leftStartPt,  left2, curQMesh._rightStartPt, right2, QuadMeshType::MESH_RECTILINEAR);
             _quadMeshes.push_back(qMesh1);
 
             // leg
-            QuadMesh qMesh2(left2,  qMesh._leftEndPt, right2, qMesh._rightEndPt, QuadMeshType::MESH_LEG);
+            // edited : left leg
+            QuadMesh qMesh2(left2,  curQMesh._leftEndPt, right2, curQMesh._rightEndPt, QuadMeshType::MESH_LEFT_LEG);
             _quadMeshes.push_back(qMesh2);
         }
+
+        // the last quad mesh, it must be a rectangle
         else if(a == tempQuadMeshes.size() - 1)
         {
             // to do: if(spineLength < legLength + (rectilinearLength * rectFactor)) --> leg leg
@@ -240,24 +254,31 @@ void StrokePainter::DecomposeSegments()
             AVector right1 = bottomLine.GetPointInBetween(legLength / spineLength);
 
             // leg
-            QuadMesh qMesh1(qMesh._leftStartPt,  left1, qMesh._rightStartPt, right1, QuadMeshType::MESH_LEG);
+            // edited : right left
+            QuadMesh qMesh1(curQMesh._leftStartPt,  left1, curQMesh._rightStartPt, right1, QuadMeshType::MESH_RIGHT_LEG);
             _quadMeshes.push_back(qMesh1);
 
             // rect
-            QuadMesh qMesh2(left1,  qMesh._leftEndPt, right1, qMesh._rightEndPt, QuadMeshType::MESH_RECTILINEAR);
+            QuadMesh qMesh2(left1,  curQMesh._leftEndPt, right1, curQMesh._rightEndPt, QuadMeshType::MESH_RECTILINEAR);
             _quadMeshes.push_back(qMesh2);
         }
+
+        // rectangle mesh in between two kites but it has short length
         else if(spineLength < ((legLength * 2.0f) + (rectilinearLength * rectFactor)))
         {
             AVector leftMid  = topLine.GetMiddlePoint();
             AVector rightMid = bottomLine.GetMiddlePoint();
 
-            // leg
-            QuadMesh qMesh1(qMesh._leftStartPt,  leftMid, qMesh._rightStartPt, rightMid, QuadMeshType::MESH_LEG);
+            // leg 1
+            // edited
+            QuadMeshType legType1 = (prevQMesh._isRightKite) ? QuadMeshType::MESH_RIGHT_LEG : QuadMeshType::MESH_LEFT_LEG;
+            QuadMesh qMesh1(curQMesh._leftStartPt,  leftMid, curQMesh._rightStartPt, rightMid, legType1);
             _quadMeshes.push_back(qMesh1);
 
-            // leg
-            QuadMesh qMesh2(leftMid, qMesh._leftEndPt, rightMid, qMesh._rightEndPt, QuadMeshType::MESH_LEG);
+            // leg 2
+            // edited
+            QuadMeshType legType2 = (nextQMesh._isRightKite) ? QuadMeshType::MESH_LEFT_LEG : QuadMeshType::MESH_RIGHT_LEG;
+            QuadMesh qMesh2(leftMid, curQMesh._leftEndPt, rightMid, curQMesh._rightEndPt, legType2);
             _quadMeshes.push_back(qMesh2);
         }
         else
@@ -268,16 +289,20 @@ void StrokePainter::DecomposeSegments()
             AVector left2 = topLine.GetPointInBetween((spineLength - legLength) / spineLength);
             AVector right2 = bottomLine.GetPointInBetween((spineLength - legLength) / spineLength);
 
-            // leg
-            QuadMesh qMesh1(qMesh._leftStartPt,  left1, qMesh._rightStartPt, right1, QuadMeshType::MESH_LEG);
+            // leg 1
+            // edited
+            QuadMeshType legType1 = (prevQMesh._isRightKite) ? QuadMeshType::MESH_RIGHT_LEG : QuadMeshType::MESH_LEFT_LEG;
+            QuadMesh qMesh1(curQMesh._leftStartPt,  left1, curQMesh._rightStartPt, right1, legType1);
             _quadMeshes.push_back(qMesh1);
 
             // rect
             QuadMesh qMesh2(left1,  left2, right1, right2, QuadMeshType::MESH_RECTILINEAR);
             _quadMeshes.push_back(qMesh2);
 
-            // leg
-            QuadMesh qMesh3(left2,  qMesh._leftEndPt, right2, qMesh._rightEndPt, QuadMeshType::MESH_LEG);
+            // leg 2
+            // edited
+            QuadMeshType legType2 = (nextQMesh._isRightKite) ? QuadMeshType::MESH_LEFT_LEG : QuadMeshType::MESH_RIGHT_LEG;
+            QuadMesh qMesh3(left2,  curQMesh._leftEndPt, right2, curQMesh._rightEndPt, legType2);
             _quadMeshes.push_back(qMesh3);
         }
     }
@@ -425,7 +450,8 @@ void StrokePainter::CalculateVertices(QuadMesh *prevQMesh, QuadMesh *curQMesh, Q
 
     // texture length
     float textureLength = SystemParams::stroke_width; // KITE
-    if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG)
+    // edited
+    if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEFT_LEG && curQMesh->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG)
         { textureLength = _textureSizes[1].width(); }
     else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
         { textureLength = _textureSizes[2].width(); }
@@ -507,7 +533,9 @@ void StrokePainter::CalculateVertices(QuadMesh *prevQMesh, QuadMesh *curQMesh, Q
                 // RIB CONSTRAINT CHECK
                 if(xIter == 0 || xIter == xLoop - 1) { ribConstraint = true; }
             }
-            else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG)
+            // edited
+            // todo: fix this nasty code...
+            else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG || curQMesh->_quadMeshType == QuadMeshType::MESH_LEFT_LEG)
             {
                 // SHOULD_MOVE CHECK
                 // prev is right kite, mark downleft
@@ -590,9 +618,12 @@ void StrokePainter::CalculateVertices()
 
     _qMeshNumData = 0;
     _vDataHelper->BuildPointsVertexData(_constrainedPoints, &_constrainedPointsVbo, &_constrainedPointsVao, _constrainedPointColor);
-    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectMeshesColor, _kiteMeshesColor, _legMeshesColor);
+    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectMeshColor, _kiteMeshColor, _lLegMeshColor, _rLegMeshColor);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[2], &_texVaos[2], _vertexNumbers[2], QuadMeshType::MESH_RECTILINEAR);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[1], &_texVaos[1], _vertexNumbers[1], QuadMeshType::MESH_LEG);
+    // edited
+    // todo: edit the textures
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[1], &_texVaos[1], _vertexNumbers[1], QuadMeshType::MESH_LEFT_LEG);
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[1], &_texVaos[1], _vertexNumbers[1], QuadMeshType::MESH_RIGHT_LEG);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[0], &_texVaos[0], _vertexNumbers[0], QuadMeshType::MESH_KITE);
 }
 
@@ -621,7 +652,8 @@ void StrokePainter::CalculateLinearVertices(QuadMesh *qMesh)
 
     // texture length
     float textureLength = SystemParams::stroke_width; // KITE
-    if(qMesh->_quadMeshType == QuadMeshType::MESH_LEG)
+    // edited
+    if(qMesh->_quadMeshType == QuadMeshType::MESH_LEFT_LEG || qMesh->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG)
         { textureLength = _textureSizes[1].width(); }
     else if(qMesh->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
         { textureLength = _textureSizes[2].width(); }
@@ -850,9 +882,12 @@ void StrokePainter::ConformalMappingOneStep()
     */
 
     _qMeshNumData = 0;
-    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectMeshesColor, _kiteMeshesColor, _legMeshesColor);
+    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectMeshColor, _kiteMeshColor, _lLegMeshColor, _rLegMeshColor);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[2], &_texVaos[2], _vertexNumbers[2], QuadMeshType::MESH_RECTILINEAR);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[1], &_texVaos[1], _vertexNumbers[1], QuadMeshType::MESH_LEG);
+    // edited
+    // to do: different textures
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[1], &_texVaos[1], _vertexNumbers[1], QuadMeshType::MESH_LEFT_LEG);
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[1], &_texVaos[1], _vertexNumbers[1], QuadMeshType::MESH_RIGHT_LEG);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[0], &_texVaos[0], _vertexNumbers[0], QuadMeshType::MESH_KITE);
 }
 

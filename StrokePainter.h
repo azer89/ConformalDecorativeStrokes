@@ -117,9 +117,10 @@ private:
     int                         _qMeshNumData;
     QOpenGLBuffer               _quadMeshesVbo;
     QOpenGLVertexArrayObject    _quadMeshesVao;
-    QVector3D                   _rectMeshesColor;
-    QVector3D                   _legMeshesColor;
-    QVector3D                   _kiteMeshesColor;
+    QVector3D                   _rectMeshColor;
+    QVector3D                   _lLegMeshColor;
+    QVector3D                   _rLegMeshColor;
+    QVector3D                   _kiteMeshColor;
 
     // textures
     std::vector<QImage>                    _images;          // texture images

@@ -128,7 +128,8 @@ AVector ConformalMapping::GetClosestPointFromRibs(int x, int y, AVector pt, Quad
         borderLines.push_back(ALine(curQMesh->_leftStartPt, curQMesh->_leftEndPt));
         borderLines.push_back(ALine(curQMesh->_leftEndPt, curQMesh->_rightEndPt));
     }
-    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG)
+    // edited
+    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEFT_LEG || curQMesh->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG)
     {
         borderLines.push_back(ALine(curQMesh->_leftStartPt, curQMesh->_rightStartPt));
         borderLines.push_back(ALine(curQMesh->_leftEndPt, curQMesh->_rightEndPt));
@@ -188,7 +189,8 @@ AVector ConformalMapping::GetClosestPointFromBorders(int x, int y, AVector pt, Q
             borderLines.push_back(ALine(nextQMesh->_rightStartPt, nextQMesh->_rightEndPt)); /* add next neighbor (bottom) */
         }
     }
-    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG) // MESH_LEG
+    // edited
+    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEFT_LEG || curQMesh->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG) // MESH_LEG
     {
         // to do: should add the entire borders (take from left and right lines...)
 
@@ -307,7 +309,8 @@ void ConformalMapping::UpdateNeighbor(int x, int y,
             pTempVertices[pWidth - 1][pHeight - (x + 1)].position = cTempVertices[x][y].position;
         }
     }
-    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG) // MESH_LEG, neighbor is either MESH_KITE or MESH_RECTILINEAR
+    // edited
+    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEFT_LEG || curQMesh->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG) // MESH_LEG, neighbor is either MESH_KITE or MESH_RECTILINEAR
     {
         if(x == 0 && prevQMesh &&  prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE && prevQMesh->_isRightKite)
         {
@@ -395,7 +398,8 @@ PlusSignVertex ConformalMapping::GetNeighbor(int x, int y,
             return pTempVertices[pWidth - 2][pHeight - (x + 1)];
         }
     }
-    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG) // MESH_LEG
+    // edited
+    else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEFT_LEG || curQMesh->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG) // MESH_LEG
     {
         if(dir == NeighborDirection::ND_LEFT && prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE && prevQMesh->_isRightKite)
         {

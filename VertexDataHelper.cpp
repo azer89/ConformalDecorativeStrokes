@@ -335,7 +335,9 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                     uv3 = QVector2D(clip(1.0f - xCoord2, 0.0f, 1.0f), yCoord2);
                     uv4 = QVector2D(clip(1.0f - xCoord1, 0.0f, 1.0f), yCoord2);
                 }
-                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG &&
+                // edited
+                // todo: fix the the ifs
+                else if((curQMesh->_quadMeshType == QuadMeshType::MESH_LEFT_LEG || curQMesh->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG) &&
                         prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
                         prevQMesh->_isRightKite)
                 {
@@ -345,7 +347,9 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                     uv3 = QVector2D(xCoord2, yCoord2);
                     uv4 = QVector2D(xCoord1, yCoord2);
                 }
-                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG &&
+                // edited
+                // todo: fix the the ifs
+                else if((curQMesh->_quadMeshType == QuadMeshType::MESH_LEFT_LEG || curQMesh->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG) &&
                         prevQMesh && prevQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
                         !prevQMesh->_isRightKite)
                 {
@@ -355,7 +359,9 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                     uv3 = QVector2D(xCoord2, clip(1.0f - yCoord2, 0.0f, 1.0f));
                     uv4 = QVector2D(xCoord1, clip(1.0f - yCoord2, 0.0f, 1.0f));
                 }
-                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG &&
+                // edited
+                // todo: fix the the ifs
+                else if((curQMesh->_quadMeshType == QuadMeshType::MESH_LEFT_LEG || curQMesh->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG) &&
                         nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
                         nextQMesh->_isRightKite)
                 {
@@ -365,7 +371,9 @@ void VertexDataHelper::BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadM
                     uv3 = QVector2D(clip(1.0f - xCoord2, 0.0f, 1.0f), yCoord2);
                     uv4 = QVector2D(clip(1.0f - xCoord1, 0.0f, 1.0f), yCoord2);
                 }
-                else if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEG &&
+                // edited
+                // todo: fix the the ifs
+                else if((curQMesh->_quadMeshType == QuadMeshType::MESH_LEFT_LEG || curQMesh->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG) &&
                         nextQMesh && nextQMesh->_quadMeshType == QuadMeshType::MESH_KITE &&
                         !nextQMesh->_isRightKite)
                 {
@@ -422,7 +430,8 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes,
                                             int &qMeshNumData,
                                             QVector3D vecCol1,
                                             QVector3D vecCol2,
-                                            QVector3D vecCol3)
+                                            QVector3D vecCol3,
+                                            QVector3D vecCol4)
 {
     qMeshNumData = 0;
     if(quadMeshes.size() == 0) { return; }
@@ -437,12 +446,17 @@ void VertexDataHelper::BuildLinesVertexData(std::vector<QuadMesh> quadMeshes,
 
     QVector<VertexData> data;
 
-    QVector<VertexData> kiteData = SpecificTypeOfMesh(quadMeshes, QuadMeshType::MESH_KITE,        vecCol2);
-    QVector<VertexData> legData =  SpecificTypeOfMesh(quadMeshes, QuadMeshType::MESH_LEG,         vecCol3);
-    QVector<VertexData> rectData = SpecificTypeOfMesh(quadMeshes, QuadMeshType::MESH_RECTILINEAR, vecCol1);
+    QVector<VertexData> kiteData = SpecificTypeOfMesh(quadMeshes, QuadMeshType::MESH_KITE,  vecCol2);
+    //QVector<VertexData> legData =  SpecificTypeOfMesh(quadMeshes, QuadMeshType::MESH_LEG, vecCol3);
+    //edited
+    QVector<VertexData> leftLegData =  SpecificTypeOfMesh(quadMeshes,  QuadMeshType::MESH_LEFT_LEG,  vecCol3);
+    QVector<VertexData> rightLegData =  SpecificTypeOfMesh(quadMeshes, QuadMeshType::MESH_RIGHT_LEG, vecCol4);
+    QVector<VertexData> rectData = SpecificTypeOfMesh(quadMeshes,     QuadMeshType::MESH_RECTILINEAR,vecCol1);
 
     ConcatQVector(data, kiteData);
-    ConcatQVector(data, legData);
+    //ConcatQVector(data, legData);
+    ConcatQVector(data, leftLegData);
+    ConcatQVector(data, rightLegData);
     ConcatQVector(data, rectData);
 
     qMeshNumData = data.size();

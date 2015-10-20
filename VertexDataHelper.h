@@ -50,7 +50,8 @@ public:
                               int& qMeshNumData,
                               QVector3D vecCol1,
                               QVector3D vecCol2,
-                              QVector3D vecCol3);
+                              QVector3D vecCol3,
+                              QVector3D vecCol4 );
     void BuildTexturedStrokeVertexData(std::vector<QuadMesh> quadMeshes, QOpenGLBuffer* vbo, QOpenGLVertexArrayObject* vao, int& qMeshTexNumData, QuadMeshType qmType);
 
 private:
