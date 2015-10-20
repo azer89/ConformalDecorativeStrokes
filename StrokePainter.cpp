@@ -227,7 +227,22 @@ void StrokePainter::DecomposeSegments()
 
         float spineLength = curQMesh._leftStartPt.Distance(curQMesh._leftEndPt);
 
-        // the first quad mes, it must be a rectangle
+        // todo: delete this
+
+        if(a > 0)
+        {
+            if(prevQMesh._isRightKite) {std::cout << "prev is right kite\n";}
+            else {std::cout << "prev is left kite\n";}
+        }
+        if(a < tempQuadMeshes.size() - 1)
+        {
+            if(nextQMesh._isRightKite) {std::cout << "next is right kite\n";}
+            else {std::cout << "next is left kite\n";}
+        }
+        std::cout << "---\n";
+
+
+        // the first quad mesh, it must be a rectangle
         if(a == 0)
         {
             // to do: if(spineLength < legLength + (rectilinearLength * rectFactor)) --> leg leg
@@ -240,8 +255,9 @@ void StrokePainter::DecomposeSegments()
             _quadMeshes.push_back(qMesh1);
 
             // leg
-            // edited : left leg
-            QuadMesh qMesh2(left2,  curQMesh._leftEndPt, right2, curQMesh._rightEndPt, QuadMeshType::MESH_LEFT_LEG);
+            // edited
+            QuadMeshType legType = (nextQMesh._isRightKite) ? QuadMeshType::MESH_LEFT_LEG : QuadMeshType::MESH_RIGHT_LEG;
+            QuadMesh qMesh2(left2,  curQMesh._leftEndPt, right2, curQMesh._rightEndPt, legType);
             _quadMeshes.push_back(qMesh2);
         }
 
@@ -254,8 +270,9 @@ void StrokePainter::DecomposeSegments()
             AVector right1 = bottomLine.GetPointInBetween(legLength / spineLength);
 
             // leg
-            // edited : right left
-            QuadMesh qMesh1(curQMesh._leftStartPt,  left1, curQMesh._rightStartPt, right1, QuadMeshType::MESH_RIGHT_LEG);
+            // edited
+            QuadMeshType legType = (prevQMesh._isRightKite) ? QuadMeshType::MESH_RIGHT_LEG : QuadMeshType::MESH_LEFT_LEG;
+            QuadMesh qMesh1(curQMesh._leftStartPt,  left1, curQMesh._rightStartPt, right1, legType);
             _quadMeshes.push_back(qMesh1);
 
             // rect
