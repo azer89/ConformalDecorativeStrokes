@@ -115,8 +115,8 @@ private:
     // Meshes
     std::vector<QuadMesh>       _quadMeshes;
     int                         _qMeshNumData;
-    QOpenGLBuffer               _quadMeshesVbo;
-    QOpenGLVertexArrayObject    _quadMeshesVao;
+    QOpenGLBuffer               _quadMeshVbo;
+    QOpenGLVertexArrayObject    _quadMeshVao;
     QVector3D                   _rectMeshColor;
     QVector3D                   _lLegMeshColor;
     QVector3D                   _rLegMeshColor;
@@ -148,42 +148,42 @@ private:
 
     // strokes
     std::vector<AVector>        _oriStrokeLines;
-    QOpenGLBuffer               _oriStrokeLinesVbo;
-    QOpenGLVertexArrayObject    _oriStrokeLinesVao;
+    QOpenGLBuffer               _oriStrokeLineVbo;
+    QOpenGLVertexArrayObject    _oriStrokeLineVao;
     QVector3D                   _oriStrokeColor;
 
     // middle spines
     std::vector<AVector>        _spineLines;       // resampled and simplified from strokeLines
-    QOpenGLBuffer               _spineLinesVbo;
-    QOpenGLVertexArrayObject    _spineLinesVao;
-    QVector3D                   _spineLinesColor;
+    QOpenGLBuffer               _spineLineVbo;
+    QOpenGLVertexArrayObject    _spineLineVao;
+    QVector3D                   _spineLineColor;
 
     // left lines of the strokes. I need these lines to calculate closest points on the borders
     std::vector<AVector>        _leftLines;
-    QOpenGLBuffer             _leftLinesVbo;
-    QOpenGLVertexArrayObject  _leftLinesVao;
+    QOpenGLBuffer             _leftLineVbo;
+    QOpenGLVertexArrayObject  _leftLineVao;
 
     // right lines of the stroke. I need these lines to calculate closest points on the borders
     std::vector<AVector>        _rightLines;
-    QOpenGLBuffer               _rightLinesVbo;
-    QOpenGLVertexArrayObject    _rightLinesVao;
+    QOpenGLBuffer               _rightLineVbo;
+    QOpenGLVertexArrayObject    _rightLineVao;
 
     // constrained points
     std::vector<AVector>        _constrainedPoints;
-    QOpenGLBuffer               _constrainedPointsVbo;
-    QOpenGLVertexArrayObject    _constrainedPointsVao;
+    QOpenGLBuffer               _constrainedPointVbo;
+    QOpenGLVertexArrayObject    _constrainedPointVao;
     QVector3D                   _constrainedPointColor;
 
     // debug points
     std::vector<AVector>        _debugPoints;
-    QOpenGLBuffer               _debugPointsVbo;
-    QOpenGLVertexArrayObject    _debugPointsVao;
-    QVector3D                   _debugPointsColor;
+    QOpenGLBuffer               _debugPointVbo;
+    QOpenGLVertexArrayObject    _debugPointVao;
+    QVector3D                   _debugPointColor;
 
     // debug lines
     std::vector<ALine>          _debugLines;
-    QOpenGLBuffer               _debugLinesVbo;
-    QOpenGLVertexArrayObject    _debugLinesVao;
+    QOpenGLBuffer               _debugLineVbo;
+    QOpenGLVertexArrayObject    _debugLineVao;
 
 };
 

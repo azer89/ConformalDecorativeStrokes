@@ -44,11 +44,11 @@ StrokePainter::StrokePainter() :
     _unselectedPointColor = QVector3D(1, 1, 1);
 
     _oriStrokeColor  = QVector3D(1, 1, 1);
-    _spineLinesColor = QVector3D(0.5, 0.5, 1);
+    _spineLineColor = QVector3D(0.5, 0.5, 1);
 
     _constrainedPointColor = QVector3D(1, 0, 0);
 
-    _debugPointsColor = QVector3D(1, 0, 0);
+    _debugPointColor = QVector3D(1, 0, 0);
 }
 
 StrokePainter::~StrokePainter()
@@ -175,7 +175,7 @@ void StrokePainter::CalculateInitialRibbon()
     //_vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, _debugPointsColor);
     //_vDataHelper->BuildLinesVertexData(_debugLines, &_debugLinesVbo, &_debugLinesVao, QVector3D(0, 0.25, 0));
 
-    _vDataHelper->BuildLinesVertexData(_spineLines, &_spineLinesVbo, &_spineLinesVao, _spineLinesColor);
+    _vDataHelper->BuildLinesVertexData(_spineLines, &_spineLineVbo, &_spineLineVao, _spineLineColor);
     //_vDataHelper->BuildLinesVertexData(_leftLines, &_leftLinesVbo, &_leftLinesVao, QVector3D(0.5, 0.5, 1));
     //_vDataHelper->BuildLinesVertexData(_rightLines, &_rightLinesVbo, &_rightLinesVao, QVector3D(0.5, 0.5, 1));
 }
@@ -632,11 +632,11 @@ void StrokePainter::CalculateVertices()
     GenerateSlidingConstraintCandidates();
 
     // delete this
-    _vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointsVbo, &_debugPointsVao, _debugPointsColor);
+    _vDataHelper->BuildPointsVertexData(_debugPoints, &_debugPointVbo, &_debugPointVao, _debugPointColor);
 
     _qMeshNumData = 0;
-    _vDataHelper->BuildPointsVertexData(_constrainedPoints, &_constrainedPointsVbo, &_constrainedPointsVao, _constrainedPointColor);
-    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectMeshColor, _kiteMeshColor, _lLegMeshColor, _rLegMeshColor);
+    _vDataHelper->BuildPointsVertexData(_constrainedPoints, &_constrainedPointVbo, &_constrainedPointVao, _constrainedPointColor);
+    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshVbo, &_quadMeshVao, _qMeshNumData, _rectMeshColor, _kiteMeshColor, _lLegMeshColor, _rLegMeshColor);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[2], &_texVaos[2], _vertexNumbers[2], QuadMeshType::MESH_RECTILINEAR);
     // edited
     // todo: edit the textures
@@ -900,7 +900,7 @@ void StrokePainter::ConformalMappingOneStep()
     */
 
     _qMeshNumData = 0;
-    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshesVbo, &_quadMeshesVao, _qMeshNumData, _rectMeshColor, _kiteMeshColor, _lLegMeshColor, _rLegMeshColor);
+    _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshVbo, &_quadMeshVao, _qMeshNumData, _rectMeshColor, _kiteMeshColor, _lLegMeshColor, _rLegMeshColor);
     _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[2], &_texVaos[2], _vertexNumbers[2], QuadMeshType::MESH_RECTILINEAR);
     // edited
     // to do: different textures
@@ -964,7 +964,7 @@ void StrokePainter::mouseMoveEvent(float x, float y)
     {
         // Draw mode
         _oriStrokeLines.push_back(AVector(x, y));
-        _vDataHelper->BuildLinesVertexData(_oriStrokeLines, &_oriStrokeLinesVbo, &_oriStrokeLinesVao, _oriStrokeColor);
+        _vDataHelper->BuildLinesVertexData(_oriStrokeLines, &_oriStrokeLineVbo, &_oriStrokeLineVao, _oriStrokeColor);
     }
 }
 
@@ -1013,22 +1013,22 @@ void StrokePainter::Draw()
     }*/
 
     // Left lines
-    if(SystemParams::show_mesh && _leftLinesVao.isCreated())
+    if(SystemParams::show_mesh && _leftLineVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glLineWidth(4.0f);
-        _leftLinesVao.bind();
+        _leftLineVao.bind();
         glDrawArrays(GL_LINES, 0, _leftLines.size() * 2);
-        _leftLinesVao.release();
+        _leftLineVao.release();
     }
     // Right lines
-    if(SystemParams::show_mesh && _rightLinesVao.isCreated())
+    if(SystemParams::show_mesh && _rightLineVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glLineWidth(4.0f);
-        _rightLinesVao.bind();
+        _rightLineVao.bind();
         glDrawArrays(GL_LINES, 0, _rightLines.size() * 2);
-        _rightLinesVao.release();
+        _rightLineVao.release();
     }
 
     // Selected handle points
@@ -1042,43 +1042,43 @@ void StrokePainter::Draw()
     }
 
     // Constrained points
-    if(SystemParams::show_mesh && _constrainedPointsVao.isCreated())
+    if(SystemParams::show_mesh && _constrainedPointVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glPointSize(4.0f);
-        _constrainedPointsVao.bind();
+        _constrainedPointVao.bind();
         glDrawArrays(GL_POINTS, 0, _constrainedPoints.size());
-        _constrainedPointsVao.release();
+        _constrainedPointVao.release();
     }
 
     // Debug points
-    if(SystemParams::show_mesh && _debugPointsVao.isCreated())
+    if(SystemParams::show_mesh && _debugPointVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glPointSize(8.0f);
-        _debugPointsVao.bind();
+        _debugPointVao.bind();
         glDrawArrays(GL_POINTS, 0, _debugPoints.size());
-        _debugPointsVao.release();
+        _debugPointVao.release();
     }
 
     // Debug lines
-    if(SystemParams::show_mesh && _debugLinesVao.isCreated())
+    if(SystemParams::show_mesh && _debugLineVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glLineWidth(3.0f);
-        _debugLinesVao.bind();
+        _debugLineVao.bind();
         glDrawArrays(GL_LINES, 0, _debugLines.size() * 2);
-        _debugLinesVao.release();
+        _debugLineVao.release();
     }
 
     // Original stroke
-    if(_isMouseDown && _oriStrokeLinesVao.isCreated())
+    if(_isMouseDown && _oriStrokeLineVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
         glLineWidth(2.0f);
-        _oriStrokeLinesVao.bind();
+        _oriStrokeLineVao.bind();
         glDrawArrays(GL_LINES, 0, _oriStrokeLines.size() * 2);
-        _oriStrokeLinesVao.release();
+        _oriStrokeLineVao.release();
     }
 
     // Spine lines
@@ -1094,12 +1094,12 @@ void StrokePainter::Draw()
 
     // to do: uncomment this
     // Quad mesh
-    if(SystemParams::show_mesh && _quadMeshesVao.isCreated())
+    if(SystemParams::show_mesh && _quadMeshVao.isCreated())
     {
         glLineWidth(1.0f);
-        _quadMeshesVao.bind();
+        _quadMeshVao.bind();
         glDrawArrays(GL_LINES, 0, _qMeshNumData);
-        _quadMeshesVao.release();
+        _quadMeshVao.release();
     }
 
     // Rect Texture
