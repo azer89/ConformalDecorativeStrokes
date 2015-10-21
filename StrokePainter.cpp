@@ -29,15 +29,16 @@ StrokePainter::StrokePainter() :
     _maxDist(2.0f)
 {
     /*
-    _rectMeshesColor = QVector3D(0, 0, 0);
-    _legMeshesColor      = QVector3D(0.25, 0.75, 0.25);
-    _kiteMeshesColor      = QVector3D(0, 0, 1);
+    _rectMeshColor = QVector3D(0, 0, 0);
+    _lLegMeshColor = QVector3D(0.25, 0.75, 0.25);
+    _rLegMeshColor = QVector3D(0.25, 0.75, 0.25);
+    _kiteMeshColor = QVector3D(0, 0, 1);
     */
 
     _rectMeshColor = QVector3D(1, 1, 1);
-    _lLegMeshColor      = QVector3D(0.5, 0.75, 0.5);
-    _rLegMeshColor      = QVector3D(1.0, 0.5, 0.0);
-    _kiteMeshColor      = QVector3D(0.5, 0.5, 1.0);
+    _lLegMeshColor = QVector3D(0.5, 0.75, 0.5);
+    _rLegMeshColor = QVector3D(1.0, 0.5, 0.0);
+    _kiteMeshColor = QVector3D(0.5, 0.5, 1.0);
 
     _selectedPointColor   = QVector3D(0.5, 0.5, 1.0);
     _unselectedPointColor = QVector3D(1, 1, 1);
