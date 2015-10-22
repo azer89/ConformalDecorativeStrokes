@@ -10,7 +10,9 @@
   * radhitya@uwaterloo.ca
   */
 
-
+/**
+ * An implementation of Ramer-Douglas-Peucker algorithm
+ */
 class CurveRDP
 {
 public:

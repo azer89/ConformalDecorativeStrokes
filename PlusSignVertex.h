@@ -23,7 +23,7 @@ struct PlusSignVertex
     bool shouldMove;    // cannot move at all
 
     bool _isBoundaryRibConstrained; // maintain perpendicular segment boundary
-    bool _isSlideConstrained;
+    bool _isSlideConstrained;       // vertex can slide on a certain predefined path
 
     bool isValid;
 

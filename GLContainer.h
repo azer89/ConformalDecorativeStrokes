@@ -105,9 +105,11 @@ private:
      */
     void UpdateViewport(bool putInMiddle = false);
 
+// Signals
 signals:
     void ResetTime();
 
+// Slots
 private slots:
     /**
      * vertical scroll

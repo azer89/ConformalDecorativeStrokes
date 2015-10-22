@@ -18,10 +18,14 @@
  */
 struct ALine
 {
+// Properties
 public:
     float XA;	float YA;	// start
     float XB;	float YB;	// end
 
+
+// Functions
+public:
     // Constructor #1
     ALine()
     {

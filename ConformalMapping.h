@@ -9,7 +9,9 @@
   */
 
 
-
+/**
+ * We only check four directions
+ */
 enum NeighborDirection
 {
     ND_LEFT  = 0,
@@ -25,6 +27,14 @@ enum NeighborDirection
  */
 class ConformalMapping
 {
+
+public:
+    // debugging (delete after use)
+    std::vector<AVector>  _debugPoints;
+    std::vector<ALine>    _debugLines;
+
+    std::vector<std::vector<AVector>> _slidingConstraints;
+
 public:
     ConformalMapping();
 
@@ -47,12 +57,7 @@ public:
 
     void SetSlidingConstraint(std::vector<std::vector<AVector>> sConstraints) { _slidingConstraints = sConstraints; }
 
-public:
-    // debugging (delete after use)
-    std::vector<AVector>  _debugPoints;
-    std::vector<ALine>    _debugLines;
 
-    std::vector<std::vector<AVector>> _slidingConstraints;
 
 private:
     void ConformalMappingOneStepSimple(QuadMesh *qMesh);

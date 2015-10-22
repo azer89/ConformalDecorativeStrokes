@@ -18,12 +18,16 @@
  */
 struct AVector
 {
+// Properties
 public:
     // x
     float x;
 
     // y
     float y;
+
+// Functions
+public:
 
     // Default constructor
     AVector()
