@@ -28,7 +28,7 @@ enum QuadMeshType
     MESH_LEFT_LEG    = 1,
     MESH_RIGHT_LEG   = 2,
     MESH_RECTILINEAR = 3,
-};
+    TYPE_NUM = 4,};
 
 struct QuadMesh
 {

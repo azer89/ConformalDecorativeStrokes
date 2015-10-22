@@ -78,7 +78,8 @@ public:
     /**
      * Textures
      */
-    void SetLegTexture(QString img);
+    void SetLeftLegTexture(QString img);
+    void SetRightLegTexture(QString img);
     void SetKiteTexture(QString img);
     void SetRectilinearTexture(QString img);
 

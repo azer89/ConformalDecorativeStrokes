@@ -19,11 +19,13 @@ StrokePainter::StrokePainter() :
     _vDataHelper(0),
     _cMapping(new ConformalMapping()),
     _qMeshNumData(0),
-    _images(std::vector<QImage>(3)),              // support three textures
-    _oglTextures(std::vector<QOpenGLTexture*>(3)),
-    _vertexNumbers(std::vector<int>(3)),
-    _textureSizes(std::vector<QSizeF>(3)),
-    _texVbos(std::vector<QOpenGLBuffer>(3)),
+
+    _images(std::vector<QImage>(QuadMeshType::TYPE_NUM)),              // support three textures
+    _oglTextures(std::vector<QOpenGLTexture*>(QuadMeshType::TYPE_NUM)),
+    _vertexNumbers(std::vector<int>(QuadMeshType::TYPE_NUM)),
+    _textureSizes(std::vector<QSizeF>(QuadMeshType::TYPE_NUM)),
+    _texVbos(std::vector<QOpenGLBuffer>(QuadMeshType::TYPE_NUM)),
+
     _texVaos(std::vector<QOpenGLVertexArrayObject>(3)),
     _selectedIndex(-1),
     _maxDist(2.0f)
@@ -62,35 +64,59 @@ void StrokePainter::SetVertexDataHelper(QOpenGLShaderProgram* shaderProgram)
     _vDataHelper = new VertexDataHelper(shaderProgram);
 }
 
+/*
+QuadMeshType
+
+MESH_KITE = 0
+MESH_LEFT_LEG    = 1
+MESH_RIGHT_LEG   = 2
+MESH_RECTILINEAR = 3
+ */
+
+// 0
 void StrokePainter::SetKiteTexture(QString img)
 {
-    _images[0].load(img);
-    QImage qImg = _images[0];
-    _oglTextures[0] = new QOpenGLTexture(qImg);
+    _images[ QuadMeshType::MESH_KITE ].load(img);
+    QImage qImg = _images[ QuadMeshType::MESH_KITE ];
+    _oglTextures[ QuadMeshType::MESH_KITE ] = new QOpenGLTexture(qImg);
     float length = ((float)qImg.width()) / ((float)qImg.height()) * SystemParams::stroke_width;
-    _textureSizes[0] = QSizeF(length, SystemParams::stroke_width);
+    _textureSizes[ QuadMeshType::MESH_KITE ] = QSizeF(length, SystemParams::stroke_width);
 
     std::cout << "SetKiteTexture" << "\n";
 }
 
-void StrokePainter::SetLegTexture(QString img)
+// 1
+void StrokePainter::SetLeftLegTexture(QString img)
 {
-    _images[1].load(img);
-    QImage qImg = _images[1];
-    _oglTextures[1] = new QOpenGLTexture(qImg);
+    _images[ QuadMeshType::MESH_LEFT_LEG ].load(img);
+    QImage qImg = _images[ QuadMeshType::MESH_LEFT_LEG ];
+    _oglTextures[ QuadMeshType::MESH_LEFT_LEG ] = new QOpenGLTexture(qImg);
     float length = ((float)qImg.width()) / ((float)qImg.height()) * SystemParams::stroke_width;
-    _textureSizes[1] = QSizeF(length, SystemParams::stroke_width);
+    _textureSizes[ QuadMeshType::MESH_LEFT_LEG ] = QSizeF(length, SystemParams::stroke_width);
 
-    std::cout << "SetLegTexture" << "\n";
+    std::cout << "SetLeftLegTexture" << "\n";
 }
 
+// 2
+void StrokePainter::SetRightLegTexture(QString img)
+{
+    _images[ QuadMeshType::MESH_RIGHT_LEG ].load(img);
+    QImage qImg = _images[ QuadMeshType::MESH_RIGHT_LEG ];
+    _oglTextures[ QuadMeshType::MESH_RIGHT_LEG ] = new QOpenGLTexture(qImg);
+    float length = ((float)qImg.width()) / ((float)qImg.height()) * SystemParams::stroke_width;
+    _textureSizes[ QuadMeshType::MESH_RIGHT_LEG ] = QSizeF(length, SystemParams::stroke_width);
+
+    std::cout << "SetRightLegTexture" << "\n";
+}
+
+// 3
 void StrokePainter::SetRectilinearTexture(QString img)
 {
-    _images[2].load(img);
-    QImage qImg = _images[2];
-    _oglTextures[2] = new QOpenGLTexture(qImg);
+    _images[ QuadMeshType::MESH_RECTILINEAR ].load(img);
+    QImage qImg = _images[ QuadMeshType::MESH_RECTILINEAR ];
+    _oglTextures[ QuadMeshType::MESH_RECTILINEAR ] = new QOpenGLTexture(qImg);
     float length = ((float)qImg.width()) / ((float)qImg.height()) * SystemParams::stroke_width;
-    _textureSizes[2] = QSizeF(length, SystemParams::stroke_width);
+    _textureSizes[ QuadMeshType::MESH_RECTILINEAR ] = QSizeF(length, SystemParams::stroke_width);
 
     std::cout << "SetRectilinearTexture" << "\n";
 }
@@ -468,8 +494,9 @@ void StrokePainter::CalculateVertices(QuadMesh *prevQMesh, QuadMesh *curQMesh, Q
 
     // texture length
     float textureLength = SystemParams::stroke_width; // KITE
+
     // edited
-    if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEFT_LEG && curQMesh->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG)
+    if(curQMesh->_quadMeshType == QuadMeshType::MESH_LEFT_LEG || curQMesh->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG)
         { textureLength = _textureSizes[1].width(); }
     else if(curQMesh->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
         { textureLength = _textureSizes[2].width(); }
@@ -637,12 +664,30 @@ void StrokePainter::CalculateVertices()
     _qMeshNumData = 0;
     _vDataHelper->BuildPointsVertexData(_constrainedPoints, &_constrainedPointVbo, &_constrainedPointVao, _constrainedPointColor);
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshVbo, &_quadMeshVao, _qMeshNumData, _rectMeshColor, _kiteMeshColor, _lLegMeshColor, _rLegMeshColor);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[2], &_texVaos[2], _vertexNumbers[2], QuadMeshType::MESH_RECTILINEAR);
-    // edited
-    // todo: edit the textures
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[1], &_texVaos[1], _vertexNumbers[1], QuadMeshType::MESH_LEFT_LEG);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[1], &_texVaos[1], _vertexNumbers[1], QuadMeshType::MESH_RIGHT_LEG);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[0], &_texVaos[0], _vertexNumbers[0], QuadMeshType::MESH_KITE);
+
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes,
+                                                &_texVbos[QuadMeshType::MESH_RECTILINEAR],
+                                                &_texVaos[QuadMeshType::MESH_RECTILINEAR],
+                                                _vertexNumbers[QuadMeshType::MESH_RECTILINEAR],
+                                                QuadMeshType::MESH_RECTILINEAR);
+
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes,
+                                                &_texVbos[QuadMeshType::MESH_LEFT_LEG],
+                                                &_texVaos[QuadMeshType::MESH_LEFT_LEG],
+                                                _vertexNumbers[QuadMeshType::MESH_LEFT_LEG],
+                                                QuadMeshType::MESH_LEFT_LEG);
+
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes,
+                                                &_texVbos[ QuadMeshType::MESH_RIGHT_LEG ],
+                                                &_texVaos[ QuadMeshType::MESH_RIGHT_LEG ],
+                                                _vertexNumbers[ QuadMeshType::MESH_RIGHT_LEG ],
+                                                QuadMeshType::MESH_RIGHT_LEG);
+
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes,
+                                                &_texVbos[ QuadMeshType::MESH_KITE ],
+                                                &_texVaos[ QuadMeshType::MESH_KITE ],
+                                                _vertexNumbers[ QuadMeshType::MESH_KITE ],
+                                                QuadMeshType::MESH_KITE);
 }
 
 // illustrator-style texture mapping
@@ -901,12 +946,30 @@ void StrokePainter::ConformalMappingOneStep()
 
     _qMeshNumData = 0;
     _vDataHelper->BuildLinesVertexData(_quadMeshes, &_quadMeshVbo, &_quadMeshVao, _qMeshNumData, _rectMeshColor, _kiteMeshColor, _lLegMeshColor, _rLegMeshColor);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[2], &_texVaos[2], _vertexNumbers[2], QuadMeshType::MESH_RECTILINEAR);
-    // edited
-    // to do: different textures
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[1], &_texVaos[1], _vertexNumbers[1], QuadMeshType::MESH_LEFT_LEG);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[1], &_texVaos[1], _vertexNumbers[1], QuadMeshType::MESH_RIGHT_LEG);
-    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes, &_texVbos[0], &_texVaos[0], _vertexNumbers[0], QuadMeshType::MESH_KITE);
+
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes,
+                                                &_texVbos[QuadMeshType::MESH_RECTILINEAR],
+                                                &_texVaos[QuadMeshType::MESH_RECTILINEAR],
+                                                _vertexNumbers[QuadMeshType::MESH_RECTILINEAR],
+                                                QuadMeshType::MESH_RECTILINEAR);
+
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes,
+                                                &_texVbos[QuadMeshType::MESH_LEFT_LEG],
+                                                &_texVaos[QuadMeshType::MESH_LEFT_LEG],
+                                                _vertexNumbers[QuadMeshType::MESH_LEFT_LEG],
+                                                QuadMeshType::MESH_LEFT_LEG);
+
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes,
+                                                &_texVbos[ QuadMeshType::MESH_RIGHT_LEG ],
+                                                &_texVaos[ QuadMeshType::MESH_RIGHT_LEG ],
+                                                _vertexNumbers[ QuadMeshType::MESH_RIGHT_LEG ],
+                                                QuadMeshType::MESH_RIGHT_LEG);
+
+    _vDataHelper->BuildTexturedStrokeVertexData(_quadMeshes,
+                                                &_texVbos[ QuadMeshType::MESH_KITE ],
+                                                &_texVaos[ QuadMeshType::MESH_KITE ],
+                                                _vertexNumbers[ QuadMeshType::MESH_KITE ],
+                                                QuadMeshType::MESH_KITE);
 }
 
 void StrokePainter::MappingInterpolation()
@@ -1103,38 +1166,54 @@ void StrokePainter::Draw()
     }
 
     // Rect Texture
-    if(SystemParams::show_texture && _vertexNumbers[2] > 0)
+    // QuadMeshType::MESH_RECTILINEAR
+    if(SystemParams::show_texture && _vertexNumbers[QuadMeshType::MESH_RECTILINEAR] > 0)
     {
         _vDataHelper->NeedToDrawWithColor(0.0);
 
-        if(_oglTextures[2]) { _oglTextures[2]->bind(); }
-        _texVaos[2].bind();
-        glDrawArrays(GL_QUADS, 0, _vertexNumbers[2]);
-        _texVaos[2].release();
-        if(_oglTextures[2]) { _oglTextures[2]->release(); }
+        if(_oglTextures[QuadMeshType::MESH_RECTILINEAR]) { _oglTextures[QuadMeshType::MESH_RECTILINEAR]->bind(); }
+        _texVaos[QuadMeshType::MESH_RECTILINEAR].bind();
+        glDrawArrays(GL_QUADS, 0, _vertexNumbers[QuadMeshType::MESH_RECTILINEAR]);
+        _texVaos[QuadMeshType::MESH_RECTILINEAR].release();
+        if(_oglTextures[QuadMeshType::MESH_RECTILINEAR]) { _oglTextures[QuadMeshType::MESH_RECTILINEAR]->release(); }
     }
 
-    // Leg Texture
-    if(SystemParams::show_texture && _vertexNumbers[1] > 0)
+    // Left Leg Texture
+    // QuadMeshType::MESH_LEFT_LEG
+    if(SystemParams::show_texture && _vertexNumbers[ QuadMeshType::MESH_LEFT_LEG ] > 0)
     {
         _vDataHelper->NeedToDrawWithColor(0.0);
 
-        if(_oglTextures[1]) { _oglTextures[1]->bind(); }
-        _texVaos[1].bind();
-        glDrawArrays(GL_QUADS, 0, _vertexNumbers[1]);
-        _texVaos[1].release();
-        if(_oglTextures[1]) { _oglTextures[1]->release(); }
+        if(_oglTextures[ QuadMeshType::MESH_LEFT_LEG ]) { _oglTextures[ QuadMeshType::MESH_LEFT_LEG ]->bind(); }
+        _texVaos[ QuadMeshType::MESH_LEFT_LEG ].bind();
+        glDrawArrays(GL_QUADS, 0, _vertexNumbers[ QuadMeshType::MESH_LEFT_LEG ]);
+        _texVaos[ QuadMeshType::MESH_LEFT_LEG ].release();
+        if(_oglTextures[ QuadMeshType::MESH_LEFT_LEG ]) { _oglTextures[ QuadMeshType::MESH_LEFT_LEG ]->release(); }
+    }
+
+    // Right Leg Texture
+    // QuadMeshType::MESH_RIGHT_LEG
+    if(SystemParams::show_texture && _vertexNumbers[ QuadMeshType::MESH_RIGHT_LEG ] > 0)
+    {
+        _vDataHelper->NeedToDrawWithColor(0.0);
+
+        if(_oglTextures[ QuadMeshType::MESH_RIGHT_LEG ]) { _oglTextures[ QuadMeshType::MESH_RIGHT_LEG ]->bind(); }
+        _texVaos[ QuadMeshType::MESH_RIGHT_LEG ].bind();
+        glDrawArrays(GL_QUADS, 0, _vertexNumbers[ QuadMeshType::MESH_RIGHT_LEG ]);
+        _texVaos[ QuadMeshType::MESH_RIGHT_LEG ].release();
+        if(_oglTextures[ QuadMeshType::MESH_RIGHT_LEG ]) { _oglTextures[ QuadMeshType::MESH_RIGHT_LEG ]->release(); }
     }
 
     // Kite Texture
-    if(SystemParams::show_texture && _vertexNumbers[0] > 0)
+    // QuadMeshType::MESH_KITE
+    if(SystemParams::show_texture && _vertexNumbers[ QuadMeshType::MESH_KITE ] > 0)
     {
         _vDataHelper->NeedToDrawWithColor(0.0);
-        if(_oglTextures[0]) { _oglTextures[0]->bind(); }
-        _texVaos[0].bind();
-        glDrawArrays(GL_QUADS, 0, _vertexNumbers[0]);
-        _texVaos[0].release();
-        if(_oglTextures[0]) { _oglTextures[0]->release(); }
+        if(_oglTextures[ QuadMeshType::MESH_KITE ]) { _oglTextures[ QuadMeshType::MESH_KITE ]->bind(); }
+        _texVaos[ QuadMeshType::MESH_KITE ].bind();
+        glDrawArrays(GL_QUADS, 0, _vertexNumbers[ QuadMeshType::MESH_KITE ]);
+        _texVaos[ QuadMeshType::MESH_KITE ].release();
+        if(_oglTextures[ QuadMeshType::MESH_KITE ]) { _oglTextures[ QuadMeshType::MESH_KITE ]->release(); }
     }
 }
 
