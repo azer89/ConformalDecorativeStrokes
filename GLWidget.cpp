@@ -70,8 +70,10 @@ void GLWidget::initializeGL()
     _sPainter = new StrokePainter();
     _sPainter->SetVertexDataHelper(_shaderProgram);
 
+    // todo: edit this !!!
     QString qFilenameA(SystemParams::leg_texture_file.c_str());
-    this->SetLegTexture(qFilenameA);
+    this->SetLeftLegTexture(qFilenameA);
+    this->SetRightLegTexture(qFilenameA);
 
     QString qFilenameB(SystemParams::kite_texture_file.c_str());
     this->SetKiteTexture(qFilenameB);

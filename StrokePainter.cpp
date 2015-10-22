@@ -25,8 +25,8 @@ StrokePainter::StrokePainter() :
     _vertexNumbers(std::vector<int>(QuadMeshType::TYPE_NUM)),
     _textureSizes(std::vector<QSizeF>(QuadMeshType::TYPE_NUM)),
     _texVbos(std::vector<QOpenGLBuffer>(QuadMeshType::TYPE_NUM)),
+    _texVaos(std::vector<QOpenGLVertexArrayObject>(QuadMeshType::TYPE_NUM)),
 
-    _texVaos(std::vector<QOpenGLVertexArrayObject>(3)),
     _selectedIndex(-1),
     _maxDist(2.0f)
 {
@@ -409,12 +409,14 @@ void StrokePainter::CalculateInitialSegments()
             else if(rot < 0) // turn left: negative rotation
                 { rightEnd = _leftLines[a+1] + AVector(-dir1.y, dir1.x) * strokeWidth; /* rightDir */ }
 
-            QuadMesh qMesh(_leftLines[a], leftEnd, _rightLines[a], rightEnd, QuadMeshType::MESH_RECTANGLE);
+            // edited
+            QuadMesh qMesh(_leftLines[a], leftEnd, _rightLines[a], rightEnd, QuadMeshType::MESH_RECTILINEAR);
             _quadMeshes.push_back(qMesh);
         }
         else if(a == 0 && _spineLines.size() == 2)  // start
         {
-            QuadMesh qMesh(_leftLines[a], _leftLines[a+1], _rightLines[a], _rightLines[a+1], QuadMeshType::MESH_RECTANGLE);
+            //edited
+            QuadMesh qMesh(_leftLines[a], _leftLines[a+1], _rightLines[a], _rightLines[a+1], QuadMeshType::MESH_RECTILINEAR);
             _quadMeshes.push_back(qMesh);
         }
         else if(a == _spineLines.size() - 2 && _spineLines.size() > 2) // END
@@ -432,7 +434,8 @@ void StrokePainter::CalculateInitialSegments()
             else if(rot < 0) // turn left: negative rotation
                 { rightStart = _leftLines[a] + AVector(-dir2.y, dir2.x) * strokeWidth; /* rightDir */ }
 
-            QuadMesh qMesh(leftStart, _leftLines[a+1], rightStart, _rightLines[a+1], QuadMeshType::MESH_RECTANGLE);
+            // edited
+            QuadMesh qMesh(leftStart, _leftLines[a+1], rightStart, _rightLines[a+1], QuadMeshType::MESH_RECTILINEAR);
             _quadMeshes.push_back(qMesh);
         }
         else if(a > 0)  // MIDDLE
@@ -461,7 +464,8 @@ void StrokePainter::CalculateInitialSegments()
             if(rot2 > 0)      { leftEnd  = _rightLines[a+1] + AVector(dir2.y, -dir2.x) * strokeWidth; /* leftDir */  }
             else if(rot2 < 0) { rightEnd = _leftLines[a+1]  + AVector(-dir2.y, dir2.x) * strokeWidth; /* rightDir */ }
 
-            QuadMesh qMesh(leftStart, leftEnd, rightStart, rightEnd, QuadMeshType::MESH_RECTANGLE);
+            // edited
+            QuadMesh qMesh(leftStart, leftEnd, rightStart, rightEnd, QuadMeshType::MESH_RECTILINEAR);
             _quadMeshes.push_back(qMesh);
         }
     }

@@ -120,7 +120,9 @@ void MainWindow::SetLegTexture()
     ui->legTextureButton->setIcon(QIcon(qFilename));
     ui->legTextureButton->setIconSize(ui->legTextureButton->size());
 
-    ui->widget->GetGLWidget()->SetLegTexture(qFilename);
+    // todo: edit this !!!
+    ui->widget->GetGLWidget()->SetLeftLegTexture(qFilename);
+    ui->widget->GetGLWidget()->SetRightLegTexture(qFilename);
 
     if(isBusy) { animTimer->start(); }
 }
