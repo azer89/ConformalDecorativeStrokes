@@ -37,12 +37,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionParameters,	         SIGNAL(triggered()), this, SLOT(ShowParamsDockWidget()));
     connect(ui->actionTextures,	             SIGNAL(triggered()), this, SLOT(ShowTexturesDockWidget()));
     connect(ui->actionSetKiteTexture,	     SIGNAL(triggered()), this, SLOT(SetKiteTexture()));
-    connect(ui->actionSetLegTexture,	     SIGNAL(triggered()), this, SLOT(SetLegTexture()));
+    connect(ui->actionSetLLegTexture,	     SIGNAL(triggered()), this, SLOT(SetLLegTexture()));
+    connect(ui->actionSetRLegTexture,	     SIGNAL(triggered()), this, SLOT(SetRLegTexture()));
     connect(ui->actionSetRectilinearTexture, SIGNAL(triggered()), this, SLOT(SetRectilinearTexture()));
 
 
 
-    connect(ui->legTextureButton,         SIGNAL(clicked()), this, SLOT(SetLegTexture()));
+    connect(ui->lLegTextureButton,        SIGNAL(clicked()), this, SLOT(SetLLegTexture()));
+    connect(ui->rLegTextureButton,        SIGNAL(clicked()), this, SLOT(SetRLegTexture()));
     connect(ui->kiteTextureButton,        SIGNAL(clicked()), this, SLOT(SetKiteTexture()));
     connect(ui->rectilinearTextureButton, SIGNAL(clicked()), this, SLOT(SetRectilinearTexture()));
 
@@ -54,9 +56,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->kiteTextureButton->setIconSize(ui->kiteTextureButton->size());
     ui->kiteTextureButton->setText("");
 
-    ui->legTextureButton->setIcon(QIcon(SystemParams::leg_texture_file.c_str()));
-    ui->legTextureButton->setIconSize(ui->legTextureButton->size());
-    ui->legTextureButton->setText("");
+    ui->lLegTextureButton->setIcon(QIcon(SystemParams::l_leg_texture_file.c_str()));
+    ui->lLegTextureButton->setIconSize(ui->lLegTextureButton->size());
+    ui->lLegTextureButton->setText("");
+
+    ui->rLegTextureButton->setIcon(QIcon(SystemParams::r_leg_texture_file.c_str()));
+    ui->rLegTextureButton->setIconSize(ui->rLegTextureButton->size());
+    ui->rLegTextureButton->setText("");
 
     ui->rectilinearTextureButton->setIcon(QIcon(SystemParams::rectilinear_texture_file.c_str()));
     ui->rectilinearTextureButton->setIconSize(ui->rectilinearTextureButton->size());
@@ -103,7 +109,7 @@ void MainWindow::SetKiteTexture()
 }
 
 // Leg Texture
-void MainWindow::SetLegTexture()
+void MainWindow::SetLLegTexture()
 {
     bool isBusy = false;
     if(animTimer->isActive())
@@ -117,11 +123,36 @@ void MainWindow::SetLegTexture()
                                                      SystemParams::texture_dir.c_str());
     if(qFilename.isEmpty()) return;
 
-    ui->legTextureButton->setIcon(QIcon(qFilename));
-    ui->legTextureButton->setIconSize(ui->legTextureButton->size());
+    ui->lLegTextureButton->setIcon(QIcon(qFilename));
+    ui->lLegTextureButton->setIconSize(ui->lLegTextureButton->size());
 
     // todo: edit this !!!
     ui->widget->GetGLWidget()->SetLeftLegTexture(qFilename);
+    //ui->widget->GetGLWidget()->SetRightLegTexture(qFilename);
+
+    if(isBusy) { animTimer->start(); }
+}
+
+// Leg Texture
+void MainWindow::SetRLegTexture()
+{
+    bool isBusy = false;
+    if(animTimer->isActive())
+    {
+       animTimer->stop();
+       isBusy = true;
+    }
+
+    QString qFilename = QFileDialog::getOpenFileName(this,
+                                                     "Set Leg Texture",
+                                                     SystemParams::texture_dir.c_str());
+    if(qFilename.isEmpty()) return;
+
+    ui->rLegTextureButton->setIcon(QIcon(qFilename));
+    ui->rLegTextureButton->setIconSize(ui->rLegTextureButton->size());
+
+    // todo: edit this !!!
+    //ui->widget->GetGLWidget()->SetLeftLegTexture(qFilename);
     ui->widget->GetGLWidget()->SetRightLegTexture(qFilename);
 
     if(isBusy) { animTimer->start(); }

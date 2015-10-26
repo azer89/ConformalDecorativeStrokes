@@ -46,7 +46,8 @@ private slots:
     void ShowTexturesDockWidget();
 
     void SetKiteTexture();
-    void SetLegTexture();
+    void SetLLegTexture();
+    void SetRLegTexture();
     void SetRectilinearTexture();
 
     void ResetTime();

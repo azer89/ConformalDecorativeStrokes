@@ -1069,7 +1069,6 @@ void StrokePainter::Draw()
         _sConstraintVao.release();
     }
 
-
     /*if(_sConstraintCandVao.isCreated())
     {
         _vDataHelper->NeedToDrawWithColor(1.0);
@@ -1169,8 +1168,7 @@ void StrokePainter::Draw()
         _quadMeshVao.release();
     }
 
-    // Rect Texture
-    // QuadMeshType::MESH_RECTILINEAR
+    // Rect Texture - QuadMeshType::MESH_RECTILINEAR
     if(SystemParams::show_texture && _vertexNumbers[QuadMeshType::MESH_RECTILINEAR] > 0)
     {
         _vDataHelper->NeedToDrawWithColor(0.0);
@@ -1182,8 +1180,7 @@ void StrokePainter::Draw()
         if(_oglTextures[QuadMeshType::MESH_RECTILINEAR]) { _oglTextures[QuadMeshType::MESH_RECTILINEAR]->release(); }
     }
 
-    // Left Leg Texture
-    // QuadMeshType::MESH_LEFT_LEG
+    // Left Leg Texture - QuadMeshType::MESH_LEFT_LEG
     if(SystemParams::show_texture && _vertexNumbers[ QuadMeshType::MESH_LEFT_LEG ] > 0)
     {
         _vDataHelper->NeedToDrawWithColor(0.0);
@@ -1195,8 +1192,7 @@ void StrokePainter::Draw()
         if(_oglTextures[ QuadMeshType::MESH_LEFT_LEG ]) { _oglTextures[ QuadMeshType::MESH_LEFT_LEG ]->release(); }
     }
 
-    // Right Leg Texture
-    // QuadMeshType::MESH_RIGHT_LEG
+    // Right Leg Texture - QuadMeshType::MESH_RIGHT_LEG
     if(SystemParams::show_texture && _vertexNumbers[ QuadMeshType::MESH_RIGHT_LEG ] > 0)
     {
         _vDataHelper->NeedToDrawWithColor(0.0);
@@ -1208,8 +1204,7 @@ void StrokePainter::Draw()
         if(_oglTextures[ QuadMeshType::MESH_RIGHT_LEG ]) { _oglTextures[ QuadMeshType::MESH_RIGHT_LEG ]->release(); }
     }
 
-    // Kite Texture
-    // QuadMeshType::MESH_KITE
+    // Kite Texture - QuadMeshType::MESH_KITE
     if(SystemParams::show_texture && _vertexNumbers[ QuadMeshType::MESH_KITE ] > 0)
     {
         _vDataHelper->NeedToDrawWithColor(0.0);

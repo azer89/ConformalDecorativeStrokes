@@ -71,15 +71,17 @@ void GLWidget::initializeGL()
     _sPainter->SetVertexDataHelper(_shaderProgram);
 
     // todo: edit this !!!
-    QString qFilenameA(SystemParams::leg_texture_file.c_str());
+    QString qFilenameA(SystemParams::l_leg_texture_file.c_str());
     this->SetLeftLegTexture(qFilenameA);
-    this->SetRightLegTexture(qFilenameA);
 
-    QString qFilenameB(SystemParams::kite_texture_file.c_str());
-    this->SetKiteTexture(qFilenameB);
+    QString qFilenameB(SystemParams::r_leg_texture_file.c_str());
+    this->SetRightLegTexture(qFilenameB);
 
-    QString qFilenameC(SystemParams::rectilinear_texture_file.c_str());
-    this->SetRectilinearTexture(qFilenameC);
+    QString qFilenameC(SystemParams::kite_texture_file.c_str());
+    this->SetKiteTexture(qFilenameC);
+
+    QString qFilenameD(SystemParams::rectilinear_texture_file.c_str());
+    this->SetRectilinearTexture(qFilenameD);
 }
 
 bool GLWidget::event( QEvent * event )

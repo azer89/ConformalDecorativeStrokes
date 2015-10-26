@@ -30,14 +30,15 @@
      <x>0</x>
      <y>0</y>
      <width>1400</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionSetLegTexture"/>
+    <addaction name="actionSetLLegTexture"/>
+    <addaction name="actionSetRLegTexture"/>
     <addaction name="actionSetKiteTexture"/>
     <addaction name="actionSetRectilinearTexture"/>
    </widget>
@@ -469,7 +470,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Leg</string>
+        <string>Left Leg</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
@@ -477,7 +478,7 @@
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QPushButton" name="legTextureButton">
+      <widget class="QPushButton" name="lLegTextureButton">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -494,7 +495,7 @@
         <enum>Qt::LeftToRight</enum>
        </property>
        <property name="text">
-        <string>Leg</string>
+        <string>Left Leg</string>
        </property>
        <property name="default">
         <bool>false</bool>
@@ -504,7 +505,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="label_6">
        <property name="minimumSize">
         <size>
@@ -531,7 +532,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="7" column="0">
       <widget class="QPushButton" name="rectilinearTextureButton">
        <property name="minimumSize">
         <size>
@@ -559,12 +560,49 @@
        </property>
       </widget>
      </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Right Leg</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QPushButton" name="rLegTextureButton">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Right Leg</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
   </widget>
-  <action name="actionSetLegTexture">
+  <action name="actionSetLLegTexture">
    <property name="text">
-    <string>Set Leg Texture</string>
+    <string>Set Left Leg Texture</string>
+   </property>
+   <property name="toolTip">
+    <string>Set Left Leg Texture</string>
    </property>
   </action>
   <action name="actionSetKiteTexture">
@@ -588,6 +626,11 @@
   <action name="actionTextures">
    <property name="text">
     <string>Textures</string>
+   </property>
+  </action>
+  <action name="actionSetRLegTexture">
+   <property name="text">
+    <string>Set Right Leg Texture</string>
    </property>
   </action>
  </widget>

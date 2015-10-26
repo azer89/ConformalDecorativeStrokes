@@ -43,7 +43,8 @@ public:
     static bool show_texture;
 
     static std::string kite_texture_file;
-    static std::string leg_texture_file;
+    static std::string l_leg_texture_file;
+    static std::string r_leg_texture_file;
     static std::string rectilinear_texture_file;
 
     static std::string texture_dir;

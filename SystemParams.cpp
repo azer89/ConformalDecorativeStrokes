@@ -33,7 +33,8 @@ bool SystemParams::show_texture = false;
  */
 
 std::string SystemParams::kite_texture_file        = "../ConformalDecorativeStrokes/textures_02/25-15_kite.png";
-std::string SystemParams::leg_texture_file         = "../ConformalDecorativeStrokes/textures_02/25-15_leg.png";
+std::string SystemParams::l_leg_texture_file       = "../ConformalDecorativeStrokes/textures_02/25-15_leg.png";
+std::string SystemParams::r_leg_texture_file       = "../ConformalDecorativeStrokes/textures_02/25-15_leg.png";
 std::string SystemParams::rectilinear_texture_file = "../ConformalDecorativeStrokes/textures_02/25-15_straight.png";
 
 std::string SystemParams::texture_dir   = "../ConformalDecorativeStrokes/textures_02";
