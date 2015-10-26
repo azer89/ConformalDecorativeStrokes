@@ -62,9 +62,9 @@ void GLWidget::initializeGL()
         { std::cerr << "Cannot link shaders." << std::endl; return; }
 
     _shaderProgram->bind();
-    _mvpMatrixLocation = _shaderProgram->uniformLocation("mvpMatrix");
-    _colorLocation = _shaderProgram->attributeLocation("vertexColor");
-    _vertexLocation = _shaderProgram->attributeLocation("vert");
+    _mvpMatrixLocation  = _shaderProgram->uniformLocation("mvpMatrix");
+    _colorLocation      = _shaderProgram->attributeLocation("vertexColor");
+    _vertexLocation     = _shaderProgram->attributeLocation("vert");
     _use_color_location = _shaderProgram->uniformLocation("use_color");
 
     _sPainter = new StrokePainter();
@@ -107,7 +107,7 @@ void GLWidget::paintGL()
     QMatrix4x4 orthoMatrix;
 
     orthoMatrix.ortho(0.0 +  _scrollOffset.x(),
-                      (float)current_width +  _scrollOffset.x(),
+                      (float)current_width  +  _scrollOffset.x(),
                       (float)current_height + _scrollOffset.y(),
                       0.0 + _scrollOffset.y(),
                       -100, 100);
@@ -149,10 +149,7 @@ void GLWidget::mouseMoveEvent(int x, int y)
 
     // your stuff
 
-    if(_isMouseDown)
-    {
-        _sPainter->mouseMoveEvent(dx, dy);
-    }
+    if(_isMouseDown) { _sPainter->mouseMoveEvent(dx, dy); }
 
     this->repaint();
 }
@@ -171,10 +168,7 @@ void GLWidget::mouseReleaseEvent(int x, int y)
     _sPainter->mouseReleaseEvent(dx, dy);
 
     int qmSize = _sPainter->QuadMeshSize();
-    if(qmSize > 0)
-    {
-        emit CalculateConformalMap();
-    }
+    if(qmSize > 0) { emit CalculateConformalMap(); }
 
     this->repaint();
 }

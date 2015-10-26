@@ -124,16 +124,12 @@ void QuadMesh::SetSlidingConstraintFlag(int index, bool boolValue, std::vector<A
     else if(this->_quadMeshType == QuadMeshType::MESH_LEFT_LEG || this->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG)
     {
         for(int xIter = 0; xIter < w; xIter++)
-        {
-            _psVertices[xIter][index]._isSlideConstrained = boolValue;
-        }
+            { _psVertices[xIter][index]._isSlideConstrained = boolValue; }
     }
     else if(this->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
     {
         for(int xIter = 0; xIter < w; xIter++)
-        {
-            _psVertices[xIter][index]._isSlideConstrained = boolValue;
-        }
+            { _psVertices[xIter][index]._isSlideConstrained = boolValue; }
     }
 }
 
@@ -146,9 +142,7 @@ std::vector<AVector> QuadMesh::GetSideBoundary(int index)
     if(this->_quadMeshType == QuadMeshType::MESH_KITE && this->_isRightKite)
     {
         for(int xIter = 0; xIter < w - index; xIter++)
-        {
-            vertices.push_back(_psVertices[xIter][index].position);
-        }
+            { vertices.push_back(_psVertices[xIter][index].position); }
 
         for(int yIter = (index + 1); yIter < h; yIter++)
         {
@@ -162,9 +156,7 @@ std::vector<AVector> QuadMesh::GetSideBoundary(int index)
         index = h - (index + 1);
 
         for(int yIter = 0; yIter < h - index; yIter++)
-        {
-            vertices.push_back(_psVertices[index][yIter].position);
-        }
+            { vertices.push_back(_psVertices[index][yIter].position); }
 
         for(int xIter = (index + 1); xIter < w; xIter++)
         {
@@ -176,16 +168,12 @@ std::vector<AVector> QuadMesh::GetSideBoundary(int index)
     else if(this->_quadMeshType == QuadMeshType::MESH_LEFT_LEG || this->_quadMeshType == QuadMeshType::MESH_RIGHT_LEG)
     {
         for(int xIter = 0; xIter < w; xIter++)
-        {
-            vertices.push_back(_psVertices[xIter][index].position);
-        }
+            { vertices.push_back(_psVertices[xIter][index].position); }
     }
     else if(this->_quadMeshType == QuadMeshType::MESH_RECTILINEAR)
     {
         for(int xIter = 0; xIter < w; xIter++)
-        {
-            vertices.push_back(_psVertices[xIter][index].position);
-        }
+            { vertices.push_back(_psVertices[xIter][index].position); }
     }
 
     return vertices;
